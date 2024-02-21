@@ -1,0 +1,123 @@
+# serverless.yml
+
+service: abe-graphql
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-domain-manager
+
+custom:
+  domain:
+    dev: api-dev.abewriting.org
+    qa: api-qa.abewriting.org
+    prod: api.abewriting.org
+  customDomain:
+    domainName: ${self:custom.domain.${opt:stage, 'dev'}}
+    basePath: "graphql" # api root url becomes: api.mentorpal.org/graphql
+    # certificateName: '*.mentorpal.org' didnt work
+    # certificateName: 'c6107db7-c2ef-4e85-a21f-bee7d1ac008a' didnt work either
+    stage: ${self:provider.stage}
+    endpointType: regional
+    apiType: rest
+    createRoute53Record: true
+    securityPolicy: tls_1_2
+    autoDomain: true
+    # Using same domain in multiple services. https://github.com/amplify-education/serverless-domain-manager/issues/484#issuecomment-1028713546
+    preserveExternalPathMappings: true
+
+  stages:
+    dev:
+      MONGO_URI: ${ssm:/ABE/dev/mongo_uri, ''}
+      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/"
+      JWT_SECRET: ${ssm:/ABE/dev/jwt_secret, ''}
+      DOMAIN: "abewriting.org"
+      REFRESH_TOKEN_NAME: "refreshTokenDev"
+      WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
+
+    qa:
+      MONGO_URI: ${ssm:/ABE/qa/mongo_uri, ''}
+      CORS_ORIGIN: "https://qa.abewriting.org,https://qa.abewriting.org/,https://api-qa.abewriting.org,https://api-qa.abewriting.org/"
+      JWT_SECRET: ${ssm:/ABE/qa/jwt_secret, ''}
+      DOMAIN: "abewriting.org"
+      REFRESH_TOKEN_NAME: "refreshTokenQa"
+      WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
+
+    prod:
+      MONGO_URI: ${ssm:/ABE/prod/mongo_uri, ''}
+      CORS_ORIGIN: "https://abewriting.org,https://abewriting.org/,https://api.abewriting.org,https://api.abewriting.org/"
+      JWT_SECRET: ${ssm:/ABE/prod/jwt_secret, ''}
+      DOMAIN: "abewriting.org"
+      REFRESH_TOKEN_NAME: "refreshTokenProd"
+      WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  runtime: nodejs16.x
+  endpointType: regional
+  tracing:
+    lambda: true
+    apiGateway: true
+  apiGateway:
+    minimumCompressionSize: 1024
+  logs:
+    restApi:
+      # Enables HTTP access logs (default: true)
+      accessLogging: true
+      # # Log format to use for access logs
+      # format: 'requestId: $context.requestId'
+      # Enable execution logging (default: true)
+      executionLogging: true
+      level: INFO # INFO or ERROR
+      # Log full requests/responses for execution logging (default: true)
+      fullExecutionData: true
+  environment:
+    MONGO_URI: ${self:custom.stages.${self:provider.stage}.MONGO_URI}
+    CORS_ORIGIN: ${self:custom.stages.${self:provider.stage}.CORS_ORIGIN}
+    JWT_SECRET: ${self:custom.stages.${self:provider.stage}.JWT_SECRET}
+    DOMAIN: ${self:custom.stages.${self:provider.stage}.DOMAIN}
+    REFRESH_TOKEN_NAME: ${self:custom.stages.${self:provider.stage}.REFRESH_TOKEN_NAME}
+
+functions:
+  graphql:
+    timeout: 20
+    handler: src/lambda.handler
+    events:
+      - http:
+          path: /
+          method: GET
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors:
+            origins:
+              # "*"
+              - "https://*.abewriting.org"
+              - "https://*.abewriting.org/"
+              - "https://abewriting.org"
+              - "https://abewriting.org/"
+              - "http://local.abewriting.org"
+              - "http://local.abewriting.org/"
+            allowCredentials: true
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Amzn-Trace-Id
+resources:
+  Resources:
+    # this fails on first deploy because CloudFormation tries to create
+    # association but the gateway does not yet exist
+    # Workaround: Disable this resource on first deploy, when first deploy is successful, enable this resource and deploy again
+    FirewallAssociation:
+      Type: AWS::WAFv2::WebACLAssociation
+      DependsOn: "ApiGatewayRestApi"
+      Properties:
+        ResourceArn:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayRestApi}/stages/${self:provider.stage}"
+        WebACLArn: "${self:custom.stages.${self:provider.stage}.WEBACL_ARN}"
