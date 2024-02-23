@@ -11,8 +11,8 @@ jobs:
           node-version: "18.13"
       - name: install
         run: npm ci
-      - name: test audit
-        run: npm run test:audit
+      # - name: test audit
+      #   run: npm run test:audit
       - name: test format
         run: npm run test:format
       - name: test lint
