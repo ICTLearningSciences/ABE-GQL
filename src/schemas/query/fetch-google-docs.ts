@@ -5,7 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import GoogleDocsModel, { GoogleDocType } from "../models/GoogleDoc";
-import { GraphQLString, GraphQLNonNull, GraphQLList, GraphQLID } from "graphql";
+import { GraphQLNonNull, GraphQLList, GraphQLID } from "graphql";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -15,6 +15,7 @@ export const fetchGoogleDocs = {
     userId: { type: GraphQLNonNull(GraphQLID) },
   },
   async resolve(
+    // eslint-disable-next-line   @typescript-eslint/no-explicit-any
     _: any,
     args: {
       userId: string;

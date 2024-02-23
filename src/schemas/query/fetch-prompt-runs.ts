@@ -17,6 +17,7 @@ export const fetchPromptRuns = {
     googleDocId: { type: GraphQLString },
   },
   async resolve(
+    // eslint-disable-next-line   @typescript-eslint/no-explicit-any
     _: any,
     args: {
       userId: string;

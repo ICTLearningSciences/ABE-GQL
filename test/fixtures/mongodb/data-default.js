@@ -1,10 +1,16 @@
+/*
+This software is Copyright ©️ 2020 The University of Southern California. All Rights Reserved. 
+Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice and subject to the full license file found in the root of this software deliverable. Permission to make commercial use of this software may be obtained by contacting:  USC Stevens Center for Innovation University of Southern California 1150 S. Olive Street, Suite 2300, Los Angeles, CA 90115, USA Email: accounting@stevens.usc.edu
+
+The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
+*/
 import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
   openaiasyncs: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e4c"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e4c"),
       openAiData: [
         {
           openAiPromptStringify: "open_ai_prompt_stringify",
@@ -18,7 +24,7 @@ module.exports = {
 
   activities: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e9f"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e9f"),
       title: "activity_title_test",
       steps: [
         {
@@ -33,11 +39,11 @@ module.exports = {
       ],
       description: "activity_description_test",
       introduction: "activity_introduction_test",
-      prompt: ObjectId("5ffdf1231ee2c62320b49e9e"),
+      prompt: new ObjectId("5ffdf1231ee2c62320b49e9e"),
       prompts: [
         {
-          _id: ObjectId("5ffdf1231ee2c62320b49e8e"),
-          promptId: ObjectId("5ffdf1231ee2c62320b49e9e"),
+          _id: new ObjectId("5ffdf1231ee2c62320b49e8e"),
+          promptId: new ObjectId("5ffdf1231ee2c62320b49e9e"),
           order: 0,
         },
       ],
@@ -49,16 +55,16 @@ module.exports = {
   ],
   useractivitystates: [
     {
-      userId: ObjectId("5ffdf1231ee2c62320b49e99"),
-      activityId: ObjectId("5ffdf1231ee2c62320b49e9f"),
+      userId: new ObjectId("5ffdf1231ee2c62320b49e99"),
+      activityId: new ObjectId("5ffdf1231ee2c62320b49e9f"),
       googleDocId: "test_google_doc_id",
       metadata: "user_activity_state_metadata_test",
     },
   ],
   docgoals: [
     {
-      activities: [ObjectId("5ffdf1231ee2c62320b49e9f")],
-      activityOrder: [ObjectId("5ffdf1231ee2c62320b49e9f")],
+      activities: [new ObjectId("5ffdf1231ee2c62320b49e9f")],
+      activityOrder: [new ObjectId("5ffdf1231ee2c62320b49e9f")],
       title: "docgoal_title_test",
       description: "docgoal_description_test",
       displayIcon: "docgoal_display_icon_test",
@@ -68,7 +74,7 @@ module.exports = {
 
   prompts: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e9e"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e9e"),
       openAiPromptSteps: [
         {
           prompts: [
@@ -101,8 +107,8 @@ module.exports = {
   ],
   promptruns: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e9c"),
-      user: ObjectId("5ffdf1231ee2c62320b49e99"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e9c"),
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleDocId: "test_google_doc_id",
       openAiSteps: [
         {
@@ -136,8 +142,8 @@ module.exports = {
       ],
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e9d"),
-      user: ObjectId("5ffdf1231ee2c62320b49e99"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e9d"),
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleDocId: "test_google_doc_id_2",
       openAiSteps: [
         {
@@ -173,13 +179,13 @@ module.exports = {
   ],
   googledocs: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea0"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea0"),
       googleDocId: "test_google_doc_id",
-      user: ObjectId("5ffdf1231ee2c62320b49e99"),
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       createdAt: "2021-01-13T00:00:00.000+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49da7"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49da7"),
       googleDocId: "test_admin_google_doc_id",
       title: "Test Admin Document",
       createdAt: "2021-01-13T00:00:00.000+00:00",
@@ -188,21 +194,21 @@ module.exports = {
   ],
   refreshtokens: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e9a"),
-      user: ObjectId("5ffdf1231ee2c62320b49e99"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e9a"),
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       token: "fake_refresh_token",
       expires: "2100-10-12T20:49:41.599+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e9b"),
-      user: ObjectId("5ffdf1231ee2c62320b49e99"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e9b"),
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       token: "expired_refresh_token",
       expires: "2000-10-12T20:49:41.599+00:00",
     },
   ],
   googledocversions: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ec1"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ec1"),
       docId: "test_google_doc_id",
       plainText: "hello, world!",
       lastChangedId: "123",
@@ -218,7 +224,7 @@ module.exports = {
       updatedAt: "2021-01-13T00:00:00.000+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea1"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea1"),
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
       lastChangedId: "123",
@@ -233,7 +239,7 @@ module.exports = {
       modifiedTime: "2000-10-12T20:49:41.599+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea2"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea2"),
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 2",
       lastChangedId: "123",
@@ -248,7 +254,7 @@ module.exports = {
       modifiedTime: "2000-10-12T20:49:41.599+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea3"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea3"),
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
       lastChangedId: "123",
@@ -263,7 +269,7 @@ module.exports = {
       modifiedTime: "2000-10-12T20:49:41.599+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea9"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea9"),
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 4",
       lastChangedId: "123",
@@ -278,7 +284,7 @@ module.exports = {
       modifiedTime: "2000-10-12T20:49:41.599+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea8"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea8"),
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 5",
       lastChangedId: "123",
@@ -293,7 +299,7 @@ module.exports = {
       modifiedTime: "2000-10-12T20:49:41.599+00:00",
     },
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49ea7"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49ea7"),
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 6",
       lastChangedId: "123",
@@ -310,7 +316,7 @@ module.exports = {
   ],
   users: [
     {
-      _id: ObjectId("5ffdf1231ee2c62320b49e99"),
+      _id: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleId: "123",
       name: "John Doe",
       email: "johndoe@gmail.com",

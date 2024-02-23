@@ -16,7 +16,6 @@ import {
   OpenAiPromptStep,
   OpenAiPromptStepInputType,
   OpenAiPromptStepType,
-  PromptConfiguration,
 } from "./PromptRun";
 import { PromptRoles } from "../types/types";
 
