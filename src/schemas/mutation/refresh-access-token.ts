@@ -15,7 +15,7 @@ export const refreshAccessToken = {
   args: {},
   resolve: async (
     _root: GraphQLObjectType,
-    args: {},
+    args: any, // eslint-disable-line  @typescript-eslint/no-explicit-any
     context: any // eslint-disable-line  @typescript-eslint/no-explicit-any
   ): Promise<UserAccessToken> => {
     try {

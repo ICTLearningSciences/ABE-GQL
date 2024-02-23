@@ -19,6 +19,7 @@ export const storeAllPrompts = {
     prompts: { type: GraphQLNonNull(GraphQLList(PromptInputType)) },
   },
   async resolve(
+    // eslint-disable-next-line   @typescript-eslint/no-explicit-any
     _: any,
     args: {
       prompts: Prompt[];
@@ -41,7 +42,7 @@ export const storeAllPrompts = {
           },
         };
       });
-      const docs = await PromptModel.collection.bulkWrite(bulkWriteUpdate);
+      await PromptModel.collection.bulkWrite(bulkWriteUpdate);
       return await PromptModel.find({});
       //   return doc;
     } catch (e) {

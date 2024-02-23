@@ -18,6 +18,7 @@ export const updateConfigKey = {
     _root: GraphQLObjectType,
     args: {
       key: string;
+      // eslint-disable-next-line   @typescript-eslint/no-explicit-any
       value: any;
     }
     // context: { user: User }

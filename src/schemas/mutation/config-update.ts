@@ -12,7 +12,6 @@ import {
   GraphQLString,
 } from "graphql";
 import ConfigModel, { Config, ConfigType } from "../models/Config";
-import { User } from "../models/User";
 
 export const ConfigUpdateInputType = new GraphQLInputObjectType({
   name: "ConfigUpdateInputType",
@@ -28,8 +27,7 @@ export const updateConfig = {
   },
   resolve: async (
     _root: GraphQLObjectType,
-    args: { config: Config },
-    context: { user: User }
+    args: { config: Config }
   ): Promise<Config> => {
     // if (context.user.userRole !== UserRole.ADMIN) {
     //   throw new Error('you do not have permission to edit config');

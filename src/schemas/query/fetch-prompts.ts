@@ -13,7 +13,7 @@ dotenv.config();
 export const fetchPrompts = {
   type: GraphQLList(PromptType),
   args: {},
-  async resolve(_: any) {
+  async resolve() {
     try {
       return await PromptModel.find({});
     } catch (e) {

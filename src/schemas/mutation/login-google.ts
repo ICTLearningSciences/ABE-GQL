@@ -5,12 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import axios from "axios";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLBoolean,
-} from "graphql";
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql";
 import UserSchema from "../models/User";
 import {
   UserAccessTokenType,
@@ -70,7 +65,7 @@ export const loginGoogle = {
   ): Promise<UserAccessToken> => {
     try {
       const googleResponse = await authGoogle(args.accessToken);
-      let user = await UserSchema.findOneAndUpdate(
+      const user = await UserSchema.findOneAndUpdate(
         {
           googleId: googleResponse.id,
         },
