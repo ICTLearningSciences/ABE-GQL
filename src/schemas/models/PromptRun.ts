@@ -32,6 +32,7 @@ export interface PromptConfiguration {
 export interface OpenAiPromptStep {
   prompts: PromptConfiguration[];
   outputDataType: PromptOutputDataType;
+  targetGptModel: string;
   includeChatLogContext?: boolean;
   jsonValidation?: string;
 }
@@ -84,6 +85,7 @@ export const OpenAiPromptStepType = new GraphQLObjectType({
   fields: () => ({
     prompts: { type: GraphQLList(PromptConfigurationType) },
     outputDataType: { type: GraphQLString },
+    targetGptModel: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
   }),
@@ -94,6 +96,7 @@ export const OpenAiPromptStepInputType = new GraphQLInputObjectType({
   fields: () => ({
     prompts: { type: GraphQLList(PromptConfigurationInputType) },
     outputDataType: { type: GraphQLString },
+    targetGptModel: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
   }),

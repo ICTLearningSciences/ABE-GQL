@@ -30,7 +30,6 @@ describe("store prompt templates", () => {
     const newPromptTemplate = {
       title: "new_prompt_template",
       clientId: "test_client_id",
-      targetGptModel: "test_gpt_model",
       openAiPromptSteps: [
         {
           prompts: [
@@ -41,6 +40,7 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
+          targetGptModel: "test_gpt_model",
           outputDataType: "TEXT",
         },
         {
@@ -52,6 +52,7 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
+          targetGptModel: "test_gpt_model",
           outputDataType: "JSON",
         },
       ],
@@ -60,7 +61,6 @@ describe("store prompt templates", () => {
     const updatedPromptTemplate = {
       title: "updated_prompt_template",
       clientId: "test_client_id_2",
-      targetGptModel: "test_gpt_model_2",
       openAiPromptSteps: [
         {
           prompts: [
@@ -71,6 +71,7 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
+          targetGptModel: "test_gpt_model_2",
           outputDataType: "TEXT",
         },
         {
@@ -82,6 +83,7 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
+          targetGptModel: "test_gpt_model_2",
           outputDataType: "JSON",
         },
       ],
@@ -95,15 +97,15 @@ describe("store prompt templates", () => {
                 _id
                 title
                 clientId
-                targetGptModel
                 openAiPromptSteps {
                     prompts{
                       promptText
                       includeEssay
                       includeUserInput
-                      promptRole
+                promptRole
                     }
-                    outputDataType
+                targetGptModel
+                outputDataType
                   }
               }
          }`,
