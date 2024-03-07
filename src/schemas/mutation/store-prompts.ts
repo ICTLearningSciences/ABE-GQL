@@ -28,14 +28,13 @@ export const storeAllPrompts = {
     try {
       const bulkWriteUpdate = args.prompts.map((prompt) => {
         const id = idOrNew(prompt._id);
+        delete prompt._id;
         return {
           updateOne: {
             filter: { _id: new ObjectId(id) },
             update: {
               $set: {
-                openAiPromptSteps: prompt.openAiPromptSteps,
-                title: prompt.title,
-                clientId: prompt.clientId,
+                ...prompt,
               },
             },
             upsert: true,

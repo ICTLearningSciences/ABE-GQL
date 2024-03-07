@@ -24,6 +24,7 @@ export interface Prompt extends Document {
   openAiPromptSteps: OpenAiPromptStep[];
   clientId?: string;
   title: string;
+  targetGptModel: string;
 }
 
 export const PromptType = new GraphQLObjectType({
@@ -33,6 +34,7 @@ export const PromptType = new GraphQLObjectType({
     openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepType) },
     clientId: { type: GraphQLString },
     title: { type: GraphQLString },
+    targetGptModel: { type: GraphQLString },
   }),
 });
 
@@ -43,6 +45,7 @@ export const PromptInputType = new GraphQLInputObjectType({
     openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepInputType) },
     clientId: { type: GraphQLString },
     title: { type: GraphQLString },
+    targetGptModel: { type: GraphQLString },
   }),
 });
 
@@ -87,6 +90,7 @@ export const PromptSchema = new Schema(
     ],
     title: { type: String, required: true },
     clientId: { type: String, required: false, default: "" },
+    targetGptModel: { type: String, required: true },
   },
   { timestamps: true }
 );

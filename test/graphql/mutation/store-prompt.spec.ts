@@ -58,6 +58,7 @@ describe("store prompt template", () => {
           includeChatLogContext: true,
         },
       ],
+      targetGptModel: "test_target_gpt_model",
     };
     const response = await request(app)
       .post("/graphql")
@@ -67,6 +68,7 @@ describe("store prompt template", () => {
                 _id
                 title
                 clientId
+                targetGptModel
                 openAiPromptSteps {
                     prompts{
                       promptText
@@ -91,6 +93,12 @@ describe("store prompt template", () => {
     expect(
       response.body.data.storePrompt.openAiPromptSteps
     ).to.deep.include.members(newPromptTemplate.openAiPromptSteps);
+    expect(response.body.data.storePrompt.clientId).to.equal(
+      newPromptTemplate.clientId
+    );
+    expect(response.body.data.storePrompt.targetGptModel).to.equal(
+      newPromptTemplate.targetGptModel
+    );
   });
 
   it("can update existing prompt template", async () => {

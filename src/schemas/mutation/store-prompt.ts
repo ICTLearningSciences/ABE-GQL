@@ -19,12 +19,12 @@ export const storePrompt = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async resolve(_: any, args: any) {
     try {
+      const id = idOrNew(args.prompt._id);
+      delete args.prompt._id;
       const doc = await PromptModel.findOneAndUpdate(
-        { _id: idOrNew(args.prompt._id) },
+        { _id: id },
         {
-          openAiPromptSteps: args.prompt.openAiPromptSteps,
-          title: args.prompt.title,
-          clientId: args.prompt.clientId,
+          ...args.prompt,
         },
         { new: true, upsert: true }
       );
