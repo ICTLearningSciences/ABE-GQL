@@ -40,6 +40,8 @@ describe("fetch google doc versions", () => {
                         sender
                         message
                       }
+                      activity
+                      intent
                       title
                       lastModifyingUser
                       modifiedTime
@@ -66,6 +68,8 @@ describe("fetch google doc versions", () => {
                         sender
                         message
                       }
+                      activity
+                      intent
                       title
                       lastModifyingUser
                       modifiedTime   
@@ -87,6 +91,8 @@ describe("fetch google doc versions", () => {
             message: "Hello, world!",
           },
         ],
+        activity: "5ffdf1231ee2c62320b49e9f",
+        intent: "intention",
         title: "Test Document",
         lastModifyingUser: "John Doe",
         modifiedTime: "2000-10-12T20:49:41.599Z",
@@ -101,6 +107,8 @@ describe("fetch google doc versions", () => {
             message: "Hello, world!",
           },
         ],
+        activity: "5ffdf1231ee2c62320b49e9f",
+        intent: "intention",
         title: "Test Document",
         lastModifyingUser: "John Doe",
         modifiedTime: "2000-10-12T20:49:41.599Z",
@@ -115,6 +123,8 @@ describe("fetch google doc versions", () => {
             message: "Hello, world!",
           },
         ],
+        activity: "5ffdf1231ee2c62320b49e9f",
+        intent: "intention",
         title: "Test Document",
         lastModifyingUser: "John Doe",
         modifiedTime: "2000-10-12T20:49:41.599Z",

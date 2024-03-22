@@ -41,6 +41,8 @@ describe("submit google doc version", () => {
                         displayType
                         bulletPoints
                       }
+                      activity
+                      intent
                       title
                       lastModifyingUser
                       modifiedTime
@@ -67,6 +69,8 @@ describe("submit google doc version", () => {
           bulletPoints: [] as string[],
         },
       ],
+      activity: "activity",
+      intent: "intent",
       title: "title",
       lastModifyingUser: "aaron",
       modifiedTime: "2000-10-12T20:49:41.599Z",
@@ -85,6 +89,8 @@ describe("submit google doc version", () => {
                         displayType
                         bulletPoints
                       }
+                      activity
+                      intent
                       title
                       lastModifyingUser
                       modifiedTime
@@ -110,6 +116,8 @@ describe("submit google doc version", () => {
                         displayType
                         bulletPoints
                       }
+                      activity
+                      intent
                       title
                       lastModifyingUser
                       modifiedTime

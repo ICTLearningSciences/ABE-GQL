@@ -53,6 +53,8 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
     plainText: { type: GraphQLNonNull(GraphQLString) },
     lastChangedId: { type: GraphQLString },
     chatLog: { type: GraphQLList(ChatItemInputType) },
+    activity: { type: GraphQLString },
+    intent: { type: GraphQLString },
     title: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
@@ -67,6 +69,8 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     lastChangedId: { type: GraphQLString },
     title: { type: GraphQLString },
     chatLog: { type: GraphQLList(ChatItemObjectType) },
+    activity: { type: GraphQLString },
+    intent: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
     createdAt: { type: DateType },
@@ -79,6 +83,8 @@ export interface IGDocVersion {
   plainText: string;
   lastChangedId: string;
   chatLog: ChatItem[];
+  activity: string;
+  intent: string;
   title: string;
   lastModifyingUser: string;
   modifiedTime: Date;
@@ -99,6 +105,8 @@ export const GDocVersionSchema = new Schema(
         bulletPoints: [String],
       },
     ],
+    activity: String,
+    intent: String,
     title: String,
     lastModifyingUser: String,
     modifiedTime: Date,
