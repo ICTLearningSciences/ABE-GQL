@@ -137,37 +137,35 @@ describe("store doc timeline", () => {
         },
       });
     expect(response0.status).to.equal(200);
-    expect(response0.body.data.fetchDocTimeline).to.deep.contain.members([
-      {
-        docId: "doc_id",
-        user: "5ffdf1231ee2c62320b49e99",
-        timelinePoints: [
-          {
-            time: "2021-01-12T00:00:00.000Z",
-            type: TimelinePointType.START,
-            document: {
-              docId: "doc_od",
-              plainText: "test",
-              lastChangedId: "test",
-              chatLog: [
-                {
-                  sender: "USER",
-                  message: "test",
-                },
-              ],
-              activity: "test",
-              intent: "test",
-              title: "test",
-              lastModifyingUser: "test",
-            },
+    expect(response0.body.data.fetchDocTimeline).to.eql({
+      docId: "doc_id",
+      user: "5ffdf1231ee2c62320b49e99",
+      timelinePoints: [
+        {
+          time: "2021-01-12T00:00:00.000Z",
+          type: TimelinePointType.START,
+          document: {
+            docId: "doc_od",
+            plainText: "test",
+            lastChangedId: "test",
+            chatLog: [
+              {
+                sender: "USER",
+                message: "test",
+              },
+            ],
+            activity: "test",
             intent: "test",
-            changeSummary: "test",
-            reverseOutline: "test",
-            relatedFeedback: "test",
+            title: "test",
+            lastModifyingUser: "test",
           },
-        ],
-      },
-    ]);
+          intent: "test",
+          changeSummary: "test",
+          reverseOutline: "test",
+          relatedFeedback: "test",
+        },
+      ],
+    });
 
     const response = await request(app)
       .post("/graphql")
@@ -250,12 +248,10 @@ describe("store doc timeline", () => {
         },
       });
     expect(response2.status).to.equal(200);
-    expect(response2.body.data.fetchDocTimeline).to.deep.contain.members([
-      {
-        user: "5ffdf1231ee2c62320b49e99",
-        docId: "doc_id",
-        timelinePoints: [],
-      },
-    ]);
+    expect(response2.body.data.fetchDocTimeline).to.eql({
+      user: "5ffdf1231ee2c62320b49e99",
+      docId: "doc_id",
+      timelinePoints: [],
+    });
   });
 });

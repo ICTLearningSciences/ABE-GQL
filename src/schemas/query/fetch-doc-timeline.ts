@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLString, GraphQLNonNull, GraphQLList } from "graphql";
+import { GraphQLString, GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
 import DocTimelineModel, {
   DocTimelineType,
@@ -12,7 +12,7 @@ import DocTimelineModel, {
 dotenv.config();
 
 export const fetchDocTimeline = {
-  type: GraphQLList(DocTimelineType),
+  type: DocTimelineType,
   args: {
     googleDocId: { type: GraphQLNonNull(GraphQLString) },
     userId: { type: GraphQLNonNull(GraphQLString) },
@@ -26,7 +26,7 @@ export const fetchDocTimeline = {
     }
   ) {
     try {
-      return await DocTimelineModel.find({
+      return await DocTimelineModel.findOne({
         docId: args.googleDocId,
         user: args.userId,
       });

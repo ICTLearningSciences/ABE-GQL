@@ -64,37 +64,35 @@ describe("fetch doc timeline", () => {
         },
       });
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchDocTimeline).to.deep.contain.members([
-      {
-        docId: "doc_id",
-        user: "5ffdf1231ee2c62320b49e99",
+    expect(response.body.data.fetchDocTimeline).to.eql({
+      docId: "doc_id",
+      user: "5ffdf1231ee2c62320b49e99",
 
-        timelinePoints: [
-          {
-            type: TimelinePointType.START,
-            time: "2021-01-12T00:00:00.000Z",
-            document: {
-              docId: "doc_od",
-              plainText: "test",
-              lastChangedId: "test",
-              chatLog: [
-                {
-                  sender: "USER",
-                  message: "test",
-                },
-              ],
-              activity: "test",
-              intent: "test",
-              title: "test",
-              lastModifyingUser: "test",
-            },
+      timelinePoints: [
+        {
+          type: TimelinePointType.START,
+          time: "2021-01-12T00:00:00.000Z",
+          document: {
+            docId: "doc_od",
+            plainText: "test",
+            lastChangedId: "test",
+            chatLog: [
+              {
+                sender: "USER",
+                message: "test",
+              },
+            ],
+            activity: "test",
             intent: "test",
-            changeSummary: "test",
-            reverseOutline: "test",
-            relatedFeedback: "test",
+            title: "test",
+            lastModifyingUser: "test",
           },
-        ],
-      },
-    ]);
+          intent: "test",
+          changeSummary: "test",
+          reverseOutline: "test",
+          relatedFeedback: "test",
+        },
+      ],
+    });
   });
 });
