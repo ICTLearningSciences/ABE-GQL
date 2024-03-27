@@ -5,6 +5,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose from "mongoose";
+import {
+  TimelinePointType,
+  Sender,
+} from "../../../src/schemas/models/DocTimeline";
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
@@ -336,6 +340,74 @@ module.exports = {
       email: "johndoe@gmail.com",
       userRole: "USER",
       lastLoginAt: "2000-10-12T20:49:41.599+00:00",
+    },
+  ],
+  doctimelines: [
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320b49e39"),
+      docId: "doc_id",
+      user: "5ffdf1231ee2c62320b49e99",
+      timelinePoints: [
+        {
+          time: "2021-01-12T00:00:00.000Z",
+          type: TimelinePointType.START,
+          document: {
+            docId: "doc_od",
+            plainText: "test",
+            lastChangedId: "test",
+            chatLog: [
+              {
+                sender: "USER",
+                message: "test",
+              },
+            ],
+            activity: "test",
+            intent: "test",
+            title: "test",
+            lastModifyingUser: "test",
+            createdAt: new Date("2021-01-12T00:00:00.000Z"),
+            modifiedTime: new Date("2021-01-12T00:00:00.000Z"),
+            updatedAt: new Date("2021-01-12T00:00:00.000Z"),
+          },
+          intent: "test",
+          changeSummary: "test",
+          reverseOutline: "test",
+          relatedFeedback: "test",
+        },
+      ],
+    },
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320b49e29"),
+      docId: "doc_id_2",
+      user: "5ffdf1231ee2c62320b49e99",
+      timelinePoints: [
+        {
+          time: "2021-01-12T00:00:00.000Z",
+          type: TimelinePointType.NEW_ACTIVITY,
+          document: {
+            docId: "doc_od",
+            plainText: "test_2",
+            lastChangedId: "test_2",
+            chatLog: [
+              {
+                sender: "USER",
+                message: "test",
+              },
+            ],
+            activity: "test_2",
+            intent: "test_2",
+            title: "test_2",
+            lastModifyingUser: "test_2",
+            createdAt: new Date("2021-01-12T00:00:00.000Z"),
+            modifiedTime: new Date("2021-01-12T00:00:00.000Z"),
+            updatedAt: new Date("2021-01-12T00:00:00.000Z"),
+          },
+          intent: "test_2",
+          changeSummary: "test_2",
+          reverseOutline: "test_2",
+          relatedFeedback: "test_2",
+        },
+      ],
     },
   ],
 };
