@@ -349,9 +349,9 @@ module.exports = {
       user: "5ffdf1231ee2c62320b49e99",
       timelinePoints: [
         {
-          time: "2021-01-12T00:00:00.000Z",
+          versionTime: "2021-01-12T00:00:00.000Z",
           type: TimelinePointType.START,
-          document: {
+          version: {
             docId: "doc_od",
             plainText: "test",
             lastChangedId: "test",
@@ -382,9 +382,9 @@ module.exports = {
       user: "5ffdf1231ee2c62320b49e99",
       timelinePoints: [
         {
-          time: "2021-01-12T00:00:00.000Z",
+          versionTime: "2021-01-12T00:00:00.000Z",
           type: TimelinePointType.NEW_ACTIVITY,
-          document: {
+          version: {
             docId: "doc_od",
             plainText: "test_2",
             lastChangedId: "test_2",

@@ -37,8 +37,8 @@ describe("fetch doc timeline", () => {
                 user
                 timelinePoints{
                     type
-                    time
-                    document{
+                    versionTime
+                    version{
                         docId
                         plainText
                         lastChangedId
@@ -71,8 +71,8 @@ describe("fetch doc timeline", () => {
       timelinePoints: [
         {
           type: TimelinePointType.START,
-          time: "2021-01-12T00:00:00.000Z",
-          document: {
+          versionTime: "2021-01-12T00:00:00.000Z",
+          version: {
             docId: "doc_od",
             plainText: "test",
             lastChangedId: "test",

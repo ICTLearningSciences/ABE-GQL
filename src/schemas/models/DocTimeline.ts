@@ -29,8 +29,8 @@ export enum TimelinePointType {
 
 export interface TimelinePoint {
   type: TimelinePointType;
-  time: string;
-  document: IGDocVersion;
+  versionTime: string;
+  version: IGDocVersion;
   intent: string;
   changeSummary: string;
   reverseOutline: string;
@@ -41,8 +41,8 @@ export const TimelinePointObjectType = new GraphQLObjectType({
   name: "TimelinePointObjectType",
   fields: () => ({
     type: { type: GraphQLString },
-    time: { type: GraphQLString },
-    document: { type: GDocVersionObjectType },
+    versionTime: { type: GraphQLString },
+    version: { type: GDocVersionObjectType },
     intent: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
@@ -54,8 +54,8 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
   name: "TimelinePointInputType",
   fields: () => ({
     type: { type: GraphQLString },
-    time: { type: GraphQLString },
-    document: { type: GDocVersionInputType },
+    versionTime: { type: GraphQLString },
+    version: { type: GDocVersionInputType },
     intent: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
@@ -66,8 +66,8 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
 export const TimelinePointSchema = new Schema<TimelinePoint>(
   {
     type: { type: String },
-    time: { type: String },
-    document: { type: GDocVersionSchema },
+    versionTime: { type: String },
+    version: { type: GDocVersionSchema },
     intent: { type: String },
     changeSummary: { type: String },
     reverseOutline: { type: String },
