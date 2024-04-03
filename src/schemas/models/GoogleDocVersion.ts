@@ -14,6 +14,12 @@ import {
   GraphQLList,
 } from "graphql";
 import DateType from "../types/date";
+import {
+  PaginateOptions,
+  PaginateQuery,
+  PaginatedResolveResult,
+  pluginPagination,
+} from "./Paginatation";
 const Schema = mongoose.Schema;
 
 export enum Sender {
@@ -92,6 +98,13 @@ export interface IGDocVersion {
   updatedAt: Date;
 }
 
+export interface GDocVersionModel extends mongoose.Model<IGDocVersion> {
+  paginate(
+    query?: PaginateQuery<IGDocVersion>,
+    options?: PaginateOptions
+  ): Promise<PaginatedResolveResult<IGDocVersion>>;
+}
+
 export const GDocVersionSchema = new Schema(
   {
     docId: String,
@@ -114,4 +127,8 @@ export const GDocVersionSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("GoogleDocVersion", GDocVersionSchema);
+pluginPagination(GDocVersionSchema);
+export default mongoose.model<IGDocVersion, GDocVersionModel>(
+  "GoogleDocVersion",
+  GDocVersionSchema
+);

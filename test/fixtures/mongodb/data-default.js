@@ -226,8 +226,9 @@ module.exports = {
       activity: "5ffdf1231ee2c62320b49e9f",
       intent: "intention",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       updatedAt: "2021-01-13T00:00:00.000+00:00",
+      createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea1"),
@@ -244,7 +245,8 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
+      createdAt: new Date("2001-10-12T20:49:41.599+00:00"),
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea2"),
@@ -261,7 +263,8 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
+      createdAt: new Date("2002-10-12T20:49:41.599+00:00"),
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea3"),
@@ -278,7 +281,8 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
+      createdAt: new Date("2003-10-12T20:49:41.599+00:00"),
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea9"),
@@ -295,7 +299,8 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
+      createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea8"),
@@ -312,7 +317,8 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
+      createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea7"),
@@ -329,7 +335,8 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
-      modifiedTime: "2000-10-12T20:49:41.599+00:00",
+      modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
+      createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },
   ],
   users: [

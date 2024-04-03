@@ -29,6 +29,7 @@ import openAiAsyncJobUpdate from "./mutation/open-ai-async-job-update";
 import fetchOpenAiAsyncJob from "./query/fetch-open-ai-async-job";
 import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
+import { docVersions } from "./query/fetch-paged-doc-versions";
 
 const PublicRootQuery = new GraphQLObjectType({
   name: "PublicRootQueryType",
@@ -43,6 +44,7 @@ const PublicRootQuery = new GraphQLObjectType({
     fetchUserActivityStates,
     fetchOpenAiAsyncJob,
     fetchDocTimeline,
+    docVersions,
   },
 });
 
