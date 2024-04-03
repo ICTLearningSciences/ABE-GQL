@@ -10,14 +10,22 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLBoolean,
+  GraphQLInputObjectType,
 } from "graphql";
 import { DateType } from "../types/date";
 import { User } from "./User";
-import GoogleDocVersionsModel from "./GoogleDocVersion";
+import GoogleDocVersionsModel, {
+  IIntention,
+  IntentionInputType,
+  IntentionObjectType,
+  IntentionSchema,
+} from "./GoogleDocVersion";
 
 export interface GoogleDoc {
   googleDocId: string;
   title: string;
+  documentIntention: IIntention;
+  assignmentDescription: string;
   admin: boolean;
   user: User["_id"];
 }
@@ -28,6 +36,8 @@ export const GoogleDocType = new GraphQLObjectType({
     googleDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     admin: { type: GraphQLBoolean },
+    documentIntention: { type: IntentionObjectType },
+    assignmentDescription: { type: GraphQLString },
     title: {
       type: GraphQLString,
       resolve: async (doc: GoogleDoc) => {
@@ -43,9 +53,23 @@ export const GoogleDocType = new GraphQLObjectType({
   }),
 });
 
+export const GoogleDocInputType = new GraphQLInputObjectType({
+  name: "GoogleDocInputType",
+  fields: () => ({
+    googleDocId: { type: GraphQLString },
+    user: { type: GraphQLID },
+    admin: { type: GraphQLBoolean },
+    documentIntention: { type: IntentionInputType },
+    assignmentDescription: { type: GraphQLString },
+    title: { type: GraphQLString },
+  }),
+});
+
 export const GoogleDocSchema = new Schema(
   {
     googleDocId: { type: String, required: true },
+    documentIntention: IntentionSchema,
+    assignmentDescription: { type: String },
     admin: { type: Boolean, default: false },
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },

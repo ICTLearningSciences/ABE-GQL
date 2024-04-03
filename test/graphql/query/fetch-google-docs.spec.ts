@@ -55,7 +55,7 @@ describe("fetch google doc versions", () => {
         createdAt: "2021-01-13T00:00:00.000Z",
         googleDocId: "test_admin_google_doc_id",
         title: "Test Admin Document",
-        user: null,
+        user: "5ffdf1231ee2c62320b49e99",
       },
     ]);
   });

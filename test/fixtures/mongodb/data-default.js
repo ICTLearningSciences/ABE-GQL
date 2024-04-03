@@ -191,6 +191,7 @@ module.exports = {
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49da7"),
       googleDocId: "test_admin_google_doc_id",
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       title: "Test Admin Document",
       createdAt: "2021-01-13T00:00:00.000+00:00",
       admin: true,
@@ -216,6 +217,7 @@ module.exports = {
       docId: "test_google_doc_id",
       plainText: "hello, world!",
       lastChangedId: "123",
+      sessionId: "session-id",
       chatLog: [
         {
           sender: "John Doe",
@@ -235,6 +237,7 @@ module.exports = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
       lastChangedId: "123",
+      sessionId: "session-id-1",
       chatLog: [
         {
           sender: "John Doe",
@@ -253,6 +256,7 @@ module.exports = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 2",
       lastChangedId: "123",
+      sessionId: "session-id-2",
       chatLog: [
         {
           sender: "John Doe",
@@ -271,6 +275,15 @@ module.exports = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
       lastChangedId: "123",
+      sessionId: "session-id-3",
+      sessionIntention: {
+        description: "test-intention",
+        createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
+      },
+      dayIntention: {
+        description: "test-day-intention",
+        createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
+      },
       chatLog: [
         {
           sender: "John Doe",
@@ -289,6 +302,7 @@ module.exports = {
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 4",
       lastChangedId: "123",
+      sessionId: "session-id-4",
       chatLog: [
         {
           sender: "John Doe",
@@ -307,6 +321,7 @@ module.exports = {
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 5",
       lastChangedId: "123",
+      sessionId: "session-id-5",
       chatLog: [
         {
           sender: "John Doe",
@@ -325,6 +340,7 @@ module.exports = {
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 6",
       lastChangedId: "123",
+      sessionId: "session-id-6",
       chatLog: [
         {
           sender: "John Doe",

@@ -52,12 +52,41 @@ export const ChatItemObjectType = new GraphQLObjectType({
   }),
 });
 
+export interface IIntention {
+  description: string;
+}
+
+export const IntentionInputType = new GraphQLInputObjectType({
+  name: "IntentionInputType",
+  fields: () => ({
+    description: { type: GraphQLString },
+  }),
+});
+
+export const IntentionObjectType = new GraphQLObjectType({
+  name: "IntentionObjectType",
+  fields: () => ({
+    description: { type: GraphQLString },
+    createdAt: { type: DateType },
+  }),
+});
+
+export const IntentionSchema = new Schema(
+  {
+    description: String,
+  },
+  { timestamps: true }
+);
+
 export const GDocVersionInputType = new GraphQLInputObjectType({
   name: "GDocVersionInputType",
   fields: () => ({
     docId: { type: GraphQLNonNull(GraphQLString) },
     plainText: { type: GraphQLNonNull(GraphQLString) },
     lastChangedId: { type: GraphQLString },
+    sessionId: { type: GraphQLString },
+    sessionIntention: { type: IntentionInputType },
+    dayIntention: { type: IntentionInputType },
     chatLog: { type: GraphQLList(ChatItemInputType) },
     activity: { type: GraphQLString },
     intent: { type: GraphQLString },
@@ -73,6 +102,9 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     docId: { type: GraphQLString },
     plainText: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
+    sessionId: { type: GraphQLString },
+    sessionIntention: { type: IntentionObjectType },
+    dayIntention: { type: IntentionObjectType },
     title: { type: GraphQLString },
     chatLog: { type: GraphQLList(ChatItemObjectType) },
     activity: { type: GraphQLString },
@@ -88,6 +120,9 @@ export interface IGDocVersion {
   docId: string;
   plainText: string;
   lastChangedId: string;
+  sessionId: string;
+  sessionIntention: IIntention;
+  dayIntention: IIntention;
   chatLog: ChatItem[];
   activity: string;
   intent: string;
@@ -110,6 +145,9 @@ export const GDocVersionSchema = new Schema(
     docId: String,
     plainText: String,
     lastChangedId: String,
+    sessionId: String,
+    sessionIntention: IntentionSchema,
+    dayIntention: IntentionSchema,
     chatLog: [
       {
         sender: String,

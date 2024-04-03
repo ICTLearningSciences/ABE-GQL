@@ -69,6 +69,13 @@ describe("submit google doc version", () => {
           bulletPoints: [] as string[],
         },
       ],
+      sessionId: "session-id-123",
+      sessionIntention: {
+        description: "intention",
+      },
+      dayIntention: {
+        description: "day-intention",
+      },
       activity: "activity",
       intent: "intent",
       title: "title",
@@ -83,6 +90,13 @@ describe("submit google doc version", () => {
                       docId
                       plainText
                       lastChangedId
+                      sessionId
+                      sessionIntention {
+                        description
+                      }
+                      dayIntention {
+                        description
+                      }
                       chatLog {
                         sender
                         message
@@ -110,6 +124,13 @@ describe("submit google doc version", () => {
                       docId
                       plainText
                       lastChangedId
+                      sessionId
+                      sessionIntention {
+                        description
+                      }
+                      dayIntention {
+                        description
+                      }
                       chatLog {
                         sender
                         message

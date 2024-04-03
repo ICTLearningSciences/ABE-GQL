@@ -4,33 +4,48 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import GoogleDocModel, { GoogleDocType } from "../models/GoogleDoc";
-import {
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLID,
-  GraphQLBoolean,
-} from "graphql";
+import GoogleDocModel, {
+  GoogleDoc,
+  GoogleDocInputType,
+  GoogleDocType,
+} from "../models/GoogleDoc";
+import { GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
 dotenv.config();
 
 export const submitGoogleDoc = {
   type: GoogleDocType,
   args: {
-    googleDocId: { type: GraphQLNonNull(GraphQLString) },
-    user: { type: GraphQLID },
-    isAdminDoc: { type: GraphQLBoolean },
-    title: { type: GraphQLString },
+    googleDoc: { type: GraphQLNonNull(GoogleDocInputType) },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async resolve(_: any, args: any) {
+  async resolve(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _: any,
+    args: {
+      googleDoc: GoogleDoc;
+    }
+  ) {
     try {
-      const doc = await GoogleDocModel.create({
-        googleDocId: args.googleDocId,
-        user: args.user,
-        admin: args.isAdminDoc,
-        title: args.title,
-      });
+      if (!args.googleDoc.user) {
+        throw new Error("user is required");
+      }
+      if (!args.googleDoc.googleDocId) {
+        throw new Error("googleDocId is required");
+      }
+      const doc = await GoogleDocModel.findOneAndUpdate(
+        {
+          googleDocId: args.googleDoc.googleDocId,
+          user: args.googleDoc.user,
+        },
+        {
+          ...args.googleDoc,
+          admin: args.googleDoc.admin,
+        },
+        {
+          upsert: true,
+          new: true,
+        }
+      );
       return doc;
     } catch (e) {
       console.log(e);

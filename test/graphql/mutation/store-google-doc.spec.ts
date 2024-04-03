@@ -30,15 +30,17 @@ describe("store google doc", () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation StoreGoogleDoc($googleDocId: String!, $user: ID) {
-            storeGoogleDoc(googleDocId: $googleDocId, user: $user) {
+        query: `mutation StoreGoogleDoc($googleDoc: GoogleDocInputType!) {
+            storeGoogleDoc(googleDoc: $googleDoc) {
                 googleDocId
                 user
                     }
                 }`,
         variables: {
-          googleDocId: "test_store_google_doc",
-          user: "5ffdf1231ee2c62320b49e99",
+          googleDoc: {
+            googleDocId: "test_store_google_doc",
+            user: "5ffdf1231ee2c62320b49e99",
+          },
         },
       });
     expect(response.status).to.equal(200);
@@ -52,17 +54,25 @@ describe("store google doc", () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation StoreGoogleDoc($googleDocId: String!, $user: ID, $isAdminDoc: Boolean, $title: String) {
-            storeGoogleDoc(googleDocId: $googleDocId, user: $user, isAdminDoc: $isAdminDoc, title: $title) {
-                googleDocId
-                admin
-                title
-                    }
+        query: `mutation StoreGoogleDoc($googleDoc: GoogleDocInputType!) {
+                  storeGoogleDoc(googleDoc: $googleDoc) {
+                      googleDocId
+                      admin
+                      title
+                      documentIntention {
+                          description
+                          createdAt
+                      }
+                      assignmentDescription
+                  }
                 }`,
         variables: {
-          googleDocId: "test_store_google_doc",
-          isAdminDoc: true,
-          title: "test_title_input",
+          googleDoc: {
+            googleDocId: "test_store_google_doc",
+            user: "5ffdf1231ee2c62320b49e99",
+            admin: true,
+            title: "test_title_input",
+          },
         },
       });
     expect(response.status).to.equal(200);
@@ -70,6 +80,48 @@ describe("store google doc", () => {
       googleDocId: "test_store_google_doc",
       admin: true,
       title: "test_title_input",
+      documentIntention: null,
+      assignmentDescription: null,
+    });
+  });
+
+  it("can update existing google docs and not clobber other values", async () => {
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `mutation StoreGoogleDoc($googleDoc: GoogleDocInputType!) {
+                storeGoogleDoc(googleDoc: $googleDoc) {
+                    googleDocId
+                    admin
+                    title
+                    assignmentDescription
+                    documentIntention {
+                        description
+                    }
+                    createdAt
+                }
+              }`,
+        variables: {
+          googleDoc: {
+            googleDocId: "test_admin_google_doc_id",
+            user: "5ffdf1231ee2c62320b49e99",
+            documentIntention: {
+              description: "test_intention",
+            },
+            assignmentDescription: "test_assignment",
+          },
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.storeGoogleDoc).to.eql({
+      googleDocId: "test_admin_google_doc_id",
+      admin: true,
+      title: "Test Admin Document",
+      documentIntention: {
+        description: "test_intention",
+      },
+      assignmentDescription: "test_assignment",
+      createdAt: "2021-01-13T00:00:00.000Z",
     });
   });
 });

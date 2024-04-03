@@ -31,13 +31,14 @@ describe("fetch google doc versions", () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `query DocVersions($limit: Int, $filter: String) {
-                docVersions(limit: $limit, filter: $filter) {
+        query: `query DocVersions($limit: Int, $filter: String, $sortAscending: Boolean, $sortBy: String) {
+                docVersions(limit: $limit, filter: $filter, sortAscending: $sortAscending, sortBy: $sortBy) {
                       edges {
                         node{
                             docId
                             plainText
                             lastChangedId
+                            sessionId
                             chatLog {
                               sender
                               message
@@ -54,6 +55,8 @@ describe("fetch google doc versions", () => {
                 }`,
         variables: {
           limit: 10,
+          sortBy: "createdAt",
+          sortAscending: true,
           filter: JSON.stringify({
             docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
           }),
@@ -67,6 +70,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world!",
         lastChangedId: "123",
+        sessionId: "session-id-1",
         chatLog: [
           {
             sender: "John Doe",
@@ -84,6 +88,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 2",
         lastChangedId: "123",
+        sessionId: "session-id-2",
         chatLog: [
           {
             sender: "John Doe",
@@ -101,6 +106,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 3",
         lastChangedId: "123",
+        sessionId: "session-id-3",
         chatLog: [
           {
             sender: "John Doe",
@@ -128,6 +134,15 @@ describe("fetch google doc versions", () => {
                             docId
                             plainText
                             lastChangedId
+                            sessionId
+                            sessionIntention {
+                              description
+                              createdAt
+                            }
+                            dayIntention {
+                              description
+                              createdAt
+                            }
                             chatLog {
                               sender
                               message
@@ -158,6 +173,15 @@ describe("fetch google doc versions", () => {
           docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
           plainText: "hello, world! 3",
           lastChangedId: "123",
+          sessionId: "session-id-3",
+          sessionIntention: {
+            description: "test-intention",
+            createdAt: "2000-10-12T20:49:41.599Z",
+          },
+          dayIntention: {
+            description: "test-day-intention",
+            createdAt: "2000-10-12T20:49:41.599Z",
+          },
           chatLog: [
             {
               sender: "John Doe",
