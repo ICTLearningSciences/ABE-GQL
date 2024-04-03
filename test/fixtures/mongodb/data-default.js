@@ -190,6 +190,10 @@ module.exports = {
         description: "test-intention",
         createdAt: "2000-10-12T20:49:41.599+00:00",
       },
+      currentDayIntention: {
+        description: "test-day-intention",
+        createdAt: "2000-10-12T20:49:41.599+00:00",
+      },
       assignmentDescription: "test-assignment-description",
       createdAt: "2021-01-13T00:00:00.000+00:00",
     },

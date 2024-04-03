@@ -25,6 +25,7 @@ export interface GoogleDoc {
   googleDocId: string;
   title: string;
   documentIntention: IIntention;
+  currentDayIntention: IIntention;
   assignmentDescription: string;
   admin: boolean;
   user: User["_id"];
@@ -37,6 +38,7 @@ export const GoogleDocType = new GraphQLObjectType({
     user: { type: GraphQLID },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionObjectType },
+    currentDayIntention: { type: IntentionObjectType },
     assignmentDescription: { type: GraphQLString },
     title: {
       type: GraphQLString,
@@ -60,6 +62,7 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
     user: { type: GraphQLID },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionInputType },
+    currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
     title: { type: GraphQLString },
   }),
@@ -69,6 +72,7 @@ export const GoogleDocSchema = new Schema(
   {
     googleDocId: { type: String, required: true },
     documentIntention: IntentionSchema,
+    currentDayIntention: IntentionSchema,
     assignmentDescription: { type: String },
     admin: { type: Boolean, default: false },
     user: { type: mongoose.Types.ObjectId, ref: "User" },

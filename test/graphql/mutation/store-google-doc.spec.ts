@@ -63,6 +63,10 @@ describe("store google doc", () => {
                           description
                           createdAt
                       }
+                      currentDayIntention {
+                          description
+                          createdAt
+                      }
                       assignmentDescription
                   }
                 }`,
@@ -81,6 +85,7 @@ describe("store google doc", () => {
       admin: true,
       title: "test_title_input",
       documentIntention: null,
+      currentDayIntention: null,
       assignmentDescription: null,
     });
   });
@@ -98,6 +103,9 @@ describe("store google doc", () => {
                     documentIntention {
                         description
                     }
+                    currentDayIntention {
+                        description
+                    }
                     createdAt
                 }
               }`,
@@ -107,6 +115,9 @@ describe("store google doc", () => {
             user: "5ffdf1231ee2c62320b49e99",
             documentIntention: {
               description: "test_intention",
+            },
+            currentDayIntention: {
+              description: "test_day_intention",
             },
             assignmentDescription: "test_assignment",
           },
@@ -119,6 +130,9 @@ describe("store google doc", () => {
       title: "Test Admin Document",
       documentIntention: {
         description: "test_intention",
+      },
+      currentDayIntention: {
+        description: "test_day_intention",
       },
       assignmentDescription: "test_assignment",
       createdAt: "2021-01-13T00:00:00.000Z",
