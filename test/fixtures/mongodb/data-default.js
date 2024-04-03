@@ -186,6 +186,11 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea0"),
       googleDocId: "test_google_doc_id",
       user: new ObjectId("5ffdf1231ee2c62320b49e99"),
+      documentIntention: {
+        description: "test-intention",
+        createdAt: "2000-10-12T20:49:41.599+00:00",
+      },
+      assignmentDescription: "test-assignment-description",
       createdAt: "2021-01-13T00:00:00.000+00:00",
     },
     {
