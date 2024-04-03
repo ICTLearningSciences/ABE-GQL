@@ -1,18 +1,22 @@
 
 .PHONY: format
 format: node_modules/prettier
-	npm run format
+	npm run license:fix && npm run format
 
 .PHONY: pretty
 pretty: node_modules/prettier
 	npm run format
 
 .PHONY: test-all
-test-all: test-format test-lint test-types test
+test-all: test-license test-format test-lint test-types test
 
 .PHONY: test-format
 test-format: node_modules/prettier
 	npm run test:format
+
+.PHONY: test-license
+test-license: node_modules/license-check-and-add
+	npm run test:license
 
 .PHONY: test-lint
 test-lint: node_modules/eslint
