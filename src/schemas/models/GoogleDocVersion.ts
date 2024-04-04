@@ -87,6 +87,7 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
     sessionId: { type: GraphQLString },
     sessionIntention: { type: IntentionInputType },
     dayIntention: { type: IntentionInputType },
+    documentIntention: { type: IntentionInputType },
     chatLog: { type: GraphQLList(ChatItemInputType) },
     activity: { type: GraphQLString },
     intent: { type: GraphQLString },
@@ -104,6 +105,7 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     lastChangedId: { type: GraphQLString },
     sessionId: { type: GraphQLString },
     sessionIntention: { type: IntentionObjectType },
+    documentIntention: { type: IntentionObjectType },
     dayIntention: { type: IntentionObjectType },
     title: { type: GraphQLString },
     chatLog: { type: GraphQLList(ChatItemObjectType) },
@@ -122,6 +124,7 @@ export interface IGDocVersion {
   lastChangedId: string;
   sessionId: string;
   sessionIntention: IIntention;
+  documentIntention: IIntention;
   dayIntention: IIntention;
   chatLog: ChatItem[];
   activity: string;
@@ -147,6 +150,7 @@ export const GDocVersionSchema = new Schema(
     lastChangedId: String,
     sessionId: String,
     sessionIntention: IntentionSchema,
+    documentIntention: IntentionSchema,
     dayIntention: IntentionSchema,
     chatLog: [
       {

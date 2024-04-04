@@ -139,6 +139,10 @@ describe("fetch google doc versions", () => {
                               description
                               createdAt
                             }
+                            documentIntention {
+                              description
+                              createdAt
+                            }
                             dayIntention {
                               description
                               createdAt
@@ -176,6 +180,10 @@ describe("fetch google doc versions", () => {
           sessionId: "session-id-3",
           sessionIntention: {
             description: "test-intention",
+            createdAt: "2000-10-12T20:49:41.599Z",
+          },
+          documentIntention: {
+            description: "test-document-intention",
             createdAt: "2000-10-12T20:49:41.599Z",
           },
           dayIntention: {

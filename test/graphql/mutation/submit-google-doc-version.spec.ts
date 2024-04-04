@@ -73,6 +73,9 @@ describe("submit google doc version", () => {
       sessionIntention: {
         description: "intention",
       },
+      documentIntention: {
+        description: "document-intention",
+      },
       dayIntention: {
         description: "day-intention",
       },
@@ -92,6 +95,9 @@ describe("submit google doc version", () => {
                       lastChangedId
                       sessionId
                       sessionIntention {
+                        description
+                      }
+                      documentIntention {
                         description
                       }
                       dayIntention {
@@ -126,6 +132,9 @@ describe("submit google doc version", () => {
                       lastChangedId
                       sessionId
                       sessionIntention {
+                        description
+                      }
+                      documentIntention {
                         description
                       }
                       dayIntention {

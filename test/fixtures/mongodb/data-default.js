@@ -293,6 +293,10 @@ module.exports = {
         description: "test-day-intention",
         createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
       },
+      documentIntention: {
+        description: "test-document-intention",
+        createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
+      },
       chatLog: [
         {
           sender: "John Doe",
