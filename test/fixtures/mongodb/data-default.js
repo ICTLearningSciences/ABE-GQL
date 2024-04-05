@@ -107,6 +107,7 @@ module.exports = {
         },
       ],
       title: "prompt_title_test",
+      userInputIsIntention: false,
     },
   ],
   promptruns: [

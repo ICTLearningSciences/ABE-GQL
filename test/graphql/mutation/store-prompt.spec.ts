@@ -60,6 +60,7 @@ describe("store prompt template", () => {
           includeChatLogContext: true,
         },
       ],
+      userInputIsIntention: true,
     };
     const response = await request(app)
       .post("/graphql")
@@ -69,6 +70,7 @@ describe("store prompt template", () => {
                 _id
                 title
                 clientId
+                userInputIsIntention
                 openAiPromptSteps {
                     prompts{
                       promptText
@@ -97,6 +99,9 @@ describe("store prompt template", () => {
     expect(response.body.data.storePrompt.clientId).to.equal(
       newPromptTemplate.clientId
     );
+    expect(response.body.data.storePrompt.userInputIsIntention).to.equal(
+      newPromptTemplate.userInputIsIntention
+    );
   });
 
   it("can update existing prompt template", async () => {
@@ -119,6 +124,7 @@ describe("store prompt template", () => {
                   outputDataType
                   includeChatLogContext
                 }
+                userInputIsIntention
               }
          }`,
         variables: {
@@ -133,6 +139,7 @@ describe("store prompt template", () => {
       existingPromptTemplateId
     );
     expect(response.body.data.storePrompt.title).to.equal(newTitle);
+    expect(response.body.data.storePrompt.userInputIsIntention).to.eql(false);
     expect(response.body.data.storePrompt.openAiPromptSteps).to.eql([
       {
         prompts: [

@@ -60,6 +60,7 @@ describe("fetch doc goals", () => {
                             includeChatLogContext
                           }
                           title
+                          userInputIsIntention
                         }
                         prompts{
                           _id
@@ -132,6 +133,7 @@ describe("fetch doc goals", () => {
                     includeChatLogContext: true,
                   },
                 ],
+                userInputIsIntention: false,
               },
               prompts: [
                 {
