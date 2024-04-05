@@ -60,6 +60,7 @@ export interface Activity extends Document {
   responsePendingMessage?: string;
   responseReadyMessage?: string;
   disabled?: boolean;
+  newDocRecommend?: boolean;
 }
 
 // activity prompts
@@ -108,6 +109,7 @@ export const ActivityType = new GraphQLObjectType({
     },
     disabled: { type: GraphQLBoolean },
     prompts: { type: GraphQLList(ActivityPromptType) },
+    newDocRecommend: { type: GraphQLBoolean },
   }),
 });
 
@@ -123,6 +125,7 @@ export const ActivitySchema = new Schema(
     steps: [{ type: ActivityStepSchema }],
     prompt: { type: mongoose.Types.ObjectId, ref: "Prompt" },
     prompts: [{ type: ActivityPromptSchema }],
+    newDocRecommend: { type: Boolean },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

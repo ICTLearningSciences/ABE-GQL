@@ -44,6 +44,7 @@ describe("fetch doc goals", () => {
                         description
                         responsePendingMessage
                         responseReadyMessage
+                        newDocRecommend
                         introduction
                         disabled
                         displayIcon
@@ -69,6 +70,7 @@ describe("fetch doc goals", () => {
                         }
                     }
                     activityOrder
+                    newDocRecommend
                     title
                     description
                     displayIcon
@@ -101,6 +103,7 @@ describe("fetch doc goals", () => {
               description: "activity_description_test",
               responsePendingMessage: "activity_response_pending_message_test",
               responseReadyMessage: "activity_response_ready_message_test",
+              newDocRecommend: true,
               disabled: false,
               introduction: "activity_introduction_test",
               displayIcon: "activity_display_icon_test",
@@ -145,6 +148,7 @@ describe("fetch doc goals", () => {
             },
           ],
           activityOrder: ["5ffdf1231ee2c62320b49e9f"],
+          newDocRecommend: true,
           title: "docgoal_title_test",
           description: "docgoal_description_test",
           displayIcon: "docgoal_display_icon_test",

@@ -9,6 +9,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLID,
+  GraphQLBoolean,
   GraphQLList,
 } from "graphql";
 import {
@@ -27,6 +28,7 @@ export interface DocGoal extends Document {
   description: string;
   displayIcon: DisplayIcons;
   introduction: string;
+  newDocRecommend?: boolean;
 }
 
 export const DocGoalType = new GraphQLObjectType({
@@ -47,6 +49,7 @@ export const DocGoalType = new GraphQLObjectType({
     description: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
     introduction: { type: GraphQLString },
+    newDocRecommend: { type: GraphQLBoolean },
   }),
 });
 
@@ -62,6 +65,7 @@ export const DocGoalSchema = new Schema<DocGoal, DocGoalModel>(
     description: { type: String },
     displayIcon: { type: String, enum: DisplayIcons },
     introduction: { type: String },
+    newDocRecommend: { type: Boolean },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
