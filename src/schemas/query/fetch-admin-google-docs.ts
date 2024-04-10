@@ -13,7 +13,7 @@ export const fetchAdminGoogleDocs = {
   type: GraphQLList(GoogleDocType),
   async resolve() {
     try {
-      return await GoogleDocsModel.find({ admin: true });
+      return await GoogleDocsModel.find({ admin: true, deleted: false });
     } catch (e) {
       console.log(e);
       throw new Error(String(e));

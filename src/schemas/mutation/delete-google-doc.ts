@@ -4,38 +4,44 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import GoogleDocsModel, { GoogleDocType } from "../models/GoogleDoc";
-import { GraphQLNonNull, GraphQLList, GraphQLID } from "graphql";
+import GoogleDocModel, { GoogleDocType } from "../models/GoogleDoc";
+import { GraphQLNonNull, GraphQLString } from "graphql";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-export const fetchGoogleDocs = {
-  type: GraphQLList(GoogleDocType),
+export const deleteGoogleDoc = {
+  type: GoogleDocType,
   args: {
-    userId: { type: GraphQLNonNull(GraphQLID) },
+    googleDocId: { type: GraphQLNonNull(GraphQLString) },
+    userId: { type: GraphQLNonNull(GraphQLString) },
   },
   async resolve(
-    // eslint-disable-next-line   @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _: any,
     args: {
+      googleDocId: string;
       userId: string;
     }
   ) {
     try {
-      return await GoogleDocsModel.find({
-        $and: [
-          {
-            $or: [{ user: args.userId }, { admin: true }],
-          },
-          {
-            $or: [{ deleted: false }, { deleted: null }],
-          },
-        ],
-      });
+      const { googleDocId, userId } = args;
+      const deletedDoc = await GoogleDocModel.findOneAndUpdate(
+        {
+          googleDocId: googleDocId,
+          user: userId,
+        },
+        {
+          deleted: true,
+        },
+        {
+          new: true,
+        }
+      );
+      return deletedDoc;
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
     }
   },
 };
-export default fetchGoogleDocs;
+export default deleteGoogleDoc;

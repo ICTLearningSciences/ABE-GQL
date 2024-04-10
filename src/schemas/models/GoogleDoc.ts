@@ -23,6 +23,7 @@ import GoogleDocVersionsModel, {
 
 export interface GoogleDoc {
   googleDocId: string;
+  deleted: boolean;
   title: string;
   documentIntention: IIntention;
   currentDayIntention: IIntention;
@@ -36,6 +37,7 @@ export const GoogleDocType = new GraphQLObjectType({
   fields: () => ({
     googleDocId: { type: GraphQLString },
     user: { type: GraphQLID },
+    deleted: { type: GraphQLBoolean },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionObjectType },
     currentDayIntention: { type: IntentionObjectType },
@@ -71,6 +73,7 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
 export const GoogleDocSchema = new Schema(
   {
     googleDocId: { type: String, required: true },
+    deleted: { type: Boolean, default: false },
     documentIntention: IntentionSchema,
     currentDayIntention: IntentionSchema,
     assignmentDescription: { type: String },
