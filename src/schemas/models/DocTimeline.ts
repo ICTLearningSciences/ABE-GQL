@@ -33,6 +33,7 @@ export interface TimelinePoint {
   version: IGDocVersion;
   intent: string;
   changeSummary: string;
+  userInputSummary: string;
   reverseOutline: string;
   relatedFeedback: string;
 }
@@ -45,6 +46,7 @@ export const TimelinePointObjectType = new GraphQLObjectType({
     version: { type: GDocVersionObjectType },
     intent: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
+    userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
     relatedFeedback: { type: GraphQLString },
   }),
@@ -58,6 +60,7 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
     version: { type: GDocVersionInputType },
     intent: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
+    userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
     relatedFeedback: { type: GraphQLString },
   }),
@@ -70,6 +73,7 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     version: { type: GDocVersionSchema },
     intent: { type: String },
     changeSummary: { type: String },
+    userInputSummary: { type: String },
     reverseOutline: { type: String },
     relatedFeedback: { type: String },
   },

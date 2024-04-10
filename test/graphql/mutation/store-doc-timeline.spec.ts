@@ -31,6 +31,64 @@ describe("store doc timeline", () => {
     await mongoUnit.drop();
   });
 
+  const storeDocTimelineMutation = `mutation StoreDocTimeline($docTimeline: DocTimelineInputType!) {
+    storeDocTimeline(docTimeline: $docTimeline) {
+        docId
+        user
+        timelinePoints{
+            type
+            versionTime
+            version{
+                docId
+                plainText
+                lastChangedId
+                chatLog{
+                    sender
+                    message
+                }
+                activity
+                intent
+                title
+                lastModifyingUser
+            }
+            intent
+            changeSummary
+            userInputSummary
+            reverseOutline
+            relatedFeedback
+        }
+        }
+    }`;
+
+  const fetchDocTimelineQuery = `query FetchDocTimeline($googleDocId: String!, $userId: String!) {
+      fetchDocTimeline(googleDocId: $googleDocId, userId: $userId) {
+          docId
+          user
+          timelinePoints{
+              type
+              versionTime
+              version{
+                  docId
+                  plainText
+                  lastChangedId
+                  chatLog{
+                      sender
+                      message
+                  }
+                  activity
+                  intent
+                  title
+                  lastModifyingUser
+              }
+              intent
+              changeSummary
+              userInputSummary
+              reverseOutline
+              relatedFeedback
+          }
+          }
+      }`;
+
   const newDocTimeline = {
     docId: "test_store_doc_timeline",
     user: "5ffdf1231ee2c62320b49e99",
@@ -55,6 +113,38 @@ describe("store doc timeline", () => {
         },
         intent: "test",
         changeSummary: "test",
+        userInputSummary: "test",
+        reverseOutline: "test",
+        relatedFeedback: "test",
+      },
+    ],
+  };
+
+  const existingTimeline = {
+    docId: "doc_id",
+    user: "5ffdf1231ee2c62320b49e99",
+    timelinePoints: [
+      {
+        versionTime: "2021-01-12T00:00:00.000Z",
+        type: TimelinePointType.START,
+        version: {
+          docId: "doc_od",
+          plainText: "test",
+          lastChangedId: "test",
+          chatLog: [
+            {
+              sender: "USER",
+              message: "test",
+            },
+          ],
+          activity: "test",
+          intent: "test",
+          title: "test",
+          lastModifyingUser: "test",
+        },
+        intent: "test",
+        changeSummary: "test",
+        userInputSummary: "test",
         reverseOutline: "test",
         relatedFeedback: "test",
       },
@@ -65,33 +155,7 @@ describe("store doc timeline", () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation StoreDocTimeline($docTimeline: DocTimelineInputType!) {
-            storeDocTimeline(docTimeline: $docTimeline) {
-                docId
-                user
-                timelinePoints{
-                    type
-                    versionTime
-                    version{
-                        docId
-                        plainText
-                        lastChangedId
-                        chatLog{
-                            sender
-                            message
-                        }
-                        activity
-                        intent
-                        title
-                        lastModifyingUser
-                    }
-                    intent
-                    changeSummary
-                    reverseOutline
-                    relatedFeedback
-                }
-                }
-            }`,
+        query: storeDocTimelineMutation,
         variables: {
           docTimeline: newDocTimeline,
         },
@@ -104,99 +168,19 @@ describe("store doc timeline", () => {
     const response0 = await request(app)
       .post("/graphql")
       .send({
-        query: `query FetchDocTimeline($googleDocId: String!, $userId: String!) {
-          fetchDocTimeline(googleDocId: $googleDocId, userId: $userId) {
-              docId
-              user
-              timelinePoints{
-                  type
-                  versionTime
-                  version{
-                      docId
-                      plainText
-                      lastChangedId
-                      chatLog{
-                          sender
-                          message
-                      }
-                      activity
-                      intent
-                      title
-                      lastModifyingUser
-                  }
-                  intent
-                  changeSummary
-                  reverseOutline
-                  relatedFeedback
-              }
-              }
-          }`,
+        query: fetchDocTimelineQuery,
         variables: {
           googleDocId: "doc_id",
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
     expect(response0.status).to.equal(200);
-    expect(response0.body.data.fetchDocTimeline).to.eql({
-      docId: "doc_id",
-      user: "5ffdf1231ee2c62320b49e99",
-      timelinePoints: [
-        {
-          versionTime: "2021-01-12T00:00:00.000Z",
-          type: TimelinePointType.START,
-          version: {
-            docId: "doc_od",
-            plainText: "test",
-            lastChangedId: "test",
-            chatLog: [
-              {
-                sender: "USER",
-                message: "test",
-              },
-            ],
-            activity: "test",
-            intent: "test",
-            title: "test",
-            lastModifyingUser: "test",
-          },
-          intent: "test",
-          changeSummary: "test",
-          reverseOutline: "test",
-          relatedFeedback: "test",
-        },
-      ],
-    });
+    expect(response0.body.data.fetchDocTimeline).to.eql(existingTimeline);
 
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation StoreDocTimeline($docTimeline: DocTimelineInputType!) {
-            storeDocTimeline(docTimeline: $docTimeline) {
-                docId
-                user
-                timelinePoints{
-                    type
-                    versionTime
-                    version{
-                        docId
-                        plainText
-                        lastChangedId
-                        chatLog{
-                            sender
-                            message
-                        }
-                        activity
-                        intent
-                        title
-                        lastModifyingUser
-                    }
-                    intent
-                    changeSummary
-                    reverseOutline
-                    relatedFeedback
-                }
-                }
-            }`,
+        query: storeDocTimelineMutation,
         variables: {
           docTimeline: {
             user: "5ffdf1231ee2c62320b49e99",
@@ -215,33 +199,7 @@ describe("store doc timeline", () => {
     const response2 = await request(app)
       .post("/graphql")
       .send({
-        query: `query FetchDocTimeline($googleDocId: String!, $userId: String!) {
-          fetchDocTimeline(googleDocId: $googleDocId, userId: $userId) {
-              docId
-              user
-              timelinePoints{
-                  type
-                  versionTime
-                  version{
-                      docId
-                      plainText
-                      lastChangedId
-                      chatLog{
-                          sender
-                          message
-                      }
-                      activity
-                      intent
-                      title
-                      lastModifyingUser
-                  }
-                  intent
-                  changeSummary
-                  reverseOutline
-                  relatedFeedback
-              }
-              }
-          }`,
+        query: fetchDocTimelineQuery,
         variables: {
           googleDocId: "doc_id",
           userId: "5ffdf1231ee2c62320b49e99",
@@ -249,9 +207,50 @@ describe("store doc timeline", () => {
       });
     expect(response2.status).to.equal(200);
     expect(response2.body.data.fetchDocTimeline).to.eql({
-      user: "5ffdf1231ee2c62320b49e99",
-      docId: "doc_id",
+      ...existingTimeline,
       timelinePoints: [],
     });
+  });
+
+  it(`can update userInputSummary`, async () => {
+    const response0 = await request(app)
+      .post("/graphql")
+      .send({
+        query: fetchDocTimelineQuery,
+        variables: {
+          googleDocId: "doc_id",
+          userId: "5ffdf1231ee2c62320b49e99",
+        },
+      });
+    expect(response0.status).to.equal(200);
+    expect(
+      response0.body.data.fetchDocTimeline.timelinePoints[0].changeSummary
+    ).to.equal("test");
+
+    const updateResponse = await request(app)
+      .post("/graphql")
+      .send({
+        query: storeDocTimelineMutation,
+        variables: {
+          docTimeline: {
+            user: "5ffdf1231ee2c62320b49e99",
+            docId: "doc_id",
+            timelinePoints: [
+              {
+                ...existingTimeline.timelinePoints[0],
+                userInputSummary: "test-user-input-summary",
+              },
+            ],
+          },
+        },
+      });
+    expect(updateResponse.status).to.equal(200);
+    expect(
+      updateResponse.body.data.storeDocTimeline.timelinePoints[0].changeSummary
+    ).to.equal("test");
+    expect(
+      updateResponse.body.data.storeDocTimeline.timelinePoints[0]
+        .userInputSummary
+    ).to.equal("test-user-input-summary");
   });
 });
