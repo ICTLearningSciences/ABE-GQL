@@ -37,9 +37,11 @@ describe("fetch doc goals", () => {
                         _id
                         title
                         steps{
-                            text
+                            messages
+                            stepName
                             stepType
                             mcqChoices
+                            prompts
                         }
                         description
                         responsePendingMessage
@@ -90,26 +92,17 @@ describe("fetch doc goals", () => {
               title: "activity_title_test",
               steps: [
                 {
-                  stepType: "MESSAGE",
-                  text: "activity_message_test",
+                  messages: ["hello", "world"],
+                  stepName: "Test Name",
+                  stepType: "TEXT",
                   mcqChoices: [],
-                },
-                {
-                  stepType: "MULTIPLE_CHOICE_QUESTIONS",
-                  text: "activity_multiple_choice_questions_test",
-                  mcqChoices: ["mcq_choice_1", "mcq_choice_2", "mcq_choice_3"],
+                  prompts: ["5ffdf1231ee2c62320b49e9e"],
                 },
               ],
               description: "activity_description_test",
-              responsePendingMessage: "activity_response_pending_message_test",
-              responseReadyMessage: "activity_response_ready_message_test",
-              newDocRecommend: true,
-              disabled: false,
               introduction: "activity_introduction_test",
-              displayIcon: "activity_display_icon_test",
               prompt: {
                 _id: "5ffdf1231ee2c62320b49e9e",
-                title: "prompt_title_test",
                 openAiPromptSteps: [
                   {
                     prompts: [
@@ -136,6 +129,7 @@ describe("fetch doc goals", () => {
                     includeChatLogContext: true,
                   },
                 ],
+                title: "prompt_title_test",
                 userInputIsIntention: false,
               },
               prompts: [
@@ -145,6 +139,11 @@ describe("fetch doc goals", () => {
                   order: 0,
                 },
               ],
+              disabled: false,
+              displayIcon: "activity_display_icon_test",
+              responsePendingMessage: "activity_response_pending_message_test",
+              responseReadyMessage: "activity_response_ready_message_test",
+              newDocRecommend: true,
             },
           ],
           activityOrder: ["5ffdf1231ee2c62320b49e9f"],

@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import mongoose, { Document, Schema } from "mongoose";
 import {
   GraphQLObjectType,
+  GraphQLInputObjectType,
   GraphQLID,
   GraphQLString,
   GraphQLList,
@@ -18,8 +19,10 @@ import PromptModel, { PromptType, Prompt } from "./Prompt";
 // Activity Question
 
 export interface ActivityStep {
-  text: string;
+  messages: string[];
+  stepName: string;
   stepType: ActivityStepTypes;
+  prompts: string[];
   mcqChoices?: string[];
 }
 
@@ -33,17 +36,34 @@ export enum ActivityStepTypes {
 export const ActivityStepType = new GraphQLObjectType({
   name: "ActivityStepType",
   fields: () => ({
-    text: { type: GraphQLString },
+    _id: { type: GraphQLID },
+    messages: { type: GraphQLList(GraphQLString) },
+    stepName: { type: GraphQLString },
     stepType: { type: GraphQLString },
     mcqChoices: { type: GraphQLList(GraphQLString) },
+    prompts: { type: GraphQLList(GraphQLString) },
+  }),
+});
+
+export const ActivityStepInputType = new GraphQLInputObjectType({
+  name: "ActivityStepInputType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    messages: { type: GraphQLList(GraphQLString) },
+    stepName: { type: GraphQLString },
+    stepType: { type: GraphQLString },
+    mcqChoices: { type: GraphQLList(GraphQLString) },
+    prompts: { type: GraphQLList(GraphQLString) },
   }),
 });
 
 export const ActivityStepSchema = new Schema<ActivityStep>(
   {
-    text: { type: String, required: true },
-    stepType: { type: String, enum: ActivityStepTypes },
-    mcqChoices: [{ type: String, required: false }],
+    messages: [{ type: String, required: true }],
+    stepName: { type: String, required: true },
+    stepType: { type: String, enum: ActivityStepTypes, required: true },
+    mcqChoices: [{ type: String, required: true }],
+    prompts: [{ type: String, required: true }], // prompt ids
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
@@ -87,6 +107,15 @@ export const ActivityPromptType = new GraphQLObjectType({
   }),
 });
 
+export const ActivityPromptInputType = new GraphQLInputObjectType({
+  name: "ActivityPromptInputType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    promptId: { type: GraphQLID },
+    order: { type: GraphQLInt },
+  }),
+});
+
 export const ActivityType = new GraphQLObjectType({
   name: "ActivityType",
   fields: () => ({
@@ -109,6 +138,24 @@ export const ActivityType = new GraphQLObjectType({
     },
     disabled: { type: GraphQLBoolean },
     prompts: { type: GraphQLList(ActivityPromptType) },
+    newDocRecommend: { type: GraphQLBoolean },
+  }),
+});
+
+export const ActivityInputType = new GraphQLInputObjectType({
+  name: "ActivityInputType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    title: { type: GraphQLString },
+    description: { type: GraphQLString },
+    introduction: { type: GraphQLString },
+    displayIcon: { type: GraphQLString },
+    steps: { type: GraphQLList(ActivityStepInputType) },
+    prompt: { type: GraphQLID },
+    prompts: { type: GraphQLList(ActivityPromptInputType) },
+    responsePendingMessage: { type: GraphQLString },
+    responseReadyMessage: { type: GraphQLString },
+    disabled: { type: GraphQLBoolean },
     newDocRecommend: { type: GraphQLBoolean },
   }),
 });

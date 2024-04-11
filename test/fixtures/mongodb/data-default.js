@@ -32,13 +32,11 @@ module.exports = {
       title: "activity_title_test",
       steps: [
         {
-          stepType: "MESSAGE",
-          text: "activity_message_test",
-        },
-        {
-          stepType: "MULTIPLE_CHOICE_QUESTIONS",
-          text: "activity_multiple_choice_questions_test",
-          mcqChoices: ["mcq_choice_1", "mcq_choice_2", "mcq_choice_3"],
+          messages: ["hello", "world"],
+          stepName: "Test Name",
+          stepType: "TEXT",
+          mcqChoices: [],
+          prompts: ["5ffdf1231ee2c62320b49e9e"],
         },
       ],
       description: "activity_description_test",

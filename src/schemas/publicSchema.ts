@@ -31,6 +31,7 @@ import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
 import { docVersions } from "./query/fetch-paged-doc-versions";
 import deleteGoogleDoc from "./mutation/delete-google-doc";
+import addOrUpdateActivity from "./mutation/add-or-update-activity";
 
 const PublicRootQuery = new GraphQLObjectType({
   name: "PublicRootQueryType",
@@ -65,6 +66,7 @@ const PublicMutation = new GraphQLObjectType({
     openAiAsyncJobUpdate,
     storeDocTimeline,
     deleteGoogleDoc,
+    addOrUpdateActivity,
   },
 });
 
