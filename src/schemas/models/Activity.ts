@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import {
   GraphQLObjectType,
   GraphQLInputObjectType,
@@ -15,7 +15,12 @@ import {
   GraphQLInt,
 } from "graphql";
 import PromptModel, { PromptType, Prompt } from "./Prompt";
-
+import {
+  PaginatedResolveResult,
+  PaginateOptions,
+  PaginateQuery,
+  pluginPagination,
+} from "./Paginatation";
 // Activity Question
 
 export interface ActivityStep {
@@ -177,4 +182,16 @@ export const ActivitySchema = new Schema(
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-export default mongoose.model<Activity>("Activity", ActivitySchema);
+export interface ActivityModel extends Model<Activity> {
+  paginate(
+    query?: PaginateQuery<Activity>,
+    options?: PaginateOptions
+  ): Promise<PaginatedResolveResult<Activity>>;
+}
+
+pluginPagination(ActivitySchema);
+
+export default mongoose.model<Activity, ActivityModel>(
+  "Activity",
+  ActivitySchema
+);

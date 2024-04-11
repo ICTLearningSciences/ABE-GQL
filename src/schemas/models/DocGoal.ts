@@ -18,12 +18,11 @@ import {
   PaginateQuery,
   pluginPagination,
 } from "./Paginatation";
-import ActivityModel, { Activity, ActivityType } from "./Activity";
 import { DisplayIcons } from "../../constants";
 
 export interface DocGoal extends Document {
-  activities: Activity["_id"][];
-  activityOrder: Activity["_id"][];
+  activities: string[];
+  activityOrder: string[];
   title: string;
   description: string;
   displayIcon: DisplayIcons;
@@ -36,13 +35,7 @@ export const DocGoalType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     activities: {
-      type: GraphQLList(ActivityType),
-      resolve: async (docGoal: DocGoal) => {
-        const activities = await ActivityModel.find({
-          _id: { $in: docGoal.activities },
-        });
-        return activities;
-      },
+      type: GraphQLList(GraphQLID),
     },
     activityOrder: { type: GraphQLList(GraphQLID) },
     title: { type: GraphQLString },

@@ -33,44 +33,7 @@ describe("fetch doc goals", () => {
           fetchDocGoals {
             edges {
                 node{
-                    activities{
-                        _id
-                        title
-                        steps{
-                            messages
-                            stepName
-                            stepType
-                            mcqChoices
-                            prompts
-                        }
-                        description
-                        responsePendingMessage
-                        responseReadyMessage
-                        newDocRecommend
-                        introduction
-                        disabled
-                        displayIcon
-                        prompt{
-                          _id
-                          openAiPromptSteps{
-                            prompts{
-                              promptText
-                              includeEssay
-                              includeUserInput
-                              promptRole
-                            }
-                            outputDataType
-                            includeChatLogContext
-                          }
-                          title
-                          userInputIsIntention
-                        }
-                        prompts{
-                          _id
-                          promptId
-                          order
-                        }
-                    }
+                    activities
                     activityOrder
                     newDocRecommend
                     title
@@ -86,66 +49,7 @@ describe("fetch doc goals", () => {
     expect(response.body.data.fetchDocGoals.edges).to.deep.include.members([
       {
         node: {
-          activities: [
-            {
-              _id: "5ffdf1231ee2c62320b49e9f",
-              title: "activity_title_test",
-              steps: [
-                {
-                  messages: ["hello", "world"],
-                  stepName: "Test Name",
-                  stepType: "TEXT",
-                  mcqChoices: [],
-                  prompts: ["5ffdf1231ee2c62320b49e9e"],
-                },
-              ],
-              description: "activity_description_test",
-              introduction: "activity_introduction_test",
-              prompt: {
-                _id: "5ffdf1231ee2c62320b49e9e",
-                openAiPromptSteps: [
-                  {
-                    prompts: [
-                      {
-                        promptText: "prompt_text",
-                        includeEssay: false,
-                        includeUserInput: true,
-                        promptRole: "user",
-                      },
-                    ],
-                    outputDataType: "TEXT",
-                    includeChatLogContext: false,
-                  },
-                  {
-                    prompts: [
-                      {
-                        promptText: "prompt_text_2",
-                        includeEssay: true,
-                        includeUserInput: true,
-                        promptRole: "user",
-                      },
-                    ],
-                    outputDataType: "JSON",
-                    includeChatLogContext: true,
-                  },
-                ],
-                title: "prompt_title_test",
-                userInputIsIntention: false,
-              },
-              prompts: [
-                {
-                  _id: "5ffdf1231ee2c62320b49e8e",
-                  promptId: "5ffdf1231ee2c62320b49e9e",
-                  order: 0,
-                },
-              ],
-              disabled: false,
-              displayIcon: "activity_display_icon_test",
-              responsePendingMessage: "activity_response_pending_message_test",
-              responseReadyMessage: "activity_response_ready_message_test",
-              newDocRecommend: true,
-            },
-          ],
+          activities: ["5ffdf1231ee2c62320b49e9f"],
           activityOrder: ["5ffdf1231ee2c62320b49e9f"],
           newDocRecommend: true,
           title: "docgoal_title_test",
