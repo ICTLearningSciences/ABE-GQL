@@ -86,6 +86,11 @@ export const PromptSchema = new Schema(
           required: false,
           default: "gpt-3.5-turbo-16k",
         },
+        customSystemRole: {
+          type: String,
+          required: false,
+          default: "",
+        },
         includeChatLogContext: {
           type: Boolean,
           required: false,

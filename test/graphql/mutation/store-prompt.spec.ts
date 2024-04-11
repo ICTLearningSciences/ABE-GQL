@@ -42,6 +42,7 @@ describe("store prompt template", () => {
           ],
           outputDataType: "TEXT",
           targetGptModel: "test_target_gpt_model",
+          customSystemRole: "test_custom_system_role",
           jsonValidation: "test_json_validation",
           includeChatLogContext: true,
         },
@@ -56,6 +57,7 @@ describe("store prompt template", () => {
           ],
           outputDataType: "TEXT",
           targetGptModel: "test_target_gpt_model",
+          customSystemRole: "test_custom_system_role",
           jsonValidation: "test_json_validation",
           includeChatLogContext: true,
         },
@@ -79,6 +81,7 @@ describe("store prompt template", () => {
                       promptRole
                     }
                       targetGptModel
+                      customSystemRole
                       outputDataType
                     jsonValidation
                     includeChatLogContext
