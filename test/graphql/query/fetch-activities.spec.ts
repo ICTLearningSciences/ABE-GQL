@@ -36,7 +36,10 @@ describe("fetch activities", () => {
                     _id
                     title
                     steps{
-                        messages
+                        messages{
+                          _id
+                          text
+                        }
                         stepName
                         stepType
                         mcqChoices
@@ -85,7 +88,16 @@ describe("fetch activities", () => {
           title: "activity_title_test",
           steps: [
             {
-              messages: ["hello", "world"],
+              messages: [
+                {
+                  _id: "5ffdf1231ee2c62320b49e4e",
+                  text: "hello",
+                },
+                {
+                  _id: "5ffdf1231ee2c62320b49d4e",
+                  text: "world",
+                },
+              ],
               stepName: "Test Name",
               stepType: "TEXT",
               mcqChoices: [],

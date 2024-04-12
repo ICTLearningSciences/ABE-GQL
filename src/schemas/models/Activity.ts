@@ -23,8 +23,13 @@ import {
 } from "./Paginatation";
 // Activity Question
 
+export interface StepMessage {
+  _id: string;
+  text: string;
+}
+
 export interface ActivityStep {
-  messages: string[];
+  messages: StepMessage[];
   stepName: string;
   stepType: ActivityStepTypes;
   prompts: string[];
@@ -38,11 +43,34 @@ export enum ActivityStepTypes {
   SHOULD_INCLUDE_ESSAY = "SHOULD_INCLUDE_ESSAY",
 }
 
+export const MessageType = new GraphQLObjectType({
+  name: "MessageType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    text: { type: GraphQLString },
+  }),
+});
+
+export const MessageTypeInput = new GraphQLInputObjectType({
+  name: "MessageTypeInput",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    text: { type: GraphQLString },
+  }),
+});
+
+export const MessageTypeSchema = new Schema(
+  {
+    text: { type: String, required: true },
+  },
+  { timestamps: true, collation: { locale: "en", strength: 2 } }
+);
+
 export const ActivityStepType = new GraphQLObjectType({
   name: "ActivityStepType",
   fields: () => ({
     _id: { type: GraphQLID },
-    messages: { type: GraphQLList(GraphQLString) },
+    messages: { type: GraphQLList(MessageType) },
     stepName: { type: GraphQLString },
     stepType: { type: GraphQLString },
     mcqChoices: { type: GraphQLList(GraphQLString) },
@@ -54,7 +82,7 @@ export const ActivityStepInputType = new GraphQLInputObjectType({
   name: "ActivityStepInputType",
   fields: () => ({
     _id: { type: GraphQLID },
-    messages: { type: GraphQLList(GraphQLString) },
+    messages: { type: GraphQLList(MessageTypeInput) },
     stepName: { type: GraphQLString },
     stepType: { type: GraphQLString },
     mcqChoices: { type: GraphQLList(GraphQLString) },
@@ -64,7 +92,7 @@ export const ActivityStepInputType = new GraphQLInputObjectType({
 
 export const ActivityStepSchema = new Schema<ActivityStep>(
   {
-    messages: [{ type: String, required: true }],
+    messages: [MessageTypeSchema],
     stepName: { type: String, required: true },
     stepType: { type: String, enum: ActivityStepTypes, required: true },
     mcqChoices: [{ type: String, required: true }],

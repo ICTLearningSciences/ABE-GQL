@@ -35,12 +35,32 @@ describe("update user activity state", () => {
                 _id
                 title
                 description
+                steps{
+                  messages{
+                    _id
+                    text
+                  }
+                }
               }
          }`,
         variables: {
           activity: {
             _id: "5ffdf1231ee2c62320b49e9f",
             title: "test_new_activity_title",
+            steps: [
+              {
+                messages: [
+                  {
+                    _id: "5ffdf1231ee2c62320b49e4e",
+                    text: "message 1",
+                  },
+                  {
+                    _id: "5ffdf1231ee2c62320b49d4e",
+                    text: "message 2",
+                  },
+                ],
+              },
+            ],
           },
         },
       });
@@ -50,6 +70,20 @@ describe("update user activity state", () => {
       _id: "5ffdf1231ee2c62320b49e9f",
       title: "test_new_activity_title",
       description: "activity_description_test",
+      steps: [
+        {
+          messages: [
+            {
+              _id: "5ffdf1231ee2c62320b49e4e",
+              text: "message 1",
+            },
+            {
+              _id: "5ffdf1231ee2c62320b49d4e",
+              text: "message 2",
+            },
+          ],
+        },
+      ],
     });
   });
 });
