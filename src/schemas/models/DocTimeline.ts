@@ -88,7 +88,7 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     changeSummaryStatus: {
       type: String,
       enum: OpenAiGenerationStatus,
-      default: OpenAiGenerationStatus.NONE,
+      default: OpenAiGenerationStatus.COMPLETED, // backwards compatibility
     },
     changeSummary: { type: String },
     userInputSummary: { type: String },
@@ -96,7 +96,7 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     reverseOutlineStatus: {
       type: String,
       enum: OpenAiGenerationStatus,
-      default: OpenAiGenerationStatus.NONE,
+      default: OpenAiGenerationStatus.COMPLETED, // backwards compatibility
     },
     relatedFeedback: { type: String },
   },
