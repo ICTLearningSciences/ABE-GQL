@@ -55,8 +55,9 @@ describe("store doc timeline", () => {
             intent
             changeSummary
             userInputSummary
-            openAiGenerationStatus
+            changeSummaryStatus
             reverseOutline
+            reverseOutlineStatus
             relatedFeedback
         }
         }
@@ -84,9 +85,10 @@ describe("store doc timeline", () => {
               }
               intent
               changeSummary
+              changeSummaryStatus
               userInputSummary
-              openAiGenerationStatus
               reverseOutline
+              reverseOutlineStatus
               relatedFeedback
           }
           }
@@ -116,9 +118,10 @@ describe("store doc timeline", () => {
         },
         intent: "test",
         changeSummary: "test",
-        openAiGenerationStatus: OpenAiGenerationStatus.NONE,
+        changeSummaryStatus: OpenAiGenerationStatus.NONE,
         userInputSummary: "test",
         reverseOutline: "test",
+        reverseOutlineStatus: OpenAiGenerationStatus.NONE,
         relatedFeedback: "test",
       },
     ],
@@ -148,9 +151,10 @@ describe("store doc timeline", () => {
         },
         intent: "test",
         changeSummary: "test",
-        openAiGenerationStatus: OpenAiGenerationStatus.NONE,
+        changeSummaryStatus: OpenAiGenerationStatus.NONE,
         userInputSummary: "test",
         reverseOutline: "test",
+        reverseOutlineStatus: OpenAiGenerationStatus.NONE,
         relatedFeedback: "test",
       },
     ],

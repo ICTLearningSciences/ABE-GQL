@@ -39,10 +39,11 @@ export interface TimelinePoint {
   versionTime: string;
   version: IGDocVersion;
   intent: string;
-  openAiGenerationStatus: OpenAiGenerationStatus;
+  changeSummaryStatus: OpenAiGenerationStatus;
   changeSummary: string;
   userInputSummary: string;
   reverseOutline: string;
+  reverseOutlineStatus: OpenAiGenerationStatus;
   relatedFeedback: string;
 }
 
@@ -53,10 +54,11 @@ export const TimelinePointObjectType = new GraphQLObjectType({
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionObjectType },
     intent: { type: GraphQLString },
-    openAiGenerationStatus: { type: GraphQLString },
+    changeSummaryStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
+    reverseOutlineStatus: { type: GraphQLString },
     relatedFeedback: { type: GraphQLString },
   }),
 });
@@ -68,10 +70,11 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionInputType },
     intent: { type: GraphQLString },
-    openAiGenerationStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
+    changeSummaryStatus: { type: GraphQLString },
     userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
+    reverseOutlineStatus: { type: GraphQLString },
     relatedFeedback: { type: GraphQLString },
   }),
 });
@@ -82,7 +85,7 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     versionTime: { type: String },
     version: { type: GDocVersionSchema },
     intent: { type: String },
-    openAiGenerationStatus: {
+    changeSummaryStatus: {
       type: String,
       enum: OpenAiGenerationStatus,
       default: OpenAiGenerationStatus.NONE,
@@ -90,6 +93,11 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     changeSummary: { type: String },
     userInputSummary: { type: String },
     reverseOutline: { type: String },
+    reverseOutlineStatus: {
+      type: String,
+      enum: OpenAiGenerationStatus,
+      default: OpenAiGenerationStatus.NONE,
+    },
     relatedFeedback: { type: String },
   },
   { timestamps: true }
