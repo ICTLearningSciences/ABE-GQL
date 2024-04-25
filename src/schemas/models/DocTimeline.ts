@@ -27,11 +27,19 @@ export enum TimelinePointType {
   NONE = "",
 }
 
+export enum OpenAiGenerationStatus {
+  NONE = "NONE",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
+
 export interface TimelinePoint {
   type: TimelinePointType;
   versionTime: string;
   version: IGDocVersion;
   intent: string;
+  openAiGenerationStatus: OpenAiGenerationStatus;
   changeSummary: string;
   userInputSummary: string;
   reverseOutline: string;
@@ -45,6 +53,7 @@ export const TimelinePointObjectType = new GraphQLObjectType({
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionObjectType },
     intent: { type: GraphQLString },
+    openAiGenerationStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
@@ -59,6 +68,7 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionInputType },
     intent: { type: GraphQLString },
+    openAiGenerationStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
@@ -72,6 +82,11 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     versionTime: { type: String },
     version: { type: GDocVersionSchema },
     intent: { type: String },
+    openAiGenerationStatus: {
+      type: String,
+      enum: OpenAiGenerationStatus,
+      default: OpenAiGenerationStatus.NONE,
+    },
     changeSummary: { type: String },
     userInputSummary: { type: String },
     reverseOutline: { type: String },
