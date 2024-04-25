@@ -27,14 +27,23 @@ export enum TimelinePointType {
   NONE = "",
 }
 
+export enum OpenAiGenerationStatus {
+  NONE = "NONE",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
+
 export interface TimelinePoint {
   type: TimelinePointType;
   versionTime: string;
   version: IGDocVersion;
   intent: string;
+  changeSummaryStatus: OpenAiGenerationStatus;
   changeSummary: string;
   userInputSummary: string;
   reverseOutline: string;
+  reverseOutlineStatus: OpenAiGenerationStatus;
   relatedFeedback: string;
 }
 
@@ -45,9 +54,11 @@ export const TimelinePointObjectType = new GraphQLObjectType({
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionObjectType },
     intent: { type: GraphQLString },
+    changeSummaryStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
+    reverseOutlineStatus: { type: GraphQLString },
     relatedFeedback: { type: GraphQLString },
   }),
 });
@@ -60,8 +71,10 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
     version: { type: GDocVersionInputType },
     intent: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
+    changeSummaryStatus: { type: GraphQLString },
     userInputSummary: { type: GraphQLString },
     reverseOutline: { type: GraphQLString },
+    reverseOutlineStatus: { type: GraphQLString },
     relatedFeedback: { type: GraphQLString },
   }),
 });
@@ -72,9 +85,19 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     versionTime: { type: String },
     version: { type: GDocVersionSchema },
     intent: { type: String },
+    changeSummaryStatus: {
+      type: String,
+      enum: OpenAiGenerationStatus,
+      default: OpenAiGenerationStatus.COMPLETED, // backwards compatibility
+    },
     changeSummary: { type: String },
     userInputSummary: { type: String },
     reverseOutline: { type: String },
+    reverseOutlineStatus: {
+      type: String,
+      enum: OpenAiGenerationStatus,
+      default: OpenAiGenerationStatus.COMPLETED, // backwards compatibility
+    },
     relatedFeedback: { type: String },
   },
   { timestamps: true }
