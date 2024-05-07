@@ -6,6 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { GraphQLList, GraphQLString, GraphQLObjectType } from "graphql";
+import OrgModel from "./Organization";
 
 export interface ConfigEntry {
   key: string;
@@ -14,14 +15,22 @@ export interface ConfigEntry {
 
 export interface Config {
   openaiSystemPrompt: string[];
+  displayedGoals?: string[];
+  displayedActivities?: string[];
 }
 
 type ConfigKey = keyof Config;
-export const ConfigKeys: ConfigKey[] = ["openaiSystemPrompt"];
+export const ConfigKeys: ConfigKey[] = [
+  "openaiSystemPrompt",
+  "displayedGoals",
+  "displayedActivities",
+];
 
 export function getDefaultConfig(): Config {
   return {
     openaiSystemPrompt: [],
+    displayedGoals: undefined,
+    displayedActivities: undefined,
   };
 }
 
@@ -29,6 +38,8 @@ export const ConfigType = new GraphQLObjectType({
   name: "Config",
   fields: () => ({
     openaiSystemPrompt: { type: GraphQLList(GraphQLString) },
+    displayedGoals: { type: GraphQLList(GraphQLString) },
+    displayedActivities: { type: GraphQLList(GraphQLString) },
   }),
 });
 
@@ -42,17 +53,41 @@ export const ConfigSchema = new Schema<ConfigDoc>(
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-ConfigSchema.statics.getConfig = async function (args: {
-  defaults?: Partial<Config>;
+export function reduceConfigEntriesToConfig(
+  entries: ConfigEntry[],
+  defaults: Config = getDefaultConfig()
+): Config {
+  return entries.reduce((acc: Config, cur: ConfigEntry) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (acc as any)[cur.key] = cur.value;
+    return acc;
+  }, defaults);
+}
+
+ConfigSchema.statics.getConfig = async function (args?: {
+  subdomain: string;
+  defaults?: Config;
 }) {
-  return (await this.find({ key: { $in: ConfigKeys } })).reduce(
-    (acc: Config, cur: ConfigEntry) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (acc as any)[cur.key] = cur.value;
-      return acc;
-    },
-    args?.defaults || getDefaultConfig()
+  const subdomain = args?.subdomain;
+  const defaultConfig = args?.defaults || getDefaultConfig();
+  const globalConfigEntries: ConfigEntry[] = await this.find({
+    key: { $in: ConfigKeys },
+  });
+  const globalConfig = reduceConfigEntriesToConfig(
+    globalConfigEntries,
+    defaultConfig
   );
+  if (subdomain) {
+    const org = await OrgModel.findOne({ subdomain });
+    if (org && org.customConfig) {
+      const orgCustomConfig = reduceConfigEntriesToConfig(
+        org.customConfig,
+        globalConfig
+      );
+      return orgCustomConfig;
+    }
+  }
+  return globalConfig;
 };
 
 ConfigSchema.statics.saveConfig = async function (
@@ -74,7 +109,10 @@ ConfigSchema.statics.saveConfig = async function (
 };
 
 export interface ConfigModel extends Model<ConfigDoc> {
-  getConfig(args?: { defaults?: Partial<Config> }): Promise<Config>;
+  getConfig(args?: {
+    subdomain: string;
+    defaults?: Partial<Config>;
+  }): Promise<Config>;
   saveConfig(config: Partial<Config>): Promise<void>;
 }
 
