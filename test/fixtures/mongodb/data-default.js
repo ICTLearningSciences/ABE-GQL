@@ -12,6 +12,22 @@ import {
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
+  organizations: [
+    {
+      _id: new ObjectId("5ffdf1231ee2c62330b49e4c"),
+      subdomain: "army",
+      customConfig: [
+        {
+          key: "openaiSystemPrompt",
+          value: ["army system prompt"],
+        },
+        {
+          key: "displayedGoals",
+          value: ["army goal 1"],
+        },
+      ],
+    },
+  ],
   openaiasyncs: [
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49e4c"),

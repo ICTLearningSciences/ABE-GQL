@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import express, { Express } from "express";
+import express, { Express, Request } from "express";
 import { graphqlHTTP } from "express-graphql";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -14,7 +14,11 @@ dotenv.config();
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",")
-  : ["https://dev.abewriting.org"];
+  : [
+      "https://dev.abewriting.org",
+      "https://army.dev.abewriting.org",
+      "https://army.abewriting.org",
+    ];
 
 //START MIDDLEWARE
 import mongoose from "mongoose";
@@ -88,6 +92,19 @@ export async function appStop(): Promise<void> {
   }
 }
 
+function getSubdomainFromRequest(req: Request): string {
+  try {
+    const origin = req.header("origin");
+    if (origin) {
+      const subdomain = /:\/\/([^\/]+)/.exec(origin)[1].split(".")[0];
+      return subdomain || "";
+    }
+    return "";
+  } catch (err) {
+    return "";
+  }
+}
+
 export function createApp(): Express {
   const app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -104,13 +121,14 @@ export function createApp(): Express {
 
   app.use(
     "/graphql",
-    graphqlHTTP((req, res) => {
+    graphqlHTTP((req: Request, res) => {
       return {
         schema: publicSchema,
         graphiql: true,
         context: {
           req: req,
           res: res,
+          subdomain: getSubdomainFromRequest(req),
         },
       };
     })

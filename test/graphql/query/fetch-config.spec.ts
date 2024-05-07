@@ -59,4 +59,31 @@ describe("config", () => {
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchConfig).to.eql(config);
   });
+
+  it("serves config from Settings with subdomain", async () => {
+    const config: Config = {
+      openaiSystemPrompt: ["Hello, world!"],
+      displayedGoals: ["goal1", "goal2"],
+      displayedActivities: ["activity1", "activity2"],
+    };
+    await ConfigModel.saveConfig(config);
+    const response = await request(app)
+      .post("/graphql")
+      .set("origin", "https://army.abewriting.org")
+      .send({
+        query: `query {
+          fetchConfig {
+            openaiSystemPrompt
+            displayedGoals
+            displayedActivities
+          }
+        }`,
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.fetchConfig).to.eql({
+      ...config,
+      openaiSystemPrompt: ["army system prompt"],
+      displayedGoals: ["army goal 1"],
+    });
+  });
 });

@@ -9,7 +9,6 @@ import { expect } from "chai";
 import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { getToken } from "../../helpers";
 
 describe("config update by key", () => {
   let app: Express;

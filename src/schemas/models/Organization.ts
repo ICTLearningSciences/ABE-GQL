@@ -4,20 +4,29 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import ConfigModel, { Config, ConfigType } from "../models/Config";
-import { GraphQLObjectType } from "graphql";
+import mongoose, { Schema } from "mongoose";
+import { GraphQLString, GraphQLObjectType } from "graphql";
+import { ConfigEntry, ConfigSchema, ConfigType } from "./Config";
 
-export const fetchConfig = {
-  type: ConfigType,
-  resolve: async (
-    _root: GraphQLObjectType,
-    _: unknown,
-    context: {
-      subdomain: string;
-    }
-  ): Promise<Config> => {
-    return await ConfigModel.getConfig({ subdomain: context.subdomain });
+export interface Org {
+  subdomain: string;
+  customConfig: ConfigEntry[];
+}
+
+export const OrgType = new GraphQLObjectType({
+  name: "OrgConfigType",
+  fields: () => ({
+    subdomain: { type: GraphQLString },
+    customConfig: { type: ConfigType },
+  }),
+});
+
+export const OrgSchema = new Schema(
+  {
+    subdomain: { type: String, unique: true },
+    customConfig: { type: [ConfigSchema], default: [] },
   },
-};
+  { timestamps: true }
+);
 
-export default fetchConfig;
+export default mongoose.model("Organization", OrgSchema);
