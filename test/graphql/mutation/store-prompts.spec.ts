@@ -30,13 +30,13 @@ describe("store prompt templates", () => {
     const newPromptTemplate = {
       title: "new_prompt_template",
       clientId: "test_client_id",
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
               promptText: "new_prompt_template_prompt_text",
               includeEssay: true,
-              includeUserInput: true,
+
               promptRole: "user",
             },
           ],
@@ -48,7 +48,7 @@ describe("store prompt templates", () => {
             {
               promptText: "new_prompt_template_prompt_text_2",
               includeEssay: false,
-              includeUserInput: true,
+
               promptRole: "user",
             },
           ],
@@ -61,13 +61,13 @@ describe("store prompt templates", () => {
     const updatedPromptTemplate = {
       title: "updated_prompt_template",
       clientId: "test_client_id_2",
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
               promptText: "prompt_text",
               includeEssay: false,
-              includeUserInput: true,
+
               promptRole: "user",
             },
           ],
@@ -79,7 +79,7 @@ describe("store prompt templates", () => {
             {
               promptText: "prompt_text_2",
               includeEssay: true,
-              includeUserInput: true,
+
               promptRole: "user",
             },
           ],
@@ -97,11 +97,11 @@ describe("store prompt templates", () => {
                 _id
                 title
                 clientId
-                openAiPromptSteps {
+                aiPromptSteps {
                     prompts{
                       promptText
                       includeEssay
-                      includeUserInput
+                      
                 promptRole
                     }
                 targetGptModel

@@ -54,15 +54,15 @@ describe("fetch activities", () => {
                     displayIcon
                     prompt{
                       _id
-                      openAiPromptSteps{
+                      aiPromptSteps{
                         prompts{
                           promptText
                           includeEssay
-                          includeUserInput
+                          
                           promptRole
                         }
                         outputDataType
-                        includeChatLogContext
+                        
                       }
                       title
                       userInputIsIntention
@@ -108,30 +108,28 @@ describe("fetch activities", () => {
           introduction: "activity_introduction_test",
           prompt: {
             _id: "5ffdf1231ee2c62320b49e9e",
-            openAiPromptSteps: [
+            aiPromptSteps: [
               {
                 prompts: [
                   {
                     promptText: "prompt_text",
                     includeEssay: false,
-                    includeUserInput: true,
+
                     promptRole: "user",
                   },
                 ],
                 outputDataType: "TEXT",
-                includeChatLogContext: false,
               },
               {
                 prompts: [
                   {
                     promptText: "prompt_text_2",
                     includeEssay: true,
-                    includeUserInput: true,
+
                     promptRole: "user",
                   },
                 ],
                 outputDataType: "JSON",
-                includeChatLogContext: true,
               },
             ],
             title: "prompt_title_test",

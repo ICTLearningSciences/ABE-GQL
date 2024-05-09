@@ -13,7 +13,7 @@ import mongoUnit from "mongo-unit";
 import request from "supertest";
 import {
   DocTimeline,
-  OpenAiGenerationStatus,
+  AiGenerationStatus,
   TimelinePointType,
 } from "../../../src/schemas/models/DocTimeline";
 import { Sender } from "../../../src/schemas/models/GoogleDocVersion";
@@ -118,10 +118,10 @@ describe("store doc timeline", () => {
         },
         intent: "test",
         changeSummary: "test",
-        changeSummaryStatus: OpenAiGenerationStatus.COMPLETED,
+        changeSummaryStatus: AiGenerationStatus.COMPLETED,
         userInputSummary: "test",
         reverseOutline: "test",
-        reverseOutlineStatus: OpenAiGenerationStatus.COMPLETED,
+        reverseOutlineStatus: AiGenerationStatus.COMPLETED,
         relatedFeedback: "test",
       },
     ],
@@ -151,10 +151,10 @@ describe("store doc timeline", () => {
         },
         intent: "test",
         changeSummary: "test",
-        changeSummaryStatus: OpenAiGenerationStatus.COMPLETED,
+        changeSummaryStatus: AiGenerationStatus.COMPLETED,
         userInputSummary: "test",
         reverseOutline: "test",
-        reverseOutlineStatus: OpenAiGenerationStatus.COMPLETED,
+        reverseOutlineStatus: AiGenerationStatus.COMPLETED,
         relatedFeedback: "test",
       },
     ],

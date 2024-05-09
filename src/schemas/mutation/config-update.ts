@@ -16,7 +16,7 @@ import ConfigModel, { Config, ConfigType } from "../models/Config";
 export const ConfigUpdateInputType = new GraphQLInputObjectType({
   name: "ConfigUpdateInputType",
   fields: () => ({
-    openaiSystemPrompt: { type: GraphQLList(GraphQLString) },
+    aiSystemPrompt: { type: GraphQLList(GraphQLString) },
   }),
 });
 

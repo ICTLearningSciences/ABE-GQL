@@ -18,7 +18,7 @@ module.exports = {
       subdomain: "army",
       customConfig: [
         {
-          key: "openaiSystemPrompt",
+          key: "aiSystemPrompt",
           value: ["army system prompt"],
         },
         {
@@ -26,19 +26,6 @@ module.exports = {
           value: ["army goal 1"],
         },
       ],
-    },
-  ],
-  openaiasyncs: [
-    {
-      _id: new ObjectId("5ffdf1231ee2c62320b49e4c"),
-      openAiData: [
-        {
-          openAiPromptStringify: "open_ai_prompt_stringify",
-          openAiResponseStringify: "open_ai_response_stringify",
-        },
-      ],
-      answer: "Open Ai Async Answer Test",
-      status: "QUEUED",
     },
   ],
 
@@ -104,31 +91,26 @@ module.exports = {
   prompts: [
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49e9e"),
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
               promptText: "prompt_text",
               includeEssay: false,
-              includeUserInput: true,
               promptRole: "user",
             },
           ],
           outputDataType: "TEXT",
-          includeChatLogContext: false,
         },
         {
           prompts: [
             {
               promptText: "prompt_text_2",
               includeEssay: true,
-              includeUserInput: true,
               promptRole: "user",
             },
           ],
           outputDataType: "JSON",
-          jsonValidation: "json_validation_test",
-          includeChatLogContext: true,
         },
       ],
       title: "prompt_title_test",
@@ -140,19 +122,18 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49e9c"),
       user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleDocId: "test_google_doc_id",
-      openAiSteps: [
+      aiSteps: [
         {
-          openAiPromptStringify: "open_ai_prompt_stringify",
-          openAiResponseStringify: "open_ai_response_stringify",
+          aiServiceRequestParams: "open_ai_prompt_stringify",
+          aiServiceResponse: "open_ai_response_stringify",
         },
       ],
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
               promptText: "prompt_text_test",
               includeEssay: true,
-              includeUserInput: true,
               promptRole: "user",
             },
           ],
@@ -163,7 +144,6 @@ module.exports = {
             {
               promptText: "prompt_text_test_2",
               includeEssay: true,
-              includeUserInput: true,
               promptRole: "user",
             },
           ],
@@ -175,19 +155,18 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49e9d"),
       user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleDocId: "test_google_doc_id_2",
-      openAiSteps: [
+      aiSteps: [
         {
-          openAiPromptStringify: "open_ai_prompt_stringify",
-          openAiResponseStringify: "open_ai_response_stringify",
+          aiServiceRequestParams: "open_ai_prompt_stringify",
+          aiServiceResponse: "open_ai_response_stringify",
         },
       ],
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
               promptText: "prompt_text_test",
               includeEssay: true,
-              includeUserInput: true,
               promptRole: "user",
             },
           ],
@@ -198,7 +177,6 @@ module.exports = {
             {
               promptText: "prompt_text_test_2",
               includeEssay: true,
-              includeUserInput: true,
               promptRole: "user",
             },
           ],
