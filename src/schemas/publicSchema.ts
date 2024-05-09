@@ -25,8 +25,6 @@ import configUpdateByKey from "./mutation/config-update-key";
 import fetchDocGoals from "./query/fetch-doc-goals";
 import fetchUserActivityStates from "./query/fetch-user-activity-states";
 import updateUserActivityState from "./mutation/update-user-activity-state";
-import openAiAsyncJobUpdate from "./mutation/open-ai-async-job-update";
-import fetchOpenAiAsyncJob from "./query/fetch-open-ai-async-job";
 import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
 import { docVersions } from "./query/fetch-paged-doc-versions";
@@ -46,7 +44,6 @@ const PublicRootQuery = new GraphQLObjectType({
     fetchDocGoals,
     fetchActivities,
     fetchUserActivityStates,
-    fetchOpenAiAsyncJob,
     fetchDocTimeline,
     docVersions,
   },
@@ -65,7 +62,6 @@ const PublicMutation = new GraphQLObjectType({
     configUpdate,
     configUpdateByKey,
     updateUserActivityState,
-    openAiAsyncJobUpdate,
     storeDocTimeline,
     deleteGoogleDoc,
     addOrUpdateActivity,

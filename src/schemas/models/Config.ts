@@ -14,21 +14,21 @@ export interface ConfigEntry {
 }
 
 export interface Config {
-  openaiSystemPrompt: string[];
+  aiSystemPrompt: string[];
   displayedGoals?: string[];
   displayedActivities?: string[];
 }
 
 type ConfigKey = keyof Config;
 export const ConfigKeys: ConfigKey[] = [
-  "openaiSystemPrompt",
+  "aiSystemPrompt",
   "displayedGoals",
   "displayedActivities",
 ];
 
 export function getDefaultConfig(): Config {
   return {
-    openaiSystemPrompt: [],
+    aiSystemPrompt: [],
     displayedGoals: undefined,
     displayedActivities: undefined,
   };
@@ -37,7 +37,7 @@ export function getDefaultConfig(): Config {
 export const ConfigType = new GraphQLObjectType({
   name: "Config",
   fields: () => ({
-    openaiSystemPrompt: { type: GraphQLList(GraphQLString) },
+    aiSystemPrompt: { type: GraphQLList(GraphQLString) },
     displayedGoals: { type: GraphQLList(GraphQLString) },
     displayedActivities: { type: GraphQLList(GraphQLString) },
   }),

@@ -18,7 +18,7 @@ module.exports = {
       subdomain: "army",
       customConfig: [
         {
-          key: "openaiSystemPrompt",
+          key: "aiSystemPrompt",
           value: ["army system prompt"],
         },
         {
@@ -26,19 +26,6 @@ module.exports = {
           value: ["army goal 1"],
         },
       ],
-    },
-  ],
-  openaiasyncs: [
-    {
-      _id: new ObjectId("5ffdf1231ee2c62320b49e4c"),
-      openAiData: [
-        {
-          openAiPromptStringify: "open_ai_prompt_stringify",
-          openAiResponseStringify: "open_ai_response_stringify",
-        },
-      ],
-      answer: "Open Ai Async Answer Test",
-      status: "QUEUED",
     },
   ],
 
@@ -104,7 +91,7 @@ module.exports = {
   prompts: [
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49e9e"),
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
@@ -140,13 +127,13 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49e9c"),
       user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleDocId: "test_google_doc_id",
-      openAiSteps: [
+      aiSteps: [
         {
-          openAiPromptStringify: "open_ai_prompt_stringify",
-          openAiResponseStringify: "open_ai_response_stringify",
+          aiServiceRequestParams: "ai_service_request_params",
+          aiServiceResponse: "ai_service_response",
         },
       ],
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
@@ -175,13 +162,13 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49e9d"),
       user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       googleDocId: "test_google_doc_id_2",
-      openAiSteps: [
+      aiSteps: [
         {
-          openAiPromptStringify: "open_ai_prompt_stringify",
-          openAiResponseStringify: "open_ai_response_stringify",
+          aiServiceRequestParams: "ai_service_request_params",
+          aiServiceResponse: "ai_service_response",
         },
       ],
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {

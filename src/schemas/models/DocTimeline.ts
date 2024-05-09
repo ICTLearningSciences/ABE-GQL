@@ -27,7 +27,7 @@ export enum TimelinePointType {
   NONE = "",
 }
 
-export enum OpenAiGenerationStatus {
+export enum AiGenerationStatus {
   NONE = "NONE",
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
@@ -39,11 +39,11 @@ export interface TimelinePoint {
   versionTime: string;
   version: IGDocVersion;
   intent: string;
-  changeSummaryStatus: OpenAiGenerationStatus;
+  changeSummaryStatus: AiGenerationStatus;
   changeSummary: string;
   userInputSummary: string;
   reverseOutline: string;
-  reverseOutlineStatus: OpenAiGenerationStatus;
+  reverseOutlineStatus: AiGenerationStatus;
   relatedFeedback: string;
 }
 
@@ -87,16 +87,16 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     intent: { type: String },
     changeSummaryStatus: {
       type: String,
-      enum: OpenAiGenerationStatus,
-      default: OpenAiGenerationStatus.COMPLETED, // backwards compatibility
+      enum: AiGenerationStatus,
+      default: AiGenerationStatus.COMPLETED, // backwards compatibility
     },
     changeSummary: { type: String },
     userInputSummary: { type: String },
     reverseOutline: { type: String },
     reverseOutlineStatus: {
       type: String,
-      enum: OpenAiGenerationStatus,
-      default: OpenAiGenerationStatus.COMPLETED, // backwards compatibility
+      enum: AiGenerationStatus,
+      default: AiGenerationStatus.COMPLETED, // backwards compatibility
     },
     relatedFeedback: { type: String },
   },

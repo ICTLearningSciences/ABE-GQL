@@ -54,7 +54,7 @@ describe("fetch activities", () => {
                     displayIcon
                     prompt{
                       _id
-                      openAiPromptSteps{
+                      aiPromptSteps{
                         prompts{
                           promptText
                           includeEssay
@@ -108,7 +108,7 @@ describe("fetch activities", () => {
           introduction: "activity_introduction_test",
           prompt: {
             _id: "5ffdf1231ee2c62320b49e9e",
-            openAiPromptSteps: [
+            aiPromptSteps: [
               {
                 prompts: [
                   {

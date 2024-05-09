@@ -31,7 +31,7 @@ describe("configUpdate", () => {
       .send({
         query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
             configUpdate(config: $config) {
-              openaiSystemPrompt
+              aiSystemPrompt
             }
         }`,
         variables: {},
@@ -45,18 +45,18 @@ describe("configUpdate", () => {
       .send({
         query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
           configUpdate(config: $config) {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
       }`,
         variables: {
           config: {
-            openaiSystemPrompt: ["Hello, world!"],
+            aiSystemPrompt: ["Hello, world!"],
           },
         },
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.configUpdate).to.eql({
-      openaiSystemPrompt: ["Hello, world!"],
+      aiSystemPrompt: ["Hello, world!"],
     });
   });
 
@@ -68,7 +68,7 @@ describe("configUpdate", () => {
       .send({
         query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
           configUpdate(config: $config) {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
       }`,
         variables: { config: {} },
@@ -87,18 +87,18 @@ describe("configUpdate", () => {
       .send({
         query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
           configUpdate(config: $config) {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
       }`,
         variables: {
           config: {
-            openaiSystemPrompt: ["Hello, world!"],
+            aiSystemPrompt: ["Hello, world!"],
           },
         },
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.configUpdate).to.eql({
-      openaiSystemPrompt: ["Hello, world!"],
+      aiSystemPrompt: ["Hello, world!"],
     });
   });
 
@@ -110,7 +110,7 @@ describe("configUpdate", () => {
       .send({
         query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
           configUpdate(config: $config) {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
       }`,
         variables: {

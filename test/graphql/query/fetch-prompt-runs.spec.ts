@@ -33,7 +33,7 @@ describe("fetch prompt runs", () => {
       .send({
         query: `query FetchPromptRuns($userId: ID!, $googleDocId: String!) {
             fetchPromptRuns(userId: $userId, googleDocId: $googleDocId) {
-                      openAiPromptSteps{
+                      aiPromptSteps{
                         prompts{
                           promptText
                           includeEssay
@@ -43,9 +43,9 @@ describe("fetch prompt runs", () => {
                       }
                         googleDocId
                         user
-                        openAiSteps {
-                          openAiPromptStringify
-                          openAiResponseStringify
+                        aiSteps {
+                          aiServiceRequestParams
+                          aiServiceResponse
                         }
                     }
                 }`,
@@ -60,13 +60,13 @@ describe("fetch prompt runs", () => {
       {
         user: "5ffdf1231ee2c62320b49e99",
         googleDocId: "test_google_doc_id",
-        openAiSteps: [
+        aiSteps: [
           {
-            openAiPromptStringify: "open_ai_prompt_stringify",
-            openAiResponseStringify: "open_ai_response_stringify",
+            aiServiceRequestParams: "ai_service_request_params",
+            aiServiceResponse: "ai_service_response",
           },
         ],
-        openAiPromptSteps: [
+        aiPromptSteps: [
           {
             prompts: [
               {
@@ -98,7 +98,7 @@ describe("fetch prompt runs", () => {
       .send({
         query: `query FetchPromptRuns($userId: ID!, $googleDocId: String) {
             fetchPromptRuns(userId: $userId, googleDocId: $googleDocId) {
-              openAiPromptSteps{
+              aiPromptSteps{
                 prompts{
                   promptText
                   includeEssay
@@ -108,9 +108,9 @@ describe("fetch prompt runs", () => {
               }
                         googleDocId
                         user
-                        openAiSteps {
-                          openAiPromptStringify
-                          openAiResponseStringify
+                        aiSteps {
+                          aiServiceRequestParams
+                          aiServiceResponse
                         }
                     }
                 }`,
@@ -124,13 +124,13 @@ describe("fetch prompt runs", () => {
       {
         user: "5ffdf1231ee2c62320b49e99",
         googleDocId: "test_google_doc_id",
-        openAiSteps: [
+        aiSteps: [
           {
-            openAiPromptStringify: "open_ai_prompt_stringify",
-            openAiResponseStringify: "open_ai_response_stringify",
+            aiServiceRequestParams: "ai_service_request_params",
+            aiServiceResponse: "ai_service_response",
           },
         ],
-        openAiPromptSteps: [
+        aiPromptSteps: [
           {
             prompts: [
               {
@@ -156,13 +156,13 @@ describe("fetch prompt runs", () => {
       {
         user: "5ffdf1231ee2c62320b49e99",
         googleDocId: "test_google_doc_id_2",
-        openAiSteps: [
+        aiSteps: [
           {
-            openAiPromptStringify: "open_ai_prompt_stringify",
-            openAiResponseStringify: "open_ai_response_stringify",
+            aiServiceRequestParams: "ai_service_request_params",
+            aiServiceResponse: "ai_service_response",
           },
         ],
-        openAiPromptSteps: [
+        aiPromptSteps: [
           {
             prompts: [
               {

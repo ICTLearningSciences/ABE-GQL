@@ -34,7 +34,7 @@ describe("fetch prompts", () => {
         query: `query FetchPrompts {
             fetchPrompts {
                   _id
-                  openAiPromptSteps {
+                  aiPromptSteps {
                         prompts{
                           promptText
                           includeEssay
@@ -57,7 +57,7 @@ describe("fetch prompts", () => {
     expect(response.body.data.fetchPrompts).to.deep.include.members([
       {
         _id: "5ffdf1231ee2c62320b49e9e",
-        openAiPromptSteps: [
+        aiPromptSteps: [
           {
             prompts: [
               {

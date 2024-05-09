@@ -30,7 +30,7 @@ describe("store prompt templates", () => {
     const newPromptTemplate = {
       title: "new_prompt_template",
       clientId: "test_client_id",
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
@@ -61,7 +61,7 @@ describe("store prompt templates", () => {
     const updatedPromptTemplate = {
       title: "updated_prompt_template",
       clientId: "test_client_id_2",
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
@@ -97,7 +97,7 @@ describe("store prompt templates", () => {
                 _id
                 title
                 clientId
-                openAiPromptSteps {
+                aiPromptSteps {
                     prompts{
                       promptText
                       includeEssay

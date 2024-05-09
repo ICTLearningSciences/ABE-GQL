@@ -14,15 +14,15 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import {
-  OpenAiPromptStep,
-  OpenAiPromptStepInputType,
-  OpenAiPromptStepType,
+  AiPromptStep,
+  AiPromptStepInputType,
+  AiPromptStepType,
 } from "./PromptRun";
 import { PromptRoles } from "../types/types";
 
 export interface Prompt extends Document {
   _id: string;
-  openAiPromptSteps: OpenAiPromptStep[];
+  aiPromptSteps: AiPromptStep[];
   clientId?: string;
   title: string;
   userInputIsIntention?: boolean;
@@ -32,7 +32,7 @@ export const PromptType = new GraphQLObjectType({
   name: "PromptType",
   fields: () => ({
     _id: { type: GraphQLID },
-    openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepType) },
+    aiPromptSteps: { type: GraphQLList(AiPromptStepType) },
     clientId: { type: GraphQLString },
     title: { type: GraphQLString },
     userInputIsIntention: { type: GraphQLBoolean },
@@ -43,7 +43,7 @@ export const PromptInputType = new GraphQLInputObjectType({
   name: "PromptInputType",
   fields: () => ({
     _id: { type: GraphQLID },
-    openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepInputType) },
+    aiPromptSteps: { type: GraphQLList(AiPromptStepInputType) },
     clientId: { type: GraphQLString },
     title: { type: GraphQLString },
     userInputIsIntention: { type: GraphQLBoolean },
@@ -57,7 +57,7 @@ export enum PromptOutputDataType {
 
 export const PromptSchema = new Schema(
   {
-    openAiPromptSteps: [
+    aiPromptSteps: [
       {
         prompts: [
           {
