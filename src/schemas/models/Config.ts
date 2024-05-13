@@ -62,6 +62,14 @@ export const AiModelServiceType = new GraphQLObjectType({
   },
 });
 
+export const AvailabeAiServiceModelsType = new GraphQLObjectType({
+  name: "AvailabeAiServiceModelsType",
+  fields: {
+    serviceName: { type: GraphQLString },
+    models: { type: GraphQLList(GraphQLString) },
+  },
+});
+
 export const ConfigType = new GraphQLObjectType({
   name: "Config",
   fields: () => ({
@@ -71,7 +79,7 @@ export const ConfigType = new GraphQLObjectType({
     overrideAiModel: { type: AiModelServiceType },
     defaultAiModel: { type: AiModelServiceType },
     availableAiServiceModels: {
-      type: GraphQLList(AiModelServiceType),
+      type: GraphQLList(AvailabeAiServiceModelsType),
     },
   }),
 });

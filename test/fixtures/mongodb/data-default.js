@@ -30,7 +30,7 @@ module.exports = {
           value: [
             {
               serviceName: "OPEN_AI",
-              model: "gpt-3.5-turbo",
+              models: ["gpt-3.5-turbo"],
             },
           ],
         },

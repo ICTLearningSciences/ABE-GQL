@@ -89,7 +89,7 @@ describe("config", () => {
             }
             availableAiServiceModels{
               serviceName
-              model
+              models
             }
           }
         }`,
@@ -106,7 +106,7 @@ describe("config", () => {
       availableAiServiceModels: [
         {
           serviceName: AiServiceNames.OPEN_AI,
-          model: "gpt-3.5-turbo",
+          models: ["gpt-3.5-turbo"],
         },
       ],
     });
