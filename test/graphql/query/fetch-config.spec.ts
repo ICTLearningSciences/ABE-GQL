@@ -10,7 +10,7 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import ConfigModel, { Config } from "../../../src/schemas/models/Config";
+import ConfigModel, { AiServiceNames, Config } from "../../../src/schemas/models/Config";
 
 describe("config", () => {
   let app: Express;
@@ -65,6 +65,10 @@ describe("config", () => {
       aiSystemPrompt: ["Hello, world!"],
       displayedGoals: ["goal1", "goal2"],
       displayedActivities: ["activity1", "activity2"],
+      overrideAiModel: {
+        serviceName: AiServiceNames.AZURE,
+        model: "model",
+      },
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -76,6 +80,10 @@ describe("config", () => {
             aiSystemPrompt
             displayedGoals
             displayedActivities
+            overrideAiModel{
+              serviceName
+              model
+            }
           }
         }`,
       });
@@ -84,6 +92,10 @@ describe("config", () => {
       ...config,
       aiSystemPrompt: ["army system prompt"],
       displayedGoals: ["army goal 1"],
+      overrideAiModel: {
+        serviceName: AiServiceNames.AZURE,
+        model: "model",
+      },
     });
   });
 });

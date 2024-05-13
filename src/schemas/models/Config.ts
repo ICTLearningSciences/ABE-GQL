@@ -13,10 +13,20 @@ export interface ConfigEntry {
   value: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
+export enum AiServiceNames{
+  AZURE = "AZURE",
+  OPEN_AI = "OPEN_AI",
+  GEMINI = "GEMINI",
+}
+
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoals?: string[];
   displayedActivities?: string[];
+  overrideAiModel?: {
+    serviceName: AiServiceNames;
+    model: string;
+  };
 }
 
 type ConfigKey = keyof Config;
@@ -24,6 +34,7 @@ export const ConfigKeys: ConfigKey[] = [
   "aiSystemPrompt",
   "displayedGoals",
   "displayedActivities",
+  "overrideAiModel",
 ];
 
 export function getDefaultConfig(): Config {
@@ -31,8 +42,17 @@ export function getDefaultConfig(): Config {
     aiSystemPrompt: [],
     displayedGoals: undefined,
     displayedActivities: undefined,
+    overrideAiModel: undefined,
   };
 }
+
+export const OverrideAiModelType = new GraphQLObjectType({
+  name: "OverrideAiModel",
+  fields: {
+    serviceName: { type: GraphQLString },
+    model: { type: GraphQLString },
+  },
+});
 
 export const ConfigType = new GraphQLObjectType({
   name: "Config",
@@ -40,6 +60,7 @@ export const ConfigType = new GraphQLObjectType({
     aiSystemPrompt: { type: GraphQLList(GraphQLString) },
     displayedGoals: { type: GraphQLList(GraphQLString) },
     displayedActivities: { type: GraphQLList(GraphQLString) },
+    overrideAiModel: { type: OverrideAiModelType },
   }),
 });
 
