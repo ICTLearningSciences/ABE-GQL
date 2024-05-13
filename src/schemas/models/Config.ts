@@ -13,20 +13,24 @@ export interface ConfigEntry {
   value: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
-export enum AiServiceNames{
+export enum AiServiceNames {
   AZURE = "AZURE",
   OPEN_AI = "OPEN_AI",
   GEMINI = "GEMINI",
+}
+
+export interface AiModelService {
+  serviceName: AiServiceNames;
+  model: string;
 }
 
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoals?: string[];
   displayedActivities?: string[];
-  overrideAiModel?: {
-    serviceName: AiServiceNames;
-    model: string;
-  };
+  overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
+  defaultAiModel?: AiModelService;
+  availableAiServiceModels?: Record<AiServiceNames, string[]>;
 }
 
 type ConfigKey = keyof Config;
@@ -35,6 +39,8 @@ export const ConfigKeys: ConfigKey[] = [
   "displayedGoals",
   "displayedActivities",
   "overrideAiModel",
+  "defaultAiModel",
+  "availableAiServiceModels",
 ];
 
 export function getDefaultConfig(): Config {
@@ -43,11 +49,13 @@ export function getDefaultConfig(): Config {
     displayedGoals: undefined,
     displayedActivities: undefined,
     overrideAiModel: undefined,
+    defaultAiModel: undefined,
+    availableAiServiceModels: undefined,
   };
 }
 
-export const OverrideAiModelType = new GraphQLObjectType({
-  name: "OverrideAiModel",
+export const AiModelServiceType = new GraphQLObjectType({
+  name: "AiModelServiceType",
   fields: {
     serviceName: { type: GraphQLString },
     model: { type: GraphQLString },
@@ -60,7 +68,11 @@ export const ConfigType = new GraphQLObjectType({
     aiSystemPrompt: { type: GraphQLList(GraphQLString) },
     displayedGoals: { type: GraphQLList(GraphQLString) },
     displayedActivities: { type: GraphQLList(GraphQLString) },
-    overrideAiModel: { type: OverrideAiModelType },
+    overrideAiModel: { type: AiModelServiceType },
+    defaultAiModel: { type: AiModelServiceType },
+    availableAiServiceModels: {
+      type: GraphQLList(AiModelServiceType),
+    },
   }),
 });
 

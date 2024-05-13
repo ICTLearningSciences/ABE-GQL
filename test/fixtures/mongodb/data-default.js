@@ -25,6 +25,15 @@ module.exports = {
           key: "displayedGoals",
           value: ["army goal 1"],
         },
+        {
+          key: "availableAiServiceModels",
+          value: [
+            {
+              serviceName: "OPEN_AI",
+              model: "gpt-3.5-turbo",
+            },
+          ],
+        },
       ],
     },
   ],

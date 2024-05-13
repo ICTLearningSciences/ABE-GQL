@@ -10,7 +10,10 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import ConfigModel, { AiServiceNames, Config } from "../../../src/schemas/models/Config";
+import ConfigModel, {
+  AiServiceNames,
+  Config,
+} from "../../../src/schemas/models/Config";
 
 describe("config", () => {
   let app: Express;
@@ -84,6 +87,10 @@ describe("config", () => {
               serviceName
               model
             }
+            availableAiServiceModels{
+              serviceName
+              model
+            }
           }
         }`,
       });
@@ -96,6 +103,12 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
+      availableAiServiceModels: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          model: "gpt-3.5-turbo",
+        },
+      ],
     });
   });
 });
