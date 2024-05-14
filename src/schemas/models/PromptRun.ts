@@ -16,6 +16,11 @@ import {
 import { User } from "./User";
 import { PromptOutputDataType } from "./Prompt";
 import { PromptRoles } from "../types/types";
+import {
+  AiModelService,
+  AiModelServiceInputType,
+  AiModelServiceType,
+} from "./Config";
 
 export interface AiReqRes {
   aiServiceRequestParams: string; //OpenAI.Chat.Completions.ChatCompletionCreateParams;
@@ -32,8 +37,8 @@ export interface PromptConfiguration {
 export interface AiPromptStep {
   prompts: PromptConfiguration[];
   outputDataType: PromptOutputDataType;
-  targetGptModel: string;
-  customSystemRole?: string;
+  targetAiServiceModel: AiModelService;
+  systemRole?: string;
   includeChatLogContext?: boolean;
   jsonValidation?: string;
 }
@@ -86,8 +91,8 @@ export const AiPromptStepType = new GraphQLObjectType({
   fields: () => ({
     prompts: { type: GraphQLList(PromptConfigurationType) },
     outputDataType: { type: GraphQLString },
-    targetGptModel: { type: GraphQLString },
-    customSystemRole: { type: GraphQLString },
+    targetAiServiceModel: { type: AiModelServiceType },
+    systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
   }),
@@ -98,8 +103,8 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
   fields: () => ({
     prompts: { type: GraphQLList(PromptConfigurationInputType) },
     outputDataType: { type: GraphQLString },
-    targetGptModel: { type: GraphQLString },
-    customSystemRole: { type: GraphQLString },
+    targetAiServiceModel: { type: AiModelServiceInputType },
+    systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
   }),

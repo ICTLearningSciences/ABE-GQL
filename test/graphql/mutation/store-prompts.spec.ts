@@ -40,7 +40,6 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
-          targetGptModel: "test_gpt_model",
           outputDataType: "TEXT",
         },
         {
@@ -52,7 +51,6 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
-          targetGptModel: "test_gpt_model",
           outputDataType: "JSON",
         },
       ],
@@ -71,7 +69,6 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
-          targetGptModel: "test_gpt_model_2",
           outputDataType: "TEXT",
         },
         {
@@ -83,7 +80,6 @@ describe("store prompt templates", () => {
               promptRole: "user",
             },
           ],
-          targetGptModel: "test_gpt_model_2",
           outputDataType: "JSON",
         },
       ],
@@ -104,7 +100,6 @@ describe("store prompt templates", () => {
                       includeUserInput
                 promptRole
                     }
-                targetGptModel
                 outputDataType
                   }
               }

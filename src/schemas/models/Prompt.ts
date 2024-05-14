@@ -81,12 +81,11 @@ export const PromptSchema = new Schema(
           required: false,
           default: PromptOutputDataType.TEXT,
         },
-        targetGptModel: {
-          type: String,
-          required: false,
-          default: "gpt-3.5-turbo-16k",
+        targetAiServiceModel: {
+          serviceName: { type: String, required: true },
+          model: { type: String, required: true },
         },
-        customSystemRole: {
+        systemRole: {
           type: String,
           required: false,
           default: "",

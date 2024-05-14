@@ -41,8 +41,11 @@ describe("store prompt template", () => {
             },
           ],
           outputDataType: "TEXT",
-          targetGptModel: "test_target_gpt_model",
-          customSystemRole: "test_custom_system_role",
+          targetAiServiceModel: {
+            serviceName: "test_service_name",
+            model: "test_model",
+          },
+          systemRole: "test_custom_system_role",
           jsonValidation: "test_json_validation",
           includeChatLogContext: true,
         },
@@ -56,8 +59,11 @@ describe("store prompt template", () => {
             },
           ],
           outputDataType: "TEXT",
-          targetGptModel: "test_target_gpt_model",
-          customSystemRole: "test_custom_system_role",
+          targetAiServiceModel: {
+            serviceName: "test_service_name",
+            model: "test_model",
+          },
+          systemRole: "test_custom_system_role",
           jsonValidation: "test_json_validation",
           includeChatLogContext: true,
         },
@@ -80,8 +86,11 @@ describe("store prompt template", () => {
                       includeUserInput
                       promptRole
                     }
-                      targetGptModel
-                      customSystemRole
+                    targetAiServiceModel{
+                      serviceName
+                      model
+                    }
+                      systemRole
                       outputDataType
                     jsonValidation
                     includeChatLogContext
@@ -99,6 +108,7 @@ describe("store prompt template", () => {
     expect(
       response.body.data.storePrompt.aiPromptSteps
     ).to.deep.include.members(newPromptTemplate.aiPromptSteps);
+
     expect(response.body.data.storePrompt.clientId).to.equal(
       newPromptTemplate.clientId
     );
