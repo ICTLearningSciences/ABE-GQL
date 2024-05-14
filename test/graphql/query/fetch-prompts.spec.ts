@@ -41,6 +41,10 @@ describe("fetch prompts", () => {
                           includeUserInput
                           promptRole
                         }
+                        targetAiServiceModel{
+                          serviceName
+                          model
+                        }
                         outputDataType
                         includeChatLogContext
                         jsonValidation
@@ -48,10 +52,6 @@ describe("fetch prompts", () => {
                       title
                     }
                 }`,
-        variables: {
-          userId: "5ffdf1231ee2c62320b49e99",
-          googleDocId: "test_google_doc_id",
-        },
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchPrompts).to.deep.include.members([
@@ -70,6 +70,10 @@ describe("fetch prompts", () => {
             outputDataType: "TEXT",
             jsonValidation: "",
             includeChatLogContext: false,
+            targetAiServiceModel: {
+              serviceName: "testServiceName",
+              model: "testModel",
+            },
           },
           {
             prompts: [
@@ -83,6 +87,7 @@ describe("fetch prompts", () => {
             outputDataType: "JSON",
             jsonValidation: "json_validation_test",
             includeChatLogContext: true,
+            targetAiServiceModel: null,
           },
         ],
         title: "prompt_title_test",

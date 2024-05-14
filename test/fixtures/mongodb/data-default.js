@@ -112,6 +112,10 @@ module.exports = {
           ],
           outputDataType: "TEXT",
           includeChatLogContext: false,
+          targetAiServiceModel: {
+            serviceName: "testServiceName",
+            model: "testModel",
+          },
         },
         {
           prompts: [

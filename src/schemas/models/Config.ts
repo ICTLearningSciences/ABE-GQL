@@ -75,6 +75,14 @@ export const AiModelServiceInputType = new GraphQLInputObjectType({
   },
 });
 
+export const AiModelServiceSchema = new Schema(
+  {
+    serviceName: { type: String, required: false },
+    model: { type: String, required: false },
+  },
+  { _id: false }
+);
+
 export const AvailabeAiServiceModelsType = new GraphQLObjectType({
   name: "AvailabeAiServiceModelsType",
   fields: {

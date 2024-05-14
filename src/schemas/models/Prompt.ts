@@ -19,6 +19,7 @@ import {
   AiPromptStepType,
 } from "./PromptRun";
 import { PromptRoles } from "../types/types";
+import { AiModelServiceSchema } from "./Config";
 
 export interface Prompt extends Document {
   _id: string;
@@ -82,8 +83,8 @@ export const PromptSchema = new Schema(
           default: PromptOutputDataType.TEXT,
         },
         targetAiServiceModel: {
-          serviceName: { type: String, required: true },
-          model: { type: String, required: true },
+          type: AiModelServiceSchema,
+          required: false,
         },
         systemRole: {
           type: String,
