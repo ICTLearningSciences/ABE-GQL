@@ -5,7 +5,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose, { Document, Model, Schema } from "mongoose";
-import { GraphQLList, GraphQLString, GraphQLObjectType } from "graphql";
+import {
+  GraphQLList,
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLInputObjectType,
+} from "graphql";
 import OrgModel from "./Organization";
 
 export interface ConfigEntry {
@@ -13,33 +18,90 @@ export interface ConfigEntry {
   value: any; // eslint-disable-line  @typescript-eslint/no-explicit-any
 }
 
+export enum AiServiceNames {
+  AZURE = "AZURE",
+  OPEN_AI = "OPEN_AI",
+  GEMINI = "GEMINI",
+}
+
+export interface AiModelService {
+  serviceName: AiServiceNames;
+  model: string;
+}
+
 export interface Config {
-  openaiSystemPrompt: string[];
+  aiSystemPrompt: string[];
   displayedGoals?: string[];
   displayedActivities?: string[];
+  overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
+  defaultAiModel?: AiModelService;
+  availableAiServiceModels?: Record<AiServiceNames, string[]>;
 }
 
 type ConfigKey = keyof Config;
 export const ConfigKeys: ConfigKey[] = [
-  "openaiSystemPrompt",
+  "aiSystemPrompt",
   "displayedGoals",
   "displayedActivities",
+  "overrideAiModel",
+  "defaultAiModel",
+  "availableAiServiceModels",
 ];
 
 export function getDefaultConfig(): Config {
   return {
-    openaiSystemPrompt: [],
+    aiSystemPrompt: [],
     displayedGoals: undefined,
     displayedActivities: undefined,
+    overrideAiModel: undefined,
+    defaultAiModel: undefined,
+    availableAiServiceModels: undefined,
   };
 }
+
+export const AiModelServiceType = new GraphQLObjectType({
+  name: "AiModelServiceType",
+  fields: {
+    serviceName: { type: GraphQLString },
+    model: { type: GraphQLString },
+  },
+});
+
+export const AiModelServiceInputType = new GraphQLInputObjectType({
+  name: "AiModelServiceInputType",
+  fields: {
+    serviceName: { type: GraphQLString },
+    model: { type: GraphQLString },
+  },
+});
+
+export const AiModelServiceSchema = new Schema(
+  {
+    serviceName: { type: String, required: false },
+    model: { type: String, required: false },
+  },
+  { _id: false }
+);
+
+export const AvailabeAiServiceModelsType = new GraphQLObjectType({
+  name: "AvailabeAiServiceModelsType",
+  fields: {
+    serviceName: { type: GraphQLString },
+    models: { type: GraphQLList(GraphQLString) },
+  },
+});
 
 export const ConfigType = new GraphQLObjectType({
   name: "Config",
   fields: () => ({
-    openaiSystemPrompt: { type: GraphQLList(GraphQLString) },
+    aiSystemPrompt: { type: GraphQLList(GraphQLString) },
     displayedGoals: { type: GraphQLList(GraphQLString) },
     displayedActivities: { type: GraphQLList(GraphQLString) },
+    overrideAiModel: { type: AiModelServiceType },
+    defaultAiModel: { type: AiModelServiceType },
+    availableAiServiceModels: {
+      type: GraphQLList(AvailabeAiServiceModelsType),
+    },
   }),
 });
 

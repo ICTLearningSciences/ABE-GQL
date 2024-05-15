@@ -14,15 +14,16 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import {
-  OpenAiPromptStep,
-  OpenAiPromptStepInputType,
-  OpenAiPromptStepType,
+  AiPromptStep,
+  AiPromptStepInputType,
+  AiPromptStepType,
 } from "./PromptRun";
 import { PromptRoles } from "../types/types";
+import { AiModelServiceSchema } from "./Config";
 
 export interface Prompt extends Document {
   _id: string;
-  openAiPromptSteps: OpenAiPromptStep[];
+  aiPromptSteps: AiPromptStep[];
   clientId?: string;
   title: string;
   userInputIsIntention?: boolean;
@@ -32,7 +33,7 @@ export const PromptType = new GraphQLObjectType({
   name: "PromptType",
   fields: () => ({
     _id: { type: GraphQLID },
-    openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepType) },
+    aiPromptSteps: { type: GraphQLList(AiPromptStepType) },
     clientId: { type: GraphQLString },
     title: { type: GraphQLString },
     userInputIsIntention: { type: GraphQLBoolean },
@@ -43,7 +44,7 @@ export const PromptInputType = new GraphQLInputObjectType({
   name: "PromptInputType",
   fields: () => ({
     _id: { type: GraphQLID },
-    openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepInputType) },
+    aiPromptSteps: { type: GraphQLList(AiPromptStepInputType) },
     clientId: { type: GraphQLString },
     title: { type: GraphQLString },
     userInputIsIntention: { type: GraphQLBoolean },
@@ -57,7 +58,7 @@ export enum PromptOutputDataType {
 
 export const PromptSchema = new Schema(
   {
-    openAiPromptSteps: [
+    aiPromptSteps: [
       {
         prompts: [
           {
@@ -81,12 +82,11 @@ export const PromptSchema = new Schema(
           required: false,
           default: PromptOutputDataType.TEXT,
         },
-        targetGptModel: {
-          type: String,
+        targetAiServiceModel: {
+          type: AiModelServiceSchema,
           required: false,
-          default: "gpt-3.5-turbo-16k",
         },
-        customSystemRole: {
+        systemRole: {
           type: String,
           required: false,
           default: "",

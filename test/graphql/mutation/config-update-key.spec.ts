@@ -30,17 +30,17 @@ describe("config update by key", () => {
       .send({
         query: `mutation ConfigUpdateByKey($key: String!, $value: AnythingScalarType!) {
             configUpdateByKey(key: $key, value: $value) {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
       }`,
         variables: {
-          key: "openaiSystemPrompt",
+          key: "aiSystemPrompt",
           value: ["Hello, world!"],
         },
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.configUpdateByKey).to.eql({
-      openaiSystemPrompt: ["Hello, world!"],
+      aiSystemPrompt: ["Hello, world!"],
     });
   });
 });

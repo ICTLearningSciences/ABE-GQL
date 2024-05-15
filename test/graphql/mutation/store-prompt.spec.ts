@@ -30,7 +30,7 @@ describe("store prompt template", () => {
     const newPromptTemplate = {
       title: "new_prompt_template",
       clientId: "test_client_id",
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
@@ -41,8 +41,11 @@ describe("store prompt template", () => {
             },
           ],
           outputDataType: "TEXT",
-          targetGptModel: "test_target_gpt_model",
-          customSystemRole: "test_custom_system_role",
+          targetAiServiceModel: {
+            serviceName: "test_service_name",
+            model: "test_model",
+          },
+          systemRole: "test_custom_system_role",
           jsonValidation: "test_json_validation",
           includeChatLogContext: true,
         },
@@ -56,8 +59,11 @@ describe("store prompt template", () => {
             },
           ],
           outputDataType: "TEXT",
-          targetGptModel: "test_target_gpt_model",
-          customSystemRole: "test_custom_system_role",
+          targetAiServiceModel: {
+            serviceName: "test_service_name",
+            model: "test_model",
+          },
+          systemRole: "test_custom_system_role",
           jsonValidation: "test_json_validation",
           includeChatLogContext: true,
         },
@@ -73,15 +79,18 @@ describe("store prompt template", () => {
                 title
                 clientId
                 userInputIsIntention
-                openAiPromptSteps {
+                aiPromptSteps {
                     prompts{
                       promptText
                       includeEssay
                       includeUserInput
                       promptRole
                     }
-                      targetGptModel
-                      customSystemRole
+                    targetAiServiceModel{
+                      serviceName
+                      model
+                    }
+                      systemRole
                       outputDataType
                     jsonValidation
                     includeChatLogContext
@@ -97,8 +106,9 @@ describe("store prompt template", () => {
       newPromptTemplate.title
     );
     expect(
-      response.body.data.storePrompt.openAiPromptSteps
-    ).to.deep.include.members(newPromptTemplate.openAiPromptSteps);
+      response.body.data.storePrompt.aiPromptSteps
+    ).to.deep.include.members(newPromptTemplate.aiPromptSteps);
+
     expect(response.body.data.storePrompt.clientId).to.equal(
       newPromptTemplate.clientId
     );
@@ -117,7 +127,7 @@ describe("store prompt template", () => {
             storePrompt(prompt: $prompt) {
                 _id
                 title
-                openAiPromptSteps {
+                aiPromptSteps {
                   prompts{
                     promptText
                     includeEssay
@@ -143,7 +153,7 @@ describe("store prompt template", () => {
     );
     expect(response.body.data.storePrompt.title).to.equal(newTitle);
     expect(response.body.data.storePrompt.userInputIsIntention).to.eql(false);
-    expect(response.body.data.storePrompt.openAiPromptSteps).to.eql([
+    expect(response.body.data.storePrompt.aiPromptSteps).to.eql([
       {
         prompts: [
           {

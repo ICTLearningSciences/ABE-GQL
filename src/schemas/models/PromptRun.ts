@@ -16,10 +16,15 @@ import {
 import { User } from "./User";
 import { PromptOutputDataType } from "./Prompt";
 import { PromptRoles } from "../types/types";
+import {
+  AiModelService,
+  AiModelServiceInputType,
+  AiModelServiceType,
+} from "./Config";
 
-export interface OpenAiReqRes {
-  openAiPromptStringify: string; //OpenAI.Chat.Completions.ChatCompletionCreateParams;
-  openAiResponseStringify: string; //OpenAI.Chat.Completions.ChatCompletion.Choice[];
+export interface AiReqRes {
+  aiServiceRequestParams: string; //OpenAI.Chat.Completions.ChatCompletionCreateParams;
+  aiServiceResponse: string; //OpenAI.Chat.Completions.ChatCompletion.Choice[];
 }
 
 export interface PromptConfiguration {
@@ -29,35 +34,35 @@ export interface PromptConfiguration {
   promptRole: PromptRoles;
 }
 
-export interface OpenAiPromptStep {
+export interface AiPromptStep {
   prompts: PromptConfiguration[];
   outputDataType: PromptOutputDataType;
-  targetGptModel: string;
-  customSystemRole?: string;
+  targetAiServiceModel: AiModelService;
+  systemRole?: string;
   includeChatLogContext?: boolean;
   jsonValidation?: string;
 }
 
 export interface PromptRun {
-  promptConfiguration: OpenAiPromptStep[];
+  promptConfiguration: AiPromptStep[];
   googleDocId: string;
   user: User["_id"];
-  openAiSteps: OpenAiReqRes[];
+  aiSteps: AiReqRes[];
 }
 
-export const OpenAiStepsType = new GraphQLObjectType({
-  name: "OpenAiStepsType",
+export const AiStepsType = new GraphQLObjectType({
+  name: "AiStepsType",
   fields: () => ({
-    openAiPromptStringify: { type: GraphQLString },
-    openAiResponseStringify: { type: GraphQLString },
+    aiServiceRequestParams: { type: GraphQLString },
+    aiServiceResponse: { type: GraphQLString },
   }),
 });
 
-export const OpenAiStepsInputType = new GraphQLInputObjectType({
-  name: "OpenAiStepsInputType",
+export const AiStepsInputType = new GraphQLInputObjectType({
+  name: "AiStepsInputType",
   fields: () => ({
-    openAiPromptStringify: { type: GraphQLString },
-    openAiResponseStringify: { type: GraphQLString },
+    aiServiceRequestParams: { type: GraphQLString },
+    aiServiceResponse: { type: GraphQLString },
   }),
 });
 
@@ -81,25 +86,25 @@ export const PromptConfigurationInputType = new GraphQLInputObjectType({
   }),
 });
 
-export const OpenAiPromptStepType = new GraphQLObjectType({
-  name: "OpenAiPromptStepType",
+export const AiPromptStepType = new GraphQLObjectType({
+  name: "AiPromptStepType",
   fields: () => ({
     prompts: { type: GraphQLList(PromptConfigurationType) },
     outputDataType: { type: GraphQLString },
-    targetGptModel: { type: GraphQLString },
-    customSystemRole: { type: GraphQLString },
+    targetAiServiceModel: { type: AiModelServiceType },
+    systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
   }),
 });
 
-export const OpenAiPromptStepInputType = new GraphQLInputObjectType({
-  name: "OpenAiPromptStepInputType",
+export const AiPromptStepInputType = new GraphQLInputObjectType({
+  name: "AiPromptStepInputType",
   fields: () => ({
     prompts: { type: GraphQLList(PromptConfigurationInputType) },
     outputDataType: { type: GraphQLString },
-    targetGptModel: { type: GraphQLString },
-    customSystemRole: { type: GraphQLString },
+    targetAiServiceModel: { type: AiModelServiceInputType },
+    systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
   }),
@@ -108,26 +113,26 @@ export const OpenAiPromptStepInputType = new GraphQLInputObjectType({
 export const PromptRunType = new GraphQLObjectType({
   name: "PromptRunType",
   fields: () => ({
-    openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepType) },
+    aiPromptSteps: { type: GraphQLList(AiPromptStepType) },
     googleDocId: { type: GraphQLString },
     user: { type: GraphQLID },
-    openAiSteps: { type: GraphQLList(OpenAiStepsType) },
+    aiSteps: { type: GraphQLList(AiStepsType) },
   }),
 });
 
 export const PromptRunInputType = new GraphQLInputObjectType({
   name: "PromptRunInputType",
   fields: () => ({
-    openAiPromptSteps: { type: GraphQLList(OpenAiPromptStepInputType) },
+    aiPromptSteps: { type: GraphQLList(AiPromptStepInputType) },
     googleDocId: { type: GraphQLString },
     user: { type: GraphQLID },
-    openAiSteps: { type: GraphQLList(OpenAiStepsInputType) },
+    aiSteps: { type: GraphQLList(AiStepsInputType) },
   }),
 });
 
 export const PromptRunSchema = new Schema(
   {
-    openAiPromptSteps: [
+    aiPromptSteps: [
       {
         prompts: [
           {
@@ -161,10 +166,10 @@ export const PromptRunSchema = new Schema(
     ],
     googleDocId: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    openAiSteps: [
+    aiSteps: [
       {
-        openAiPromptStringify: { type: String, required: true },
-        openAiResponseStringify: { type: String, required: true },
+        aiServiceRequestParams: { type: String, required: true },
+        aiServiceResponse: { type: String, required: true },
       },
     ],
   },

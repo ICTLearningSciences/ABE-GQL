@@ -4,10 +4,10 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import PromptRunModel, { OpenAiPromptStepInputType } from "../models/PromptRun";
+import PromptRunModel, { AiPromptStepInputType } from "../models/PromptRun";
 import { GraphQLNonNull, GraphQLString, GraphQLID, GraphQLList } from "graphql";
 import * as dotenv from "dotenv";
-import { OpenAiStepsInputType, PromptRunType } from "../models/PromptRun";
+import { AiStepsInputType, PromptRunType } from "../models/PromptRun";
 dotenv.config();
 
 export const storePromptRun = {
@@ -15,10 +15,10 @@ export const storePromptRun = {
   args: {
     googleDocId: { type: GraphQLNonNull(GraphQLString) },
     user: { type: GraphQLNonNull(GraphQLID) },
-    openAiPromptSteps: {
-      type: GraphQLNonNull(GraphQLList(OpenAiPromptStepInputType)),
+    aiPromptSteps: {
+      type: GraphQLNonNull(GraphQLList(AiPromptStepInputType)),
     },
-    openAiSteps: { type: GraphQLNonNull(GraphQLList(OpenAiStepsInputType)) },
+    aiSteps: { type: GraphQLNonNull(GraphQLList(AiStepsInputType)) },
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async resolve(_: any, args: any) {
@@ -26,8 +26,8 @@ export const storePromptRun = {
       const doc = await PromptRunModel.create({
         googleDocId: args.googleDocId,
         user: args.user,
-        openAiPromptSteps: args.openAiPromptSteps,
-        openAiSteps: args.openAiSteps,
+        aiPromptSteps: args.aiPromptSteps,
+        aiSteps: args.aiSteps,
       });
       return doc;
     } catch (e) {

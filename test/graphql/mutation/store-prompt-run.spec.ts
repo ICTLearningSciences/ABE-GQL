@@ -30,11 +30,11 @@ describe("store prompt run", () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation StorePromptRun($googleDocId: String!, $user: ID!, $openAiPromptSteps: [OpenAiPromptStepInputType]!, $openAiSteps: [OpenAiStepsInputType]!) {
-            storePromptRun(googleDocId: $googleDocId, user: $user, openAiPromptSteps: $openAiPromptSteps, openAiSteps: $openAiSteps) {
+        query: `mutation StorePromptRun($googleDocId: String!, $user: ID!, $aiPromptSteps: [AiPromptStepInputType]!, $aiSteps: [AiStepsInputType]!) {
+            storePromptRun(googleDocId: $googleDocId, user: $user, aiPromptSteps: $aiPromptSteps, aiSteps: $aiSteps) {
                 googleDocId
                 user
-                openAiPromptSteps {
+                aiPromptSteps {
                     prompts{
                       promptText
                       includeEssay
@@ -45,16 +45,16 @@ describe("store prompt run", () => {
                     jsonValidation
                     includeChatLogContext
                 }
-                openAiSteps {
-                    openAiPromptStringify
-                    openAiResponseStringify
+                aiSteps {
+                    aiServiceRequestParams
+                    aiServiceResponse
                 }
               }
          }`,
         variables: {
           googleDocId: "test_store_google_doc",
           user: "5ffdf1231ee2c62320b49e99",
-          openAiPromptSteps: [
+          aiPromptSteps: [
             {
               prompts: [
                 {
@@ -69,10 +69,10 @@ describe("store prompt run", () => {
               includeChatLogContext: true,
             },
           ],
-          openAiSteps: [
+          aiSteps: [
             {
-              openAiPromptStringify: "store_open_ai_prompt_stringify_test",
-              openAiResponseStringify: "store_open_ai_response_stringify_test",
+              aiServiceRequestParams: "store_ai_service_stringify_test",
+              aiServiceResponse: "store_ai_service_response_stringify_test",
             },
           ],
         },
@@ -81,7 +81,7 @@ describe("store prompt run", () => {
     expect(response.body.data.storePromptRun).to.eql({
       googleDocId: "test_store_google_doc",
       user: "5ffdf1231ee2c62320b49e99",
-      openAiPromptSteps: [
+      aiPromptSteps: [
         {
           prompts: [
             {
@@ -96,10 +96,10 @@ describe("store prompt run", () => {
           includeChatLogContext: true,
         },
       ],
-      openAiSteps: [
+      aiSteps: [
         {
-          openAiPromptStringify: "store_open_ai_prompt_stringify_test",
-          openAiResponseStringify: "store_open_ai_response_stringify_test",
+          aiServiceRequestParams: "store_ai_service_stringify_test",
+          aiServiceResponse: "store_ai_service_response_stringify_test",
         },
       ],
     });

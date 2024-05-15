@@ -10,7 +10,10 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import ConfigModel, { Config } from "../../../src/schemas/models/Config";
+import ConfigModel, {
+  AiServiceNames,
+  Config,
+} from "../../../src/schemas/models/Config";
 
 describe("config", () => {
   let app: Express;
@@ -32,19 +35,19 @@ describe("config", () => {
       .send({
         query: `query {
           fetchConfig {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
         }`,
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchConfig).to.eql({
-      openaiSystemPrompt: [],
+      aiSystemPrompt: [],
     });
   });
 
   it(`serves config from Settings`, async () => {
     const config: Config = {
-      openaiSystemPrompt: ["Hello, world!"],
+      aiSystemPrompt: ["Hello, world!"],
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -52,7 +55,7 @@ describe("config", () => {
       .send({
         query: `query {
           fetchConfig {
-            openaiSystemPrompt
+            aiSystemPrompt
           }
         }`,
       });
@@ -62,9 +65,13 @@ describe("config", () => {
 
   it("serves config from Settings with subdomain", async () => {
     const config: Config = {
-      openaiSystemPrompt: ["Hello, world!"],
+      aiSystemPrompt: ["Hello, world!"],
       displayedGoals: ["goal1", "goal2"],
       displayedActivities: ["activity1", "activity2"],
+      overrideAiModel: {
+        serviceName: AiServiceNames.AZURE,
+        model: "model",
+      },
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -73,17 +80,35 @@ describe("config", () => {
       .send({
         query: `query {
           fetchConfig {
-            openaiSystemPrompt
+            aiSystemPrompt
             displayedGoals
             displayedActivities
+            overrideAiModel{
+              serviceName
+              model
+            }
+            availableAiServiceModels{
+              serviceName
+              models
+            }
           }
         }`,
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchConfig).to.eql({
       ...config,
-      openaiSystemPrompt: ["army system prompt"],
+      aiSystemPrompt: ["army system prompt"],
       displayedGoals: ["army goal 1"],
+      overrideAiModel: {
+        serviceName: AiServiceNames.AZURE,
+        model: "model",
+      },
+      availableAiServiceModels: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          models: ["gpt-3.5-turbo"],
+        },
+      ],
     });
   });
 });
