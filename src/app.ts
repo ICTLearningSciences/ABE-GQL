@@ -11,6 +11,7 @@ import cors from "cors";
 import publicSchema from "./schemas/publicSchema";
 import * as dotenv from "dotenv";
 import RefreshTokenModel from "./schemas/models/RefreshToken";
+import jwt from "jsonwebtoken";
 dotenv.config();
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN
@@ -107,7 +108,9 @@ function getSubdomainFromRequest(req: Request): string {
   }
 }
 
-async function getUserFromRequest(req: Request): Promise<User | undefined> {
+async function getUserRoleFromRequest(
+  req: Request
+): Promise<string | undefined> {
   try {
     const splitAuthHeader = req.headers.authorization?.split(" ");
     if (
@@ -115,8 +118,8 @@ async function getUserFromRequest(req: Request): Promise<User | undefined> {
       splitAuthHeader[0].toLowerCase() === "bearer"
     ) {
       const token = req.headers.authorization?.split(" ")[1];
-      const { user } = await getRefreshToken(token);
-      return user;
+      const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET);
+      return decodedJwt.role;
     }
     return undefined;
   } catch (err) {
@@ -158,7 +161,7 @@ export function createApp(): Express {
           req: req,
           res: res,
           subdomain: getSubdomainFromRequest(req),
-          user: await getUserFromRequest(req),
+          userRole: await getUserRoleFromRequest(req),
         },
       };
     })

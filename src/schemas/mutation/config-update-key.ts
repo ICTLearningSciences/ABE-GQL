@@ -23,11 +23,11 @@ export const updateConfigKey = {
       value: any;
     },
     context: {
-      user?: User;
+      userRole?: UserRole;
       subdomain: string;
     }
   ): Promise<Config> => {
-    if (context.user?.userRole !== UserRole.ADMIN) {
+    if (context.userRole !== UserRole.ADMIN) {
       throw new Error("you do not have permission to edit config");
     }
     await ConfigModel.updateConfigByKey(

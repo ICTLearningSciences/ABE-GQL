@@ -12,6 +12,7 @@ import request from "supertest";
 import { getToken } from "../../helpers";
 import OrganizationModel from "../../../src/schemas/models/Organization";
 import ConfigModel from "../../../src/schemas/models/Config";
+import { UserRole } from "../../../src/schemas/models/User";
 
 describe("config update by key", () => {
   let app: Express;
@@ -28,7 +29,7 @@ describe("config update by key", () => {
   });
 
   it("does not accept USER", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49e99"); //user with role "USER"
+    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER); //user with role "USER"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
@@ -61,7 +62,7 @@ describe("config update by key", () => {
     expect(globalConfigBeforeUpdate.aiSystemPrompt).to.eql([]);
     expect(orgSystemPromptsBeforeUpdate).to.eql(["army system prompt"]);
 
-    const token = await getToken("5ffdf1231ee2c62320b49a99"); //user with role "ADMIN"
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //user with role "ADMIN"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)

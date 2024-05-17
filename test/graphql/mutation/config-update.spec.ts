@@ -10,6 +10,7 @@ import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/models/User";
 
 describe("configUpdate", () => {
   let app: Express;
@@ -40,7 +41,7 @@ describe("configUpdate", () => {
   });
 
   it("does not accept USER", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49e99"); //user with role "USER"
+    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER); //user with role "USER"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
@@ -59,7 +60,7 @@ describe("configUpdate", () => {
   });
 
   it("ADMIN can update config", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49a99"); //mentor with role "Admin"
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //mentor with role "Admin"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)

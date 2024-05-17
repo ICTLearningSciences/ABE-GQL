@@ -29,9 +29,9 @@ export const updateConfig = {
   resolve: async (
     _root: GraphQLObjectType,
     args: { config: Config },
-    context: { user?: User; subdomain: string }
+    context: { userRole: string; subdomain: string }
   ): Promise<Config> => {
-    if (context.user?.userRole !== UserRole.ADMIN) {
+    if (context.userRole !== UserRole.ADMIN) {
       throw new Error("you do not have permission to edit config");
     }
     // TODO: if this is every used, update to accomodate for subdomain
