@@ -50,6 +50,33 @@ export const GoalActivitiesInputType = new GraphQLInputObjectType({
   },
 });
 
+export interface ColorThemeConfig {
+  headerColor: string;
+  headerButtonsColor: string;
+  chatSystemBubbleColor: string;
+  chatUserBubbleColor: string;
+}
+
+export const ColorThemeConfigType = new GraphQLObjectType({
+  name: "ColorThemeConfig",
+  fields: {
+    headerColor: { type: GraphQLString },
+    headerButtonsColor: { type: GraphQLString },
+    chatSystemBubbleColor: { type: GraphQLString },
+    chatUserBubbleColor: { type: GraphQLString },
+  },
+});
+
+export const ColorThemeConfigInputType = new GraphQLInputObjectType({
+  name: "ColorThemeConfigInput",
+  fields: {
+    headerColor: { type: GraphQLString },
+    headerButtonsColor: { type: GraphQLString },
+    chatSystemBubbleColor: { type: GraphQLString },
+    chatUserBubbleColor: { type: GraphQLString },
+  },
+});
+
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoalActivities?: IGoalActivities[];
@@ -57,12 +84,14 @@ export interface Config {
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
   availableAiServiceModels?: Record<AiServiceNames, string[]>;
+  colorTheme?: Partial<ColorThemeConfig>;
 }
 
 type ConfigKey = keyof Config;
 export const ConfigKeys: ConfigKey[] = [
   "aiSystemPrompt",
   "displayedGoalActivities",
+  "colorTheme",
   "exampleGoogleDocs",
   "overrideAiModel",
   "defaultAiModel",
@@ -77,6 +106,7 @@ export function getDefaultConfig(): Config {
     overrideAiModel: undefined,
     defaultAiModel: undefined,
     availableAiServiceModels: undefined,
+    colorTheme: {},
   };
 }
 
@@ -125,6 +155,7 @@ export const ConfigType = new GraphQLObjectType({
     availableAiServiceModels: {
       type: GraphQLList(AvailabeAiServiceModelsType),
     },
+    colorTheme: { type: ColorThemeConfigType },
   }),
 });
 

@@ -72,6 +72,9 @@ describe("config", () => {
           activities: ["activity 1"],
         },
       ],
+      colorTheme: {
+        headerColor: "#000000",
+      },
       exampleGoogleDocs: ["hello"],
       overrideAiModel: {
         serviceName: AiServiceNames.AZURE,
@@ -89,6 +92,9 @@ describe("config", () => {
             displayedGoalActivities{
               goal
               activities
+            }
+            colorTheme{
+              headerColor
             }
             exampleGoogleDocs
             overrideAiModel{
@@ -112,6 +118,9 @@ describe("config", () => {
           activities: ["activity 1"],
         },
       ],
+      colorTheme: {
+        headerColor: "#000000",
+      },
       exampleGoogleDocs: ["hello"],
       overrideAiModel: {
         serviceName: AiServiceNames.AZURE,
