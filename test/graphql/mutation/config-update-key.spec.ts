@@ -10,6 +10,8 @@ import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
+import OrganizationModel from "../../../src/schemas/models/Organization";
+import ConfigModel from "../../../src/schemas/models/Config";
 
 describe("config update by key", () => {
   let app: Express;
@@ -47,11 +49,23 @@ describe("config update by key", () => {
     );
   });
 
-  it("ADMIN can update config", async () => {
+  it("updates subdomain config, not global", async () => {
+    const globalConfigBeforeUpdate = await ConfigModel.getConfig();
+    const orgBeforeUpdate = await OrganizationModel.findOne({
+      subdomain: "army",
+    });
+    const orgSystemPromptsBeforeUpdate = orgBeforeUpdate?.customConfig.find(
+      (c) => c.key === "aiSystemPrompt"
+    )?.value;
+
+    expect(globalConfigBeforeUpdate.aiSystemPrompt).to.eql([]);
+    expect(orgSystemPromptsBeforeUpdate).to.eql(["army system prompt"]);
+
     const token = await getToken("5ffdf1231ee2c62320b49a99"); //user with role "ADMIN"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
+      .set("origin", "https://army.abewriting.org")
       .send({
         query: `mutation ConfigUpdateByKey($key: String!, $value: AnythingScalarType!) {
             configUpdateByKey(key: $key, value: $value) {
@@ -67,5 +81,16 @@ describe("config update by key", () => {
     expect(response.body.data.configUpdateByKey).to.eql({
       aiSystemPrompt: ["Hello, world!"],
     });
+
+    const globalConfigAfterUpdate = await ConfigModel.getConfig();
+    const orgAfterUpdate = await OrganizationModel.findOne({
+      subdomain: "army",
+    });
+    const orgSystemPromptsAfterUpdate = orgAfterUpdate?.customConfig.find(
+      (c) => c.key === "aiSystemPrompt"
+    )?.value;
+
+    expect(globalConfigAfterUpdate.aiSystemPrompt).to.eql([]);
+    expect(orgSystemPromptsAfterUpdate).to.eql(["Hello, world!"]);
   });
 });

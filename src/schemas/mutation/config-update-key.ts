@@ -22,17 +22,20 @@ export const updateConfigKey = {
       // eslint-disable-next-line   @typescript-eslint/no-explicit-any
       value: any;
     },
-    context: { user?: User }
+    context: {
+      user?: User;
+      subdomain: string;
+    }
   ): Promise<Config> => {
     if (context.user?.userRole !== UserRole.ADMIN) {
       throw new Error("you do not have permission to edit config");
     }
-    await ConfigModel.updateOne(
-      { key: args.key },
-      { value: args.value },
-      { upsert: true }
+    await ConfigModel.updateConfigByKey(
+      context.subdomain,
+      args.key,
+      args.value
     );
-    return await ConfigModel.getConfig();
+    return await ConfigModel.getConfig({ subdomain: context.subdomain });
   },
 };
 

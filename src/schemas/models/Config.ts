@@ -152,6 +152,41 @@ ConfigSchema.statics.getConfig = async function (args?: {
   return globalConfig;
 };
 
+ConfigSchema.statics.updateConfigByKey = async function (
+  subdomain: string,
+  key: string,
+  value: any // eslint-disable-line  @typescript-eslint/no-explicit-any
+): Promise<void> {
+  const org = subdomain ? await OrgModel.findOne({ subdomain }) : undefined;
+  if (!org) {
+    // update global config
+    await this.findOneAndUpdate(
+      { key },
+      {
+        $set: { value },
+      },
+      {
+        upsert: true,
+      }
+    );
+  } else {
+    // update org config
+    const orgConfig = (org.customConfig.toObject() as ConfigEntry[]) || [];
+    const updatedConfig = orgConfig.map((entry) => {
+      if (entry.key === key) {
+        return { key, value };
+      }
+      return entry;
+    });
+    await OrgModel.updateOne(
+      { subdomain },
+      {
+        $set: { customConfig: updatedConfig },
+      }
+    );
+  }
+};
+
 ConfigSchema.statics.saveConfig = async function (
   config: Partial<Config>
 ): Promise<void> {
@@ -176,6 +211,11 @@ export interface ConfigModel extends Model<ConfigDoc> {
     defaults?: Partial<Config>;
   }): Promise<Config>;
   saveConfig(config: Partial<Config>): Promise<void>;
+  updateConfigByKey(
+    subdomain: string,
+    key: string,
+    value: any // eslint-disable-line  @typescript-eslint/no-explicit-any
+  ): Promise<void>;
 }
 
 export default mongoose.model<ConfigDoc, ConfigModel>("Config", ConfigSchema);
