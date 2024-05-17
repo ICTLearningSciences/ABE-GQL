@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from "graphql";
 import AnythingScalarType from "../types/anything-scalar-type";
 import ConfigModel, { Config, ConfigType } from "../models/Config";
+import { User, UserRole } from "../models/User";
 
 export const updateConfigKey = {
   type: ConfigType,
@@ -20,12 +21,12 @@ export const updateConfigKey = {
       key: string;
       // eslint-disable-next-line   @typescript-eslint/no-explicit-any
       value: any;
-    }
-    // context: { user: User }
+    },
+    context: { user?: User }
   ): Promise<Config> => {
-    // if (requiresAdmin && context.user.userRole !== UserRole.ADMIN) {
-    //   throw new Error('you do not have permission to edit config');
-    // }
+    if (context.user?.userRole !== UserRole.ADMIN) {
+      throw new Error("you do not have permission to edit config");
+    }
     await ConfigModel.updateOne(
       { key: args.key },
       { value: args.value },

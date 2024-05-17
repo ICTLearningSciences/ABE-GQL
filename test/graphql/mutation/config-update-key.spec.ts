@@ -9,6 +9,7 @@ import { expect } from "chai";
 import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import { getToken } from "../../helpers";
 
 describe("config update by key", () => {
   let app: Express;
@@ -24,9 +25,33 @@ describe("config update by key", () => {
     await mongoUnit.drop();
   });
 
-  it("can update config by key", async () => {
+  it("does not accept USER", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49e99"); //user with role "USER"
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ConfigUpdateByKey($key: String!, $value: AnythingScalarType!) {
+            configUpdateByKey(key: $key, value: $value) {
+            aiSystemPrompt
+          }
+      }`,
+        variables: {
+          key: "aiSystemPrompt",
+          value: ["Hello, world!"],
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.errors[0].message).to.equal(
+      "you do not have permission to edit config"
+    );
+  });
+
+  it("ADMIN can update config", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99"); //user with role "ADMIN"
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation ConfigUpdateByKey($key: String!, $value: AnythingScalarType!) {
             configUpdateByKey(key: $key, value: $value) {

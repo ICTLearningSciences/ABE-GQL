@@ -12,6 +12,7 @@ import {
   GraphQLString,
 } from "graphql";
 import ConfigModel, { Config, ConfigType } from "../models/Config";
+import { User, UserRole } from "../models/User";
 
 export const ConfigUpdateInputType = new GraphQLInputObjectType({
   name: "ConfigUpdateInputType",
@@ -27,11 +28,12 @@ export const updateConfig = {
   },
   resolve: async (
     _root: GraphQLObjectType,
-    args: { config: Config }
+    args: { config: Config },
+    context: { user?: User }
   ): Promise<Config> => {
-    // if (context.user.userRole !== UserRole.ADMIN) {
-    //   throw new Error('you do not have permission to edit config');
-    // }
+    if (context.user?.userRole !== UserRole.ADMIN) {
+      throw new Error("you do not have permission to edit config");
+    }
     await ConfigModel.saveConfig(args.config);
     return await ConfigModel.getConfig();
   },

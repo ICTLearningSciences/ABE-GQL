@@ -403,6 +403,14 @@ module.exports = {
       userRole: "USER",
       lastLoginAt: "2000-10-12T20:49:41.599+00:00",
     },
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320b49a99"),
+      googleId: "1234",
+      name: "John Admin Doe",
+      email: "johnadmindoe@gmail.com",
+      userRole: "ADMIN",
+      lastLoginAt: "2000-10-12T20:49:41.599+00:00",
+    },
   ],
   doctimelines: [
     {
