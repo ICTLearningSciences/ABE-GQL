@@ -64,7 +64,6 @@ describe("update user activity state", () => {
           },
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.addOrUpdateActivity).to.eql({
       _id: "5ffdf1231ee2c62320b49e9f",

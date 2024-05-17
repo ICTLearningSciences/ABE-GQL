@@ -10,6 +10,7 @@ import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/models/User";
 
 describe("configUpdate", () => {
   let app: Express;
@@ -39,29 +40,8 @@ describe("configUpdate", () => {
     expect(response.status).to.not.equal(200);
   });
 
-  it("can update config", async () => {
-    const response = await request(app)
-      .post("/graphql")
-      .send({
-        query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
-          configUpdate(config: $config) {
-            aiSystemPrompt
-          }
-      }`,
-        variables: {
-          config: {
-            aiSystemPrompt: ["Hello, world!"],
-          },
-        },
-      });
-    expect(response.status).to.equal(200);
-    expect(response.body.data.configUpdate).to.eql({
-      aiSystemPrompt: ["Hello, world!"],
-    });
-  });
-
-  it.skip("does not accept USER", async () => {
-    const token = getToken("5ffdf41a1ee2c62320b49ea2"); //mentor with role "User"
+  it("does not accept USER", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER); //user with role "USER"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
@@ -79,31 +59,8 @@ describe("configUpdate", () => {
     );
   });
 
-  it.skip("CONTENT_MANAGER can update config", async () => {
-    const token = getToken("5ffdf41a1ee2c62320b49ea5"); //mentor with role "Content Manager"
-    let response = await request(app)
-      .post("/graphql")
-      .set("Authorization", `bearer ${token}`)
-      .send({
-        query: `mutation ConfigUpdate($config: ConfigUpdateInputType!) {
-          configUpdate(config: $config) {
-            aiSystemPrompt
-          }
-      }`,
-        variables: {
-          config: {
-            aiSystemPrompt: ["Hello, world!"],
-          },
-        },
-      });
-    expect(response.status).to.equal(200);
-    expect(response.body.data.configUpdate).to.eql({
-      aiSystemPrompt: ["Hello, world!"],
-    });
-  });
-
-  it.skip("ADMIN can update config", async () => {
-    const token = getToken("5ffdf41a1ee2c62320b49ea1"); //mentor with role "Admin"
+  it("ADMIN can update config", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //mentor with role "Admin"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
@@ -115,17 +72,13 @@ describe("configUpdate", () => {
       }`,
         variables: {
           config: {
-            featuredMentors: ["5ffdf41a1ee2c62111111119"],
-            featuredMentorPanels: ["5ffdf41a1ee2c62111111111"],
+            aiSystemPrompt: ["new prompt"],
           },
         },
       });
     expect(response.status).to.equal(200);
-    expect(response.body.data.me.configUpdate).to.eql({
-      activeMentors: [],
-      featuredMentorPanels: ["5ffdf41a1ee2c62111111111"],
-      featuredMentors: ["5ffdf41a1ee2c62111111119"],
-      mentorsDefault: [],
+    expect(response.body.data.configUpdate).to.eql({
+      aiSystemPrompt: ["new prompt"],
     });
   });
 });

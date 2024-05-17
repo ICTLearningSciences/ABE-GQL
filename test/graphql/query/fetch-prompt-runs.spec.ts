@@ -11,7 +11,6 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { getToken } from "../../helpers";
 
 describe("fetch prompt runs", () => {
   let app: Express;

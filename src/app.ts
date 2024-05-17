@@ -10,6 +10,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import publicSchema from "./schemas/publicSchema";
 import * as dotenv from "dotenv";
+import RefreshTokenModel from "./schemas/models/RefreshToken";
+import jwt from "jsonwebtoken";
 dotenv.config();
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN
@@ -23,6 +25,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 //START MIDDLEWARE
 import mongoose from "mongoose";
 import privateSchema from "./schemas/privateSchema";
+import { User } from "./schemas/models/User";
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 const authorization = (req: any, res: any, next: any) => {
@@ -105,6 +108,35 @@ function getSubdomainFromRequest(req: Request): string {
   }
 }
 
+async function getUserRoleFromRequest(
+  req: Request
+): Promise<string | undefined> {
+  try {
+    const splitAuthHeader = req.headers.authorization?.split(" ");
+    if (
+      splitAuthHeader.length === 2 &&
+      splitAuthHeader[0].toLowerCase() === "bearer"
+    ) {
+      const token = req.headers.authorization?.split(" ")[1];
+      const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET);
+      return decodedJwt.role;
+    }
+    return undefined;
+  } catch (err) {
+    return undefined;
+  }
+}
+
+async function getRefreshToken(token: string) {
+  const refreshToken = await RefreshTokenModel.findOne({ token }).populate(
+    "user"
+  );
+  if (!refreshToken || !refreshToken.isActive) {
+    throw "invalid token";
+  }
+  return refreshToken;
+}
+
 export function createApp(): Express {
   const app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -121,7 +153,7 @@ export function createApp(): Express {
 
   app.use(
     "/graphql",
-    graphqlHTTP((req: Request, res) => {
+    graphqlHTTP(async (req: Request, res) => {
       return {
         schema: publicSchema,
         graphiql: true,
@@ -129,6 +161,7 @@ export function createApp(): Express {
           req: req,
           res: res,
           subdomain: getSubdomainFromRequest(req),
+          userRole: await getUserRoleFromRequest(req),
         },
       };
     })

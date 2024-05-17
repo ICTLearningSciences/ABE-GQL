@@ -10,6 +10,8 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import request from "supertest";
 import requireEnv from "../src/utils/require-env";
+import RefreshTokenModel from "../src/schemas/models/RefreshToken";
+import { UserRole } from "../src/schemas/models/User";
 
 export function fixturePath(p: string): string {
   return path.join(__dirname, "fixtures", p);
@@ -22,13 +24,17 @@ export function accessTokenDuration(): number {
     : 60 * 60 * 24 * 90;
 }
 
-export function getToken(userId: string, expiresIn?: number): string {
+export async function getToken(
+  userId: string,
+  userRole: UserRole,
+  expiresIn?: number
+): Promise<string> {
   if (!expiresIn) {
     expiresIn = accessTokenDuration();
   }
   const expirationDate = new Date(Date.now() + expiresIn * 1000);
   const accessToken = jwt.sign(
-    { id: userId, expirationDate },
+    { id: userId, expirationDate, role: userRole },
     requireEnv("JWT_SECRET"),
     { expiresIn: expirationDate.getTime() - new Date().getTime() }
   );
@@ -49,7 +55,7 @@ export interface AuthGqlArgs {
 
 const USER_ID_DEFAULT = "5f0cfea3395d762ca65405d3";
 export async function authGql(args: AuthGqlArgs): Promise<request.Response> {
-  const token = getToken(args.userId || USER_ID_DEFAULT);
+  const token = await getToken(args.userId || USER_ID_DEFAULT, UserRole.ADMIN);
   const response = await request(args.app)
     .post("/graphql")
     .set("Authorization", `bearer ${token}`)
