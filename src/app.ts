@@ -10,7 +10,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import publicSchema from "./schemas/publicSchema";
 import * as dotenv from "dotenv";
-import RefreshTokenModel from "./schemas/models/RefreshToken";
 import jwt from "jsonwebtoken";
 dotenv.config();
 
@@ -25,7 +24,6 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 //START MIDDLEWARE
 import mongoose from "mongoose";
 import privateSchema from "./schemas/privateSchema";
-import { User } from "./schemas/models/User";
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 const authorization = (req: any, res: any, next: any) => {
@@ -118,6 +116,7 @@ async function getUserRoleFromRequest(
       splitAuthHeader[0].toLowerCase() === "bearer"
     ) {
       const token = req.headers.authorization?.split(" ")[1];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET);
       return decodedJwt.role;
     }
@@ -125,16 +124,6 @@ async function getUserRoleFromRequest(
   } catch (err) {
     return undefined;
   }
-}
-
-async function getRefreshToken(token: string) {
-  const refreshToken = await RefreshTokenModel.findOne({ token }).populate(
-    "user"
-  );
-  if (!refreshToken || !refreshToken.isActive) {
-    throw "invalid token";
-  }
-  return refreshToken;
 }
 
 export function createApp(): Express {

@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from "graphql";
 import AnythingScalarType from "../types/anything-scalar-type";
 import ConfigModel, { Config, ConfigType } from "../models/Config";
-import { User, UserRole } from "../models/User";
+import { UserRole } from "../models/User";
 
 export const updateConfigKey = {
   type: ConfigType,

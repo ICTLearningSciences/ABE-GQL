@@ -29,10 +29,31 @@ export interface AiModelService {
   model: string;
 }
 
+interface IGoalActivities {
+  goal: string;
+  activities: string[];
+}
+
+export const GoalActivitiesType = new GraphQLObjectType({
+  name: "GoalActivitiesType",
+  fields: {
+    goal: { type: GraphQLString },
+    activities: { type: GraphQLList(GraphQLString) },
+  },
+});
+
+export const GoalActivitiesInputType = new GraphQLInputObjectType({
+  name: "GoalActivitiesInputType",
+  fields: {
+    goal: { type: GraphQLString },
+    activities: { type: GraphQLList(GraphQLString) },
+  },
+});
+
 export interface Config {
   aiSystemPrompt: string[];
-  displayedGoals?: string[];
-  displayedActivities?: string[];
+  displayedGoalActivities?: IGoalActivities[];
+  exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
   availableAiServiceModels?: Record<AiServiceNames, string[]>;
@@ -41,8 +62,8 @@ export interface Config {
 type ConfigKey = keyof Config;
 export const ConfigKeys: ConfigKey[] = [
   "aiSystemPrompt",
-  "displayedGoals",
-  "displayedActivities",
+  "displayedGoalActivities",
+  "exampleGoogleDocs",
   "overrideAiModel",
   "defaultAiModel",
   "availableAiServiceModels",
@@ -51,8 +72,8 @@ export const ConfigKeys: ConfigKey[] = [
 export function getDefaultConfig(): Config {
   return {
     aiSystemPrompt: [],
-    displayedGoals: undefined,
-    displayedActivities: undefined,
+    displayedGoalActivities: [],
+    exampleGoogleDocs: [],
     overrideAiModel: undefined,
     defaultAiModel: undefined,
     availableAiServiceModels: undefined,
@@ -95,8 +116,10 @@ export const ConfigType = new GraphQLObjectType({
   name: "Config",
   fields: () => ({
     aiSystemPrompt: { type: GraphQLList(GraphQLString) },
-    displayedGoals: { type: GraphQLList(GraphQLString) },
-    displayedActivities: { type: GraphQLList(GraphQLString) },
+    displayedGoalActivities: {
+      type: GraphQLList(GoalActivitiesType),
+    },
+    exampleGoogleDocs: { type: GraphQLList(GraphQLString) },
     overrideAiModel: { type: AiModelServiceType },
     defaultAiModel: { type: AiModelServiceType },
     availableAiServiceModels: {

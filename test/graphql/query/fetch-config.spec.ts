@@ -66,8 +66,13 @@ describe("config", () => {
   it("serves config from Settings with subdomain", async () => {
     const config: Config = {
       aiSystemPrompt: ["Hello, world!"],
-      displayedGoals: ["goal1", "goal2"],
-      displayedActivities: ["activity1", "activity2"],
+      displayedGoalActivities: [
+        {
+          goal: "goal 1",
+          activities: ["activity 1"],
+        },
+      ],
+      exampleGoogleDocs: ["hello"],
       overrideAiModel: {
         serviceName: AiServiceNames.AZURE,
         model: "model",
@@ -81,8 +86,11 @@ describe("config", () => {
         query: `query {
           fetchConfig {
             aiSystemPrompt
-            displayedGoals
-            displayedActivities
+            displayedGoalActivities{
+              goal
+              activities
+            }
+            exampleGoogleDocs
             overrideAiModel{
               serviceName
               model
@@ -98,7 +106,13 @@ describe("config", () => {
     expect(response.body.data.fetchConfig).to.eql({
       ...config,
       aiSystemPrompt: ["army system prompt"],
-      displayedGoals: ["army goal 1"],
+      displayedGoalActivities: [
+        {
+          goal: "goal 1",
+          activities: ["activity 1"],
+        },
+      ],
+      exampleGoogleDocs: ["hello"],
       overrideAiModel: {
         serviceName: AiServiceNames.AZURE,
         model: "model",
