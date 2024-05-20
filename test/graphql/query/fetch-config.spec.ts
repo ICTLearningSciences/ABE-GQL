@@ -69,7 +69,12 @@ describe("config", () => {
       displayedGoalActivities: [
         {
           goal: "goal 1",
-          activities: ["activity 1"],
+          activities: [
+            {
+              activity: "activity 1",
+              disabled: false,
+            },
+          ],
         },
       ],
       colorTheme: {
@@ -80,6 +85,7 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
+      headerTitle: "header title",
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -91,7 +97,10 @@ describe("config", () => {
             aiSystemPrompt
             displayedGoalActivities{
               goal
-              activities
+              activities{
+                activity
+                disabled
+              }
             }
             colorTheme{
               headerColor
@@ -105,6 +114,7 @@ describe("config", () => {
               serviceName
               models
             }
+            headerTitle
           }
         }`,
       });
@@ -115,7 +125,12 @@ describe("config", () => {
       displayedGoalActivities: [
         {
           goal: "goal 1",
-          activities: ["activity 1"],
+          activities: [
+            {
+              activity: "activity 1",
+              disabled: false,
+            },
+          ],
         },
       ],
       colorTheme: {
@@ -132,6 +147,7 @@ describe("config", () => {
           models: ["gpt-3.5-turbo"],
         },
       ],
+      headerTitle: "header title",
     });
   });
 });

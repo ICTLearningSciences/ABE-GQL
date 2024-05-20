@@ -87,8 +87,6 @@ module.exports = {
   ],
   docgoals: [
     {
-      activities: [new ObjectId("5ffdf1231ee2c62320b49e9f")],
-      activityOrder: [new ObjectId("5ffdf1231ee2c62320b49e9f")],
       newDocRecommend: true,
       title: "docgoal_title_test",
       description: "docgoal_description_test",

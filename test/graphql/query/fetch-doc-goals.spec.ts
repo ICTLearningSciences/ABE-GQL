@@ -33,8 +33,6 @@ describe("fetch doc goals", () => {
           fetchDocGoals {
             edges {
                 node{
-                    activities
-                    activityOrder
                     newDocRecommend
                     title
                     description
@@ -49,8 +47,6 @@ describe("fetch doc goals", () => {
     expect(response.body.data.fetchDocGoals.edges).to.deep.include.members([
       {
         node: {
-          activities: ["5ffdf1231ee2c62320b49e9f"],
-          activityOrder: ["5ffdf1231ee2c62320b49e9f"],
           newDocRecommend: true,
           title: "docgoal_title_test",
           description: "docgoal_description_test",

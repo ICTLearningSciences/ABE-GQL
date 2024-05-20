@@ -10,7 +10,6 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLBoolean,
-  GraphQLList,
 } from "graphql";
 import {
   PaginatedResolveResult,
@@ -21,8 +20,6 @@ import {
 import { DisplayIcons } from "../../constants";
 
 export interface DocGoal extends Document {
-  activities: string[];
-  activityOrder: string[];
   title: string;
   description: string;
   displayIcon: DisplayIcons;
@@ -34,10 +31,6 @@ export const DocGoalType = new GraphQLObjectType({
   name: "DocGoalType",
   fields: () => ({
     _id: { type: GraphQLID },
-    activities: {
-      type: GraphQLList(GraphQLID),
-    },
-    activityOrder: { type: GraphQLList(GraphQLID) },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
@@ -48,12 +41,6 @@ export const DocGoalType = new GraphQLObjectType({
 
 export const DocGoalSchema = new Schema<DocGoal, DocGoalModel>(
   {
-    activities: [
-      { type: mongoose.Types.ObjectId, ref: "Activity", default: [] },
-    ],
-    activityOrder: [
-      { type: mongoose.Types.ObjectId, ref: "Activity", default: [] },
-    ],
     title: { type: String, required: true },
     description: { type: String },
     displayIcon: { type: String, enum: DisplayIcons },

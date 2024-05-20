@@ -10,6 +10,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLInputObjectType,
+  GraphQLBoolean,
 } from "graphql";
 import OrgModel from "./Organization";
 
@@ -29,16 +30,37 @@ export interface AiModelService {
   model: string;
 }
 
+interface IActivityConfig {
+  activity: string;
+  disabled: boolean;
+}
+
 interface IGoalActivities {
   goal: string;
-  activities: string[];
+  activities: IActivityConfig[];
 }
+
+export const ActivityConfigType = new GraphQLObjectType({
+  name: "ActivityConfigType",
+  fields: {
+    activity: { type: GraphQLString },
+    disabled: { type: GraphQLBoolean },
+  },
+});
+
+export const ActivityConfigInputType = new GraphQLInputObjectType({
+  name: "ActivityConfigInputType",
+  fields: {
+    activity: { type: GraphQLString },
+    disabled: { type: GraphQLBoolean },
+  },
+});
 
 export const GoalActivitiesType = new GraphQLObjectType({
   name: "GoalActivitiesType",
   fields: {
     goal: { type: GraphQLString },
-    activities: { type: GraphQLList(GraphQLString) },
+    activities: { type: GraphQLList(ActivityConfigType) },
   },
 });
 
@@ -46,7 +68,7 @@ export const GoalActivitiesInputType = new GraphQLInputObjectType({
   name: "GoalActivitiesInputType",
   fields: {
     goal: { type: GraphQLString },
-    activities: { type: GraphQLList(GraphQLString) },
+    activities: { type: GraphQLList(ActivityConfigInputType) },
   },
 });
 
@@ -54,7 +76,9 @@ export interface ColorThemeConfig {
   headerColor: string;
   headerButtonsColor: string;
   chatSystemBubbleColor: string;
+  chatSystemTextColor: string;
   chatUserBubbleColor: string;
+  chatUserTextColor: string;
 }
 
 export const ColorThemeConfigType = new GraphQLObjectType({
@@ -63,7 +87,9 @@ export const ColorThemeConfigType = new GraphQLObjectType({
     headerColor: { type: GraphQLString },
     headerButtonsColor: { type: GraphQLString },
     chatSystemBubbleColor: { type: GraphQLString },
+    chatSystemTextColor: { type: GraphQLString },
     chatUserBubbleColor: { type: GraphQLString },
+    chatUserTextColor: { type: GraphQLString },
   },
 });
 
@@ -73,7 +99,9 @@ export const ColorThemeConfigInputType = new GraphQLInputObjectType({
     headerColor: { type: GraphQLString },
     headerButtonsColor: { type: GraphQLString },
     chatSystemBubbleColor: { type: GraphQLString },
+    chatSystemTextColor: { type: GraphQLString },
     chatUserBubbleColor: { type: GraphQLString },
+    chatUserTextColor: { type: GraphQLString },
   },
 });
 
@@ -85,6 +113,7 @@ export interface Config {
   defaultAiModel?: AiModelService;
   availableAiServiceModels?: Record<AiServiceNames, string[]>;
   colorTheme?: Partial<ColorThemeConfig>;
+  headerTitle?: string;
 }
 
 type ConfigKey = keyof Config;
@@ -96,6 +125,7 @@ export const ConfigKeys: ConfigKey[] = [
   "overrideAiModel",
   "defaultAiModel",
   "availableAiServiceModels",
+  "headerTitle",
 ];
 
 export function getDefaultConfig(): Config {
@@ -107,6 +137,7 @@ export function getDefaultConfig(): Config {
     defaultAiModel: undefined,
     availableAiServiceModels: undefined,
     colorTheme: {},
+    headerTitle: "",
   };
 }
 
@@ -156,6 +187,7 @@ export const ConfigType = new GraphQLObjectType({
       type: GraphQLList(AvailabeAiServiceModelsType),
     },
     colorTheme: { type: ColorThemeConfigType },
+    headerTitle: { type: GraphQLString },
   }),
 });
 
