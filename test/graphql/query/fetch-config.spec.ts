@@ -86,6 +86,7 @@ describe("config", () => {
         model: "model",
       },
       headerTitle: "header title",
+      orgName: "org name",
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -115,6 +116,7 @@ describe("config", () => {
               models
             }
             headerTitle
+            orgName
           }
         }`,
       });
@@ -148,6 +150,7 @@ describe("config", () => {
         },
       ],
       headerTitle: "header title",
+      orgName: "org name",
     });
   });
 });
