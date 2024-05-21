@@ -115,6 +115,7 @@ export interface Config {
   colorTheme?: Partial<ColorThemeConfig>;
   headerTitle?: string;
   orgName?: string;
+  loginScreenTitle?: string;
 }
 
 type ConfigKey = keyof Config;
@@ -128,6 +129,7 @@ export const ConfigKeys: ConfigKey[] = [
   "availableAiServiceModels",
   "headerTitle",
   "orgName",
+  "loginScreenTitle",
 ];
 
 export function getDefaultConfig(): Config {
@@ -141,6 +143,7 @@ export function getDefaultConfig(): Config {
     colorTheme: {},
     headerTitle: "",
     orgName: "",
+    loginScreenTitle: "",
   };
 }
 
@@ -192,6 +195,7 @@ export const ConfigType = new GraphQLObjectType({
     colorTheme: { type: ColorThemeConfigType },
     headerTitle: { type: GraphQLString },
     orgName: { type: GraphQLString },
+    loginScreenTitle: { type: GraphQLString },
   }),
 });
 

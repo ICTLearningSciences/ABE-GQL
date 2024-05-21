@@ -87,6 +87,7 @@ describe("config", () => {
       },
       headerTitle: "header title",
       orgName: "org name",
+      loginScreenTitle: "login screen title",
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -117,6 +118,7 @@ describe("config", () => {
             }
             headerTitle
             orgName
+            loginScreenTitle
           }
         }`,
       });
@@ -151,6 +153,7 @@ describe("config", () => {
       ],
       headerTitle: "header title",
       orgName: "org name",
+      loginScreenTitle: "login screen title",
     });
   });
 });
