@@ -16,10 +16,9 @@ import {
 import {
   AiPromptStep,
   AiPromptStepInputType,
+  AiPromptStepSchema,
   AiPromptStepType,
 } from "./PromptRun";
-import { PromptRoles } from "../types/types";
-import { AiModelServiceSchema } from "./Config";
 
 export interface Prompt extends Document {
   _id: string;
@@ -51,54 +50,9 @@ export const PromptInputType = new GraphQLInputObjectType({
   }),
 });
 
-export enum PromptOutputDataType {
-  JSON = "JSON",
-  TEXT = "TEXT",
-}
-
 export const PromptSchema = new Schema(
   {
-    aiPromptSteps: [
-      {
-        prompts: [
-          {
-            promptText: { type: String, required: true },
-            includeEssay: { type: Boolean, required: true },
-            includeUserInput: {
-              type: Boolean,
-              required: false,
-              default: false,
-            },
-            promptRole: {
-              type: String,
-              enum: PromptRoles,
-              required: false,
-            },
-          },
-        ],
-        outputDataType: {
-          type: String,
-          enum: [PromptOutputDataType.JSON, PromptOutputDataType.TEXT],
-          required: false,
-          default: PromptOutputDataType.TEXT,
-        },
-        targetAiServiceModel: {
-          type: AiModelServiceSchema,
-          required: false,
-        },
-        systemRole: {
-          type: String,
-          required: false,
-          default: "",
-        },
-        includeChatLogContext: {
-          type: Boolean,
-          required: false,
-          default: false,
-        },
-        jsonValidation: { type: String, required: false, default: "" },
-      },
-    ],
+    aiPromptSteps: [{ type: AiPromptStepSchema }],
     title: { type: String, required: true },
     userInputIsIntention: { type: Boolean, required: false, default: false },
     clientId: { type: String, required: false, default: "" },

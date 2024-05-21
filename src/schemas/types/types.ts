@@ -10,3 +10,8 @@ export enum PromptRoles {
   ASSISSANT = "assistant",
   FUNCTION = "function",
 }
+
+export enum PromptOutputDataType {
+  JSON = "JSON",
+  TEXT = "TEXT",
+}

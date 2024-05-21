@@ -44,6 +44,11 @@ describe("store prompt run", () => {
                     outputDataType
                     jsonValidation
                     includeChatLogContext
+                    responseFormat
+                    targetAiServiceModel{
+                      serviceName
+                      model
+                    }
                 }
                 aiSteps {
                     aiServiceRequestParams
@@ -67,6 +72,11 @@ describe("store prompt run", () => {
               outputDataType: "TEXT",
               jsonValidation: "store_test_json_validation",
               includeChatLogContext: true,
+              responseFormat: "store_test_response_format",
+              targetAiServiceModel: {
+                serviceName: "store_test_service_name",
+                model: "store_test_model",
+              },
             },
           ],
           aiSteps: [
@@ -94,6 +104,11 @@ describe("store prompt run", () => {
           outputDataType: "TEXT",
           jsonValidation: "store_test_json_validation",
           includeChatLogContext: true,
+          responseFormat: "store_test_response_format",
+          targetAiServiceModel: {
+            serviceName: "store_test_service_name",
+            model: "store_test_model",
+          },
         },
       ],
       aiSteps: [

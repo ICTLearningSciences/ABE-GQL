@@ -114,6 +114,7 @@ module.exports = {
             serviceName: "testServiceName",
             model: "testModel",
           },
+          responseFormat: "testResponseFormat",
         },
         {
           prompts: [
@@ -127,6 +128,7 @@ module.exports = {
           outputDataType: "JSON",
           jsonValidation: "json_validation_test",
           includeChatLogContext: true,
+          responseFormat: "testResponseFormat",
         },
       ],
       title: "prompt_title_test",

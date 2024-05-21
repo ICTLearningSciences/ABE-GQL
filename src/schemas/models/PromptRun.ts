@@ -14,11 +14,11 @@ import {
   GraphQLBoolean,
 } from "graphql";
 import { User } from "./User";
-import { PromptOutputDataType } from "./Prompt";
-import { PromptRoles } from "../types/types";
+import { PromptOutputDataType, PromptRoles } from "../types/types";
 import {
   AiModelService,
   AiModelServiceInputType,
+  AiModelServiceSchema,
   AiModelServiceType,
 } from "./Config";
 
@@ -41,6 +41,7 @@ export interface AiPromptStep {
   systemRole?: string;
   includeChatLogContext?: boolean;
   jsonValidation?: string;
+  responseFormat?: string;
 }
 
 export interface PromptRun {
@@ -95,6 +96,7 @@ export const AiPromptStepType = new GraphQLObjectType({
     systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
+    responseFormat: { type: GraphQLString },
   }),
 });
 
@@ -107,7 +109,49 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
     systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
+    responseFormat: { type: GraphQLString },
   }),
+});
+
+export const AiPromptStepSchema = new Schema({
+  prompts: [
+    {
+      promptText: { type: String, required: true },
+      includeEssay: { type: Boolean, required: true },
+      includeUserInput: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+      promptRole: {
+        type: String,
+        enum: PromptRoles,
+        required: false,
+      },
+    },
+  ],
+  outputDataType: {
+    type: String,
+    enum: [PromptOutputDataType.JSON, PromptOutputDataType.TEXT],
+    required: false,
+    default: PromptOutputDataType.TEXT,
+  },
+  targetAiServiceModel: {
+    type: AiModelServiceSchema,
+    required: false,
+  },
+  systemRole: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  includeChatLogContext: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  jsonValidation: { type: String, required: false, default: "" },
+  responseFormat: { type: String, required: false, default: "" },
 });
 
 export const PromptRunType = new GraphQLObjectType({
@@ -132,38 +176,7 @@ export const PromptRunInputType = new GraphQLInputObjectType({
 
 export const PromptRunSchema = new Schema(
   {
-    aiPromptSteps: [
-      {
-        prompts: [
-          {
-            promptText: { type: String, required: true },
-            includeEssay: { type: Boolean, required: true },
-            includeUserInput: {
-              type: Boolean,
-              required: false,
-              default: false,
-            },
-            promptRole: {
-              type: String,
-              enum: PromptRoles,
-              required: false,
-            },
-          },
-        ],
-        outputDataType: {
-          type: String,
-          enum: [PromptOutputDataType.JSON, PromptOutputDataType.TEXT],
-          required: false,
-          default: PromptOutputDataType.TEXT,
-        },
-        includeChatLogContext: {
-          type: Boolean,
-          required: false,
-          default: false,
-        },
-        jsonValidation: { type: String, required: false, default: "" },
-      },
-    ],
+    aiPromptSteps: [{ type: AiPromptStepSchema }],
     googleDocId: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     aiSteps: [
