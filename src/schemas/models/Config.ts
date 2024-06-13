@@ -38,6 +38,7 @@ interface IActivityConfig {
 interface IGoalActivities {
   goal: string;
   activities: IActivityConfig[];
+  builtActivities: IActivityConfig[];
 }
 
 export const ActivityConfigType = new GraphQLObjectType({
@@ -61,6 +62,7 @@ export const GoalActivitiesType = new GraphQLObjectType({
   fields: {
     goal: { type: GraphQLString },
     activities: { type: GraphQLList(ActivityConfigType) },
+    builtActivities: { type: GraphQLList(ActivityConfigType) },
   },
 });
 

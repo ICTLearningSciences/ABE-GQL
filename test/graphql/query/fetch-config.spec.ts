@@ -75,6 +75,12 @@ describe("config", () => {
               disabled: false,
             },
           ],
+          builtActivities: [
+            {
+              activity: "built activity 1",
+              disabled: false,
+            },
+          ],
         },
       ],
       colorTheme: {
@@ -102,6 +108,10 @@ describe("config", () => {
               activities{
                 activity
                 disabled
+              }
+              builtActivities{
+                activity
+                disabled  
               }
             }
             colorTheme{
@@ -132,6 +142,12 @@ describe("config", () => {
           activities: [
             {
               activity: "activity 1",
+              disabled: false,
+            },
+          ],
+          builtActivities: [
+            {
+              activity: "built activity 1",
               disabled: false,
             },
           ],
