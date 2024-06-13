@@ -46,8 +46,6 @@ describe("fetch activities", () => {
                         prompts
                     }
                     description
-                    responsePendingMessage
-                    responseReadyMessage
                     newDocRecommend
                     introduction
                     disabled
@@ -146,8 +144,6 @@ describe("fetch activities", () => {
           ],
           disabled: false,
           displayIcon: "activity_display_icon_test",
-          responsePendingMessage: "activity_response_pending_message_test",
-          responseReadyMessage: "activity_response_ready_message_test",
           newDocRecommend: true,
         },
       },

@@ -110,8 +110,6 @@ export interface Activity extends Document {
   steps: ActivityStep[];
   prompt: Prompt["_id"];
   prompts: ActivityPrompt[];
-  responsePendingMessage?: string;
-  responseReadyMessage?: string;
   disabled?: boolean;
   newDocRecommend?: boolean;
 }
@@ -158,8 +156,6 @@ export const ActivityType = new GraphQLObjectType({
     introduction: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
     steps: { type: GraphQLList(ActivityStepType) },
-    responsePendingMessage: { type: GraphQLString },
-    responseReadyMessage: { type: GraphQLString },
     prompt: {
       type: PromptType,
       resolve: async (activitiy: Activity) => {
@@ -186,8 +182,6 @@ export const ActivityInputType = new GraphQLInputObjectType({
     steps: { type: GraphQLList(ActivityStepInputType) },
     prompt: { type: GraphQLID },
     prompts: { type: GraphQLList(ActivityPromptInputType) },
-    responsePendingMessage: { type: GraphQLString },
-    responseReadyMessage: { type: GraphQLString },
     disabled: { type: GraphQLBoolean },
     newDocRecommend: { type: GraphQLBoolean },
   }),
@@ -200,8 +194,6 @@ export const ActivitySchema = new Schema(
     introduction: { type: String },
     displayIcon: { type: String },
     disabled: { type: Boolean, default: false },
-    responsePendingMessage: { type: String },
-    responseReadyMessage: { type: String },
     steps: [{ type: ActivityStepSchema }],
     prompt: { type: mongoose.Types.ObjectId, ref: "Prompt" },
     prompts: [{ type: ActivityPromptSchema }],
