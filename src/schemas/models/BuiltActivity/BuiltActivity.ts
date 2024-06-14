@@ -12,6 +12,7 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLBoolean,
+  GraphQLUnionType,
 } from "graphql";
 import {
   PaginatedResolveResult,
@@ -19,51 +20,77 @@ import {
   PaginateQuery,
   pluginPagination,
 } from "../Paginatation";
-import { ActivityBuilderStepSchema, ActivityBuilderStepType, ActivityBuilderStepTypeInput } from "./objects";
+import {
+  ActivityBuilderStepTypeInput,
+  ActivityBuilderStepUnionSchema,
+  PromptActivityStepType,
+  RequestUserInputActivityStepType,
+  SystemMessageActivityStepType,
+} from "./objects";
 import { ActivityBuilder } from "./types";
 
+// union the different step types
+export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
+  name: "ActivityBuilderStepTypeUnion",
+  types: [
+    PromptActivityStepType,
+    RequestUserInputActivityStepType,
+    SystemMessageActivityStepType,
+  ],
+  resolveType(value) {
+    switch (value.stepType) {
+      case "Prompt":
+        return PromptActivityStepType;
+      case "RequestUserInput":
+        return RequestUserInputActivityStepType;
+      case "SystemMessage":
+        return SystemMessageActivityStepType;
+      default:
+        return null;
+    }
+  },
+});
+
 export const BuiltActivityType = new GraphQLObjectType({
-    name: "ActivityType",
-    fields: () => ({
-        _id: { type: GraphQLID },
-        activityType: { type: GraphQLString },
-        title: { type: GraphQLString },
-        description: { type: GraphQLString },
-        displayIcon: { type: GraphQLString },
-        newDocRecommend: { type: GraphQLBoolean },
-        disabled: { type: GraphQLBoolean },
-        // TODO: ensure that this allows for the other subtypes of ActivityBuilderStepType
-        steps: { type: GraphQLList(ActivityBuilderStepType) },
-    }),
+  name: "BuiltActivityType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    activityType: { type: GraphQLString },
+    title: { type: GraphQLString },
+    description: { type: GraphQLString },
+    displayIcon: { type: GraphQLString },
+    newDocRecommend: { type: GraphQLBoolean },
+    disabled: { type: GraphQLBoolean },
+    // allow one of the subtypes of ActivityBuilderStepType
+    steps: { type: GraphQLList(ActivityBuilderStepTypeUnion) },
+  }),
 });
 
 export const BuiltActivityInputType = new GraphQLInputObjectType({
-    name: "ActivityInputType",
-    fields: () => ({
-        _id: { type: GraphQLID },
-        activityType: { type: GraphQLString },
-        title: { type: GraphQLString },
-        description: { type: GraphQLString },
-        displayIcon: { type: GraphQLString },
-        newDocRecommend: { type: GraphQLBoolean },
-        disabled: { type: GraphQLBoolean },
-        // TODO: ensure that this allows for the other subtypes of ActivityBuilderStepType
-        steps: { type: GraphQLList(ActivityBuilderStepTypeInput) },
-    }),
+  name: "BuiltActivityInputType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    activityType: { type: GraphQLString },
+    title: { type: GraphQLString },
+    description: { type: GraphQLString },
+    displayIcon: { type: GraphQLString },
+    newDocRecommend: { type: GraphQLBoolean },
+    disabled: { type: GraphQLBoolean },
+    // TODO: ensure that this allows for the other subtypes of ActivityBuilderStepType
+    steps: { type: GraphQLList(ActivityBuilderStepTypeInput) },
+  }),
 });
 
-
-
 export const BuiltActivitySchema = new Schema(
-    {
-        title: { type: String },
-        description: { type: String },
-        displayIcon: { type: String },
-        disabled: { type: Boolean, default: false },
-        newDocRecommend: { type: Boolean },
-        steps: [{ type: ActivityBuilderStepSchema }],
-    },
-    { timestamps: true, collation: { locale: "en", strength: 2 } }
+  {
+    title: { type: String },
+    description: { type: String },
+    displayIcon: { type: String },
+    disabled: { type: Boolean, default: false },
+    newDocRecommend: { type: Boolean },
+    steps: [{ type: ActivityBuilderStepUnionSchema }],
+  },
+  { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
 export interface BuiltActivityModel extends Model<ActivityBuilder> {

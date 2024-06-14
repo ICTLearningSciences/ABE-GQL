@@ -6,12 +6,12 @@ The full terms of this copyright and license should always be found in the root 
 */
 
 export interface IActivity {
-  activityType: 'builder' | 'gql';
+  activityType: "builder" | "gql";
 }
 
 export interface ActivityBuilder extends IActivity {
   _id: string;
-  activityType: 'builder';
+  activityType: "builder";
   title: string;
   description: string;
   displayIcon: string;
@@ -21,9 +21,9 @@ export interface ActivityBuilder extends IActivity {
 }
 
 export enum ActivityBuilderStepType {
-  SYSTEM_MESSAGE = 'SystemMessage',
-  REQUEST_USER_INPUT = 'RequestUserInput',
-  PROMPT = 'Prompt',
+  SYSTEM_MESSAGE = "SystemMessage",
+  REQUEST_USER_INPUT = "RequestUserInput",
+  PROMPT = "Prompt",
 }
 
 export interface ActivityBuilderStep {
@@ -54,9 +54,9 @@ export interface RequestUserInputActivityStep extends ActivityBuilderStep {
 
 //Prompt
 export enum JsonResponseDataType {
-  STRING = 'string',
-  OBJECT = 'object',
-  ARRAY = 'array',
+  STRING = "string",
+  OBJECT = "object",
+  ARRAY = "array",
 }
 
 export interface JsonResponseData {

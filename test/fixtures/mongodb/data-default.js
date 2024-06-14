@@ -9,6 +9,8 @@ import {
   TimelinePointType,
   Sender,
 } from "../../../src/schemas/models/DocTimeline";
+import { DisplayIcons } from "../../../src/constants";
+import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
@@ -73,6 +75,61 @@ module.exports = {
       disabled: false,
       displayIcon: "activity_display_icon_test",
       newDocRecommend: true,
+    },
+  ],
+  builtactivities: [
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320b49e2f"),
+      title: "Test AI Response Data",
+      activityType: "builder",
+      description: "",
+      displayIcon: DisplayIcons.DEFAULT,
+      steps: [
+        {
+          stepId: "1",
+          stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+          message: "Welcome to the test activity",
+        },
+        {
+          stepId: "2",
+          stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
+          message: "What is your name?",
+          saveAsIntention: false,
+          saveResponseVariableName: "name",
+          disableFreeInput: false,
+          predefinedResponses: [],
+        },
+        {
+          stepId: "3",
+          stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+          message: "Hello, {{name}}!",
+        },
+        {
+          stepId: "4",
+          stepType: "Prompt",
+          promptText: "Please generate a nickname for {{name}}",
+          responseFormat: "",
+          jsonResponseData: [
+            {
+              name: "nickname",
+              type: "string",
+              additionalInfo: "a nickname generated for the supplied name",
+              isRequired: true,
+            },
+          ],
+          includeChatLogContext: true,
+          includeEssay: false,
+          outputDataType: "JSON",
+          customSystemRole: "user",
+        },
+        {
+          stepId: "5",
+          stepType: "SystemMessage",
+          message:
+            "Thank you for participating in the test activity, {{nickname}}!",
+          jumpToStepId: "1",
+        },
+      ],
     },
   ],
   useractivitystates: [
