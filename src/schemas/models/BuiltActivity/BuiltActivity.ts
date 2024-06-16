@@ -21,11 +21,16 @@ import {
   pluginPagination,
 } from "../Paginatation";
 import {
-  ActivityBuilderStepTypeInput,
   ActivityBuilderStepUnionSchema,
   PromptActivityStepType,
   RequestUserInputActivityStepType,
   SystemMessageActivityStepType,
+  PromptActivityStepTypeInput,
+  RequestUserInputActivityStepTypeInput,
+  SystemMessageActivityStepTypeInput,
+  SystemMessageActivityStepSchema,
+  RequestUserInputActivityStepSchema,
+  PromptActivityStepSchema,
 } from "./objects";
 import { ActivityBuilder } from "./types";
 
@@ -46,8 +51,17 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
       case "SystemMessage":
         return SystemMessageActivityStepType;
       default:
-        return null;
+        throw new Error("invalid step type");
     }
+  },
+});
+
+export const ActivityBuilderStepTypeInputUnion = new GraphQLInputObjectType({
+  name: "ActivityBuilderStepTypeInputUnion",
+  fields: {
+    ...PromptActivityStepTypeInput.getFields(),
+    ...RequestUserInputActivityStepTypeInput.getFields(),
+    ...SystemMessageActivityStepTypeInput.getFields(),
   },
 });
 
@@ -77,7 +91,7 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
     newDocRecommend: { type: GraphQLBoolean },
     disabled: { type: GraphQLBoolean },
     // TODO: ensure that this allows for the other subtypes of ActivityBuilderStepType
-    steps: { type: GraphQLList(ActivityBuilderStepTypeInput) },
+    steps: { type: GraphQLList(ActivityBuilderStepTypeInputUnion) },
   }),
 });
 
@@ -102,7 +116,21 @@ export interface BuiltActivityModel extends Model<ActivityBuilder> {
 
 pluginPagination(BuiltActivitySchema);
 
-export default mongoose.model<ActivityBuilder, BuiltActivityModel>(
-  "BuiltActivity",
-  BuiltActivitySchema
+const ActivityBuilderModel = mongoose.model<
+  ActivityBuilder,
+  BuiltActivityModel
+>("BuiltActivity", BuiltActivitySchema);
+
+ActivityBuilderModel.discriminator(
+  "SystemMessage",
+  SystemMessageActivityStepSchema
 );
+
+ActivityBuilderModel.discriminator(
+  "RequestUserInput",
+  RequestUserInputActivityStepSchema
+);
+
+ActivityBuilderModel.discriminator("PromptStep", PromptActivityStepSchema);
+
+export default ActivityBuilderModel;

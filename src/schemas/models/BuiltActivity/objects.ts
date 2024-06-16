@@ -149,11 +149,16 @@ export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
 });
 
 // schemas
-export const ActivityBuilderStepSchema = new Schema({
-  stepId: { type: String },
-  stepType: { type: String },
-  jumpToStepId: { type: String },
-});
+
+const ActivityBuilderStepSchema = new Schema(
+  {
+    stepId: { type: String },
+    stepType: { type: String },
+    jumpToStepId: { type: String },
+    // other common fields...
+  },
+  { timestamps: true, discriminatorKey: "stepType" } // Use stepType as the discriminator key
+);
 
 export const SystemMessageActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
@@ -191,11 +196,8 @@ export const PromptActivityStepSchema = new Schema({
 });
 
 // union the 3 step schemas
-export const ActivityBuilderStepUnionSchema = new Schema(
-  {
-    SystemMessageActivityStepSchema,
-    RequestUserInputActivityStepSchema,
-    PromptActivityStepSchema,
-  },
-  { discriminatorKey: "stepType" }
-);
+export const ActivityBuilderStepUnionSchema = new Schema({
+  ...SystemMessageActivityStepSchema.obj,
+  ...RequestUserInputActivityStepSchema.obj,
+  ...PromptActivityStepSchema.obj,
+});
