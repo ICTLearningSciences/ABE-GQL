@@ -98,11 +98,12 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
 export const BuiltActivitySchema = new Schema(
   {
     title: { type: String },
+    activityType: { type: String },
     description: { type: String },
     displayIcon: { type: String },
     disabled: { type: Boolean, default: false },
     newDocRecommend: { type: Boolean },
-    steps: [{ type: ActivityBuilderStepUnionSchema }],
+    steps: [ActivityBuilderStepUnionSchema],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

@@ -58,6 +58,10 @@ export const PredefinedResponseType = new GraphQLObjectType({
   }),
 });
 
+export const PredefinedResponseSchema = new Schema({
+  message: { type: String },
+});
+
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
   name: "PredefinedResponseTypeInput",
   fields: () => ({
@@ -173,7 +177,7 @@ export const RequestUserInputActivityStepSchema = new Schema({
   saveAsIntention: { type: Boolean },
   saveResponseVariableName: { type: String },
   disableFreeInput: { type: Boolean },
-  predefinedResponses: [{ type: String }],
+  predefinedResponses: [PredefinedResponseSchema],
 });
 
 export const JsonResponseDataSchema = new Schema({

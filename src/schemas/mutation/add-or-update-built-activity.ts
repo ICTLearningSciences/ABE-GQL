@@ -35,7 +35,7 @@ export const addOrUpdateBuiltActivity = {
           _id: id,
         },
         {
-          steps: args.activity.steps,
+          ...args.activity,
         },
         {
           new: true,

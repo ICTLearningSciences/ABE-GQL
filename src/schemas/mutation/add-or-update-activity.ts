@@ -31,7 +31,9 @@ export const addOrUpdateActivity = {
           _id: args.activity._id,
         },
         {
-          ...args.activity,
+          $set: {
+            ...args.activity,
+          },
         },
         {
           new: true,
