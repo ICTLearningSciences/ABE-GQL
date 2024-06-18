@@ -4,14 +4,38 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import findAll from "./find-all";
+import { GraphQLList, GraphQLObjectType } from "graphql";
+import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityType,
-} from "schemas/models/BuiltActivity/BuiltActivity";
+} from "../../schemas/models/BuiltActivity/BuiltActivity";
+dotenv.config();
 
-export const fetchBuiltActivities = findAll({
-  nodeType: BuiltActivityType,
-  model: BuiltActivityModel,
-});
-
+export const fetchBuiltActivities = {
+  type: GraphQLList(BuiltActivityType),
+  async resolve(
+    _root: GraphQLObjectType,
+    _args: null,
+    context: {
+      userId?: string;
+    }
+  ) {
+    const { userId } = context;
+    try {
+      return await BuiltActivityModel.find({
+        $or: [
+          {
+            user: userId,
+          },
+          {
+            visibility: "public",
+          },
+        ],
+      });
+    } catch (e) {
+      console.log(e);
+      throw new Error(String(e));
+    }
+  },
+};
 export default fetchBuiltActivities;

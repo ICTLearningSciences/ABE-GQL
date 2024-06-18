@@ -82,6 +82,8 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49e2f"),
       title: "Test AI Response Data",
       activityType: "builder",
+      user: "5ffdf1231ee2c62320b49e99",
+      visibility: "public",
       description: "",
       displayIcon: DisplayIcons.DEFAULT,
       steps: [
@@ -130,6 +132,16 @@ module.exports = {
           jumpToStepId: "1",
         },
       ],
+    },
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320c49e2f"),
+      title: "Private activity",
+      activityType: "builder",
+      user: "5ffdf1231ee2c62320b49e99",
+      visibility: "private",
+      description: "",
+      displayIcon: DisplayIcons.DEFAULT,
+      steps: [],
     },
   ],
   useractivitystates: [

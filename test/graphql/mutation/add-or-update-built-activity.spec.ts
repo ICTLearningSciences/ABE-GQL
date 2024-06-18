@@ -13,10 +13,14 @@ import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
+import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/models/User";
 
 export const fullBuiltActivityQueryData = `
                       _id
                       title
+                      user
+                      visibility
                       activityType
                       description
                       displayIcon
@@ -77,7 +81,62 @@ describe("update built activity", () => {
     await mongoUnit.drop();
   });
 
+  it("unauthenticated user cannot update activity", async () => {
+    const stepsData = [
+      {
+        stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+        message: "message 1",
+      },
+    ];
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+        addOrUpdateBuiltActivity(activity: $activity) {
+            ${fullBuiltActivityQueryData}
+            }
+       }`,
+        variables: {
+          activity: {
+            _id: "5ffdf1231ee2c62320b49e1f",
+            steps: stepsData,
+          },
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.errors[0].message).to.equal("unauthorized");
+  });
+
+  it("USER cannot update activity", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
+    const stepsData = [
+      {
+        stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+        message: "message 1",
+      },
+    ];
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+        addOrUpdateBuiltActivity(activity: $activity) {
+            ${fullBuiltActivityQueryData}
+            }
+       }`,
+        variables: {
+          activity: {
+            _id: "5ffdf1231ee2c62320b49e1f",
+            steps: stepsData,
+          },
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.errors[0].message).to.equal("unauthorized");
+  });
+
   it(`can update existing activity`, async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const stepsData = [
       {
         stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
@@ -94,6 +153,7 @@ describe("update built activity", () => {
     ];
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
           addOrUpdateBuiltActivity(activity: $activity) {
@@ -129,8 +189,9 @@ describe("update built activity", () => {
   });
 
   it("can create new activity", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const builtActivitesPre = await BuiltActivityModel.find();
-    expect(builtActivitesPre.length).to.equal(1);
+    expect(builtActivitesPre.length).to.equal(2);
     const stepsData = [
       {
         stepId: "123",
@@ -176,6 +237,8 @@ describe("update built activity", () => {
       _id: "5ffdf1231ee2c62320b49e5f",
       activityType: "builder",
       title: "title 1",
+      user: "5ffdf1231ee2c62320b49a99",
+      visibility: "public",
       description: "description 1",
       displayIcon: "display icon 1",
       newDocRecommend: true,
@@ -184,6 +247,7 @@ describe("update built activity", () => {
     };
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
           addOrUpdateBuiltActivity(activity: $activity) {
@@ -194,10 +258,9 @@ describe("update built activity", () => {
           activity,
         },
       });
-    expect(response.status).to.equal(200);
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
-    expect(builtActivitesPost.length).to.equal(2);
+    expect(builtActivitesPost.length).to.equal(3);
     const savedActivity = builtActivitesPost.find(
       (a) => a._id.toString() === activity._id
     );
@@ -207,14 +270,11 @@ describe("update built activity", () => {
 
     const response2 = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
-        query: `query FetchBuiltActivities($limit: Int){
-          fetchBuiltActivities(limit: $limit) {
-              edges {
-                  node{
+        query: `query FetchBuiltActivities{
+          fetchBuiltActivities{
                       ${fullBuiltActivityQueryData}
-                  }
-              }
           }
       }`,
         variables: {
@@ -222,13 +282,14 @@ describe("update built activity", () => {
         },
       });
     expect(response2.status).to.equal(200);
-    const fetchedActivity = response2.body.data.fetchBuiltActivities.edges.find(
-      (a: any) => a.node._id === activity._id
+    const fetchedActivity = response2.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === activity._id
     );
-    expect(fetchedActivity.node).to.eql(activity);
+    expect(fetchedActivity).to.eql(activity);
   });
 
   it("can update subfield of existing activity", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const preUpdate = await BuiltActivityModel.findOne({
       _id: "5ffdf1231ee2c62320b49e2f",
     });
@@ -242,6 +303,7 @@ describe("update built activity", () => {
     };
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
         addOrUpdateBuiltActivity(activity: $activity) {

@@ -70,6 +70,8 @@ export const BuiltActivityType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     activityType: { type: GraphQLString },
+    user: { type: GraphQLString },
+    visibility: { type: GraphQLString },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
@@ -85,6 +87,8 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     activityType: { type: GraphQLString },
+    user: { type: GraphQLString },
+    visibility: { type: GraphQLString },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
@@ -98,6 +102,8 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
 export const BuiltActivitySchema = new Schema(
   {
     title: { type: String },
+    user: { type: String },
+    visibility: { type: String },
     activityType: { type: String },
     description: { type: String },
     displayIcon: { type: String },

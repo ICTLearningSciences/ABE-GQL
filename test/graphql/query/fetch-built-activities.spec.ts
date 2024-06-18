@@ -10,6 +10,9 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
+import { UserRole } from "../../../src/schemas/models/User";
+import { getToken } from "../../helpers";
 
 describe("fetch built activities", () => {
   let app: Express;
@@ -25,78 +28,83 @@ describe("fetch built activities", () => {
     await mongoUnit.drop();
   });
 
-  it(`can fetch built activites`, async () => {
+  it(`can fetch public activites`, async () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `query FetchBuiltActivities($limit: Int){
-            fetchBuiltActivities(limit: $limit) {
-                edges {
-                    node{
-                        _id
-                        title
-                        activityType
-                        description
-                        displayIcon
-                        disabled
-                        newDocRecommend
-                        steps{
-                            ... on SystemMessageActivityStepType {
-                                stepId
-                                stepType
-                                jumpToStepId
-                                message
-                            }
-
-                            ... on RequestUserInputActivityStepType {
-                                stepId
-                                stepType
-                                jumpToStepId
-                                message
-                                saveAsIntention
-                                saveResponseVariableName
-                                disableFreeInput
-                                predefinedResponses{
-                                    message
-                                }
-                            }
-
-                            ... on PromptActivityStepType{
-                                stepId
-                                stepType
-                                jumpToStepId
-                                promptText
-                                responseFormat
-                                includeChatLogContext
-                                includeEssay
-                                outputDataType
-                                jsonResponseData{
-                                    name
-                                    type
-                                    isRequired
-                                    additionalInfo
-                                }
-                                customSystemRole
-                            }
-                        }
+        query: `query FetchBuiltActivities{
+            fetchBuiltActivities {
+                        ${fullBuiltActivityQueryData}
                     }
-                }
-            }
         }`,
         variables: {
           limit: 1,
         },
       });
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchBuiltActivities.edges.length).to.equal(1);
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(1);
+    expect(response.body.data.fetchBuiltActivities[0].title).to.equal(
+      "Test AI Response Data"
+    );
+    expect(response.body.data.fetchBuiltActivities[0].activityType).to.equal(
+      "builder"
+    );
+    expect(response.body.data.fetchBuiltActivities[0].steps.length).to.equal(5);
     expect(
-      response.body.data.fetchBuiltActivities.edges[0].node.title
-    ).to.equal("Test AI Response Data");
-    expect(
-      response.body.data.fetchBuiltActivities.edges[0].node.activityType
-    ).to.equal("builder");
-    expect(
-      response.body.data.fetchBuiltActivities.edges[0].node.steps.length
-    ).to.equal(5);
+      response.body.data.fetchBuiltActivities[0].steps[0].stepType
+    ).to.equal("SystemMessage");
+    expect(response.body.data.fetchBuiltActivities[0].user).to.equal(
+      "5ffdf1231ee2c62320b49e99"
+    );
+    expect(response.body.data.fetchBuiltActivities[0].visibility).to.equal(
+      "public"
+    );
+  });
+
+  it("authenticated users cannot see other users private activities", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //user with role "ADMIN"
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `query FetchBuiltActivities{
+          fetchBuiltActivities {
+                      ${fullBuiltActivityQueryData}
+                  }
+      }`,
+        variables: {
+          limit: 1,
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(1);
+    const privateActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62320c49e2f"
+    );
+    expect(privateActivity).to.be.undefined;
+  });
+
+  it("authenticated users can fetch their own private activites", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.ADMIN); //user with role "ADMIN"
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `query FetchBuiltActivities{
+          fetchBuiltActivities {
+                      ${fullBuiltActivityQueryData}
+                  }
+      }`,
+        variables: {
+          limit: 1,
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(2);
+    const privateActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62320c49e2f"
+    );
+    expect(privateActivity).to.not.be.undefined;
+    expect(privateActivity.title).to.equal("Private activity");
   });
 });

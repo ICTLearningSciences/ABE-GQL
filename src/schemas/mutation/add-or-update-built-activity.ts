@@ -10,9 +10,10 @@ import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityInputType,
   BuiltActivityType,
-} from "schemas/models/BuiltActivity/BuiltActivity";
-import { ActivityBuilder } from "schemas/models/BuiltActivity/types";
+} from "../../schemas/models/BuiltActivity/BuiltActivity";
+import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
 import { idOrNew } from "helpers";
+import { UserRole } from "../../schemas/models/User";
 dotenv.config();
 
 export const addOrUpdateBuiltActivity = {
@@ -25,8 +26,14 @@ export const addOrUpdateBuiltActivity = {
     _: any,
     args: {
       activity: ActivityBuilder;
+    },
+    context: {
+      userRole?: string;
     }
   ) {
+    if (!context.userRole || context.userRole !== UserRole.ADMIN) {
+      throw new Error("unauthorized");
+    }
     try {
       const id = idOrNew(args.activity._id);
       delete args.activity._id;
