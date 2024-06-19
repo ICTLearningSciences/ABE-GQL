@@ -55,17 +55,20 @@ export const PredefinedResponseType = new GraphQLObjectType({
   name: "PredefinedResponseType",
   fields: () => ({
     message: { type: GraphQLString },
+    jumpToStepId: { type: GraphQLString },
   }),
 });
 
 export const PredefinedResponseSchema = new Schema({
   message: { type: String },
+  jumpToStepId: { type: String, require: false },
 });
 
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
   name: "PredefinedResponseTypeInput",
   fields: () => ({
     message: { type: GraphQLString },
+    jumpToStepId: { type: GraphQLString },
   }),
 });
 
