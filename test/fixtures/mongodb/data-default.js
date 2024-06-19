@@ -86,50 +86,56 @@ module.exports = {
       visibility: "public",
       description: "",
       displayIcon: DisplayIcons.DEFAULT,
-      steps: [
+      flowsList: [
         {
-          stepId: "1",
-          stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
-          message: "Welcome to the test activity",
-        },
-        {
-          stepId: "2",
-          stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
-          message: "What is your name?",
-          saveAsIntention: false,
-          saveResponseVariableName: "name",
-          disableFreeInput: false,
-          predefinedResponses: [],
-        },
-        {
-          stepId: "3",
-          stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
-          message: "Hello, {{name}}!",
-        },
-        {
-          stepId: "4",
-          stepType: "Prompt",
-          promptText: "Please generate a nickname for {{name}}",
-          responseFormat: "",
-          jsonResponseData: [
+          _id: new ObjectId("5ffdf1231ee2c62322b49e9f"),
+          name: "Test Flow",
+          steps: [
             {
-              name: "nickname",
-              type: "string",
-              additionalInfo: "a nickname generated for the supplied name",
-              isRequired: true,
+              stepId: "1",
+              stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+              message: "Welcome to the test activity",
+            },
+            {
+              stepId: "2",
+              stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
+              message: "What is your name?",
+              saveAsIntention: false,
+              saveResponseVariableName: "name",
+              disableFreeInput: false,
+              predefinedResponses: [],
+            },
+            {
+              stepId: "3",
+              stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+              message: "Hello, {{name}}!",
+            },
+            {
+              stepId: "4",
+              stepType: "Prompt",
+              promptText: "Please generate a nickname for {{name}}",
+              responseFormat: "",
+              jsonResponseData: [
+                {
+                  name: "nickname",
+                  type: "string",
+                  additionalInfo: "a nickname generated for the supplied name",
+                  isRequired: true,
+                },
+              ],
+              includeChatLogContext: true,
+              includeEssay: false,
+              outputDataType: "JSON",
+              customSystemRole: "user",
+            },
+            {
+              stepId: "5",
+              stepType: "SystemMessage",
+              message:
+                "Thank you for participating in the test activity, {{nickname}}!",
+              jumpToStepId: "1",
             },
           ],
-          includeChatLogContext: true,
-          includeEssay: false,
-          outputDataType: "JSON",
-          customSystemRole: "user",
-        },
-        {
-          stepId: "5",
-          stepType: "SystemMessage",
-          message:
-            "Thank you for participating in the test activity, {{nickname}}!",
-          jumpToStepId: "1",
         },
       ],
     },
@@ -141,7 +147,7 @@ module.exports = {
       visibility: "private",
       description: "",
       displayIcon: DisplayIcons.DEFAULT,
-      steps: [],
+      flowsList: [],
     },
   ],
   useractivitystates: [

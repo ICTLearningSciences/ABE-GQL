@@ -9,6 +9,12 @@ export interface IActivity {
   activityType: "builder" | "gql";
 }
 
+export interface FlowItem {
+  _id: string;
+  name: string;
+  steps: ActivityBuilderStep[];
+}
+
 export interface ActivityBuilder extends IActivity {
   _id: string;
   activityType: "builder";
@@ -17,7 +23,7 @@ export interface ActivityBuilder extends IActivity {
   displayIcon: string;
   newDocRecommend?: boolean;
   disabled?: boolean;
-  steps: ActivityBuilderStep[];
+  flowsList: FlowItem[];
 }
 
 export enum ActivityBuilderStepType {

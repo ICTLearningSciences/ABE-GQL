@@ -41,6 +41,7 @@ describe("fetch built activities", () => {
           limit: 1,
         },
       });
+
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchBuiltActivities.length).to.equal(1);
     expect(response.body.data.fetchBuiltActivities[0].title).to.equal(
@@ -49,16 +50,21 @@ describe("fetch built activities", () => {
     expect(response.body.data.fetchBuiltActivities[0].activityType).to.equal(
       "builder"
     );
-    expect(response.body.data.fetchBuiltActivities[0].steps.length).to.equal(5);
-    expect(
-      response.body.data.fetchBuiltActivities[0].steps[0].stepType
-    ).to.equal("SystemMessage");
     expect(response.body.data.fetchBuiltActivities[0].user).to.equal(
       "5ffdf1231ee2c62320b49e99"
     );
     expect(response.body.data.fetchBuiltActivities[0].visibility).to.equal(
       "public"
     );
+    expect(
+      response.body.data.fetchBuiltActivities[0].flowsList.length
+    ).to.equal(1);
+    expect(
+      response.body.data.fetchBuiltActivities[0].flowsList[0].steps.length
+    ).to.equal(5);
+    expect(
+      response.body.data.fetchBuiltActivities[0].flowsList[0].steps[0].stepType
+    ).to.equal("SystemMessage");
   });
 
   it("authenticated users cannot see other users private activities", async () => {

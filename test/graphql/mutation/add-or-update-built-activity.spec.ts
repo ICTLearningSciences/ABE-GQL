@@ -11,7 +11,10 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
+import {
+  ActivityBuilder,
+  ActivityBuilderStepType,
+} from "../../../src/schemas/models/BuiltActivity/types";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
@@ -26,7 +29,10 @@ export const fullBuiltActivityQueryData = `
                       displayIcon
                       disabled
                       newDocRecommend
-                      steps{
+                      flowsList{
+                        _id
+                        name
+                        steps{
                           ... on SystemMessageActivityStepType {
                               stepId
                               stepType
@@ -65,6 +71,7 @@ export const fullBuiltActivityQueryData = `
                               customSystemRole
                           }
                       }
+                      }
 `;
 
 describe("update built activity", () => {
@@ -82,10 +89,16 @@ describe("update built activity", () => {
   });
 
   it("unauthenticated user cannot update activity", async () => {
-    const stepsData = [
+    const flowsListData = [
       {
-        stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
-        message: "message 1",
+        _id: "5ffdf1231ea2c62320b49e1a",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+          },
+        ],
       },
     ];
     const response = await request(app)
@@ -99,7 +112,7 @@ describe("update built activity", () => {
         variables: {
           activity: {
             _id: "5ffdf1231ee2c62320b49e1f",
-            steps: stepsData,
+            flowsList: flowsListData,
           },
         },
       });
@@ -109,10 +122,16 @@ describe("update built activity", () => {
 
   it("USER cannot update activity", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
-    const stepsData = [
+    const flowsListData = [
       {
-        stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
-        message: "message 1",
+        _id: "5ffdf1231ee2c62320b49e1a",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+          },
+        ],
       },
     ];
     const response = await request(app)
@@ -127,7 +146,7 @@ describe("update built activity", () => {
         variables: {
           activity: {
             _id: "5ffdf1231ee2c62320b49e1f",
-            steps: stepsData,
+            flowsList: flowsListData,
           },
         },
       });
@@ -137,18 +156,24 @@ describe("update built activity", () => {
 
   it(`can update existing activity`, async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
-    const stepsData = [
+    const flowsListData = [
       {
-        stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
-        message: "message 1",
-      },
-      {
-        stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
-        message: "message 2",
-      },
-      {
-        stepType: ActivityBuilderStepType.PROMPT,
-        promptText: "prompt 1",
+        _id: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+          },
+          {
+            stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
+            message: "message 2",
+          },
+          {
+            stepType: ActivityBuilderStepType.PROMPT,
+            promptText: "prompt 1",
+          },
+        ],
       },
     ];
     const response = await request(app)
@@ -157,7 +182,10 @@ describe("update built activity", () => {
       .send({
         query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
           addOrUpdateBuiltActivity(activity: $activity) {
-                        steps{
+                        flowsList{
+                        _id
+                        name
+                          steps{
                             ... on SystemMessageActivityStepType {
                                 stepType
                                 message
@@ -173,18 +201,19 @@ describe("update built activity", () => {
                                 promptText
                             }
                         }
+                        }
               }
          }`,
         variables: {
           activity: {
             _id: "5ffdf1231ee2c62320b49e1f",
-            steps: stepsData,
+            flowsList: flowsListData,
           },
         },
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql({
-      steps: stepsData,
+      flowsList: flowsListData,
     });
   });
 
@@ -192,45 +221,51 @@ describe("update built activity", () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const builtActivitesPre = await BuiltActivityModel.find();
     expect(builtActivitesPre.length).to.equal(2);
-    const stepsData = [
+    const flowsListData = [
       {
-        stepId: "123",
-        jumpToStepId: "456",
-        stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
-        message: "message 1",
-      },
-      {
-        stepId: "456",
-        jumpToStepId: "789",
-        stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
-        message: "message 2",
-        saveAsIntention: true,
-        saveResponseVariableName: "save response variable name 1",
-        disableFreeInput: true,
-        predefinedResponses: [
+        _id: "5ffdf1231ee2c62320b42e1f",
+        name: "flow 1",
+        steps: [
           {
+            stepId: "123",
+            jumpToStepId: "456",
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
           },
-        ],
-      },
-      {
-        stepId: "789",
-        stepType: ActivityBuilderStepType.PROMPT,
-        promptText: "prompt 1",
-        jumpToStepId: "123",
-        jsonResponseData: [
           {
-            name: "name 1",
-            type: "type 1",
-            isRequired: true,
-            additionalInfo: "additional info 1",
+            stepId: "456",
+            jumpToStepId: "789",
+            stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
+            message: "message 2",
+            saveAsIntention: true,
+            saveResponseVariableName: "save response variable name 1",
+            disableFreeInput: true,
+            predefinedResponses: [
+              {
+                message: "message 1",
+              },
+            ],
+          },
+          {
+            stepId: "789",
+            stepType: ActivityBuilderStepType.PROMPT,
+            promptText: "prompt 1",
+            jumpToStepId: "123",
+            jsonResponseData: [
+              {
+                name: "name 1",
+                type: "type 1",
+                isRequired: true,
+                additionalInfo: "additional info 1",
+              },
+            ],
+            responseFormat: "response format 1",
+            includeChatLogContext: true,
+            includeEssay: true,
+            outputDataType: "JSON",
+            customSystemRole: "custom system role 1",
           },
         ],
-        responseFormat: "response format 1",
-        includeChatLogContext: true,
-        includeEssay: true,
-        outputDataType: "JSON",
-        customSystemRole: "custom system role 1",
       },
     ];
     const activity = {
@@ -243,7 +278,7 @@ describe("update built activity", () => {
       displayIcon: "display icon 1",
       newDocRecommend: true,
       disabled: false,
-      steps: stepsData,
+      flowsList: flowsListData,
     };
     const response = await request(app)
       .post("/graphql")
@@ -290,11 +325,11 @@ describe("update built activity", () => {
 
   it("can update subfield of existing activity", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
-    const preUpdate = await BuiltActivityModel.findOne({
+    const preUpdate: ActivityBuilder | null = await BuiltActivityModel.findOne({
       _id: "5ffdf1231ee2c62320b49e2f",
     });
     expect(preUpdate).to.not.be.null;
-    expect(preUpdate!.steps.length).to.equal(5);
+    expect(preUpdate!.flowsList[0].steps.length).to.equal(5);
     expect(preUpdate!.description).to.not.equal("new description");
 
     const updateActivity = {
@@ -320,6 +355,6 @@ describe("update built activity", () => {
     });
     expect(postUpdate).to.not.be.null;
     expect(postUpdate!.description).to.equal("new description");
-    expect(postUpdate!.steps.length).to.equal(5);
+    expect(preUpdate!.flowsList[0].steps.length).to.equal(5);
   });
 });

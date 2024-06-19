@@ -56,6 +56,32 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
   },
 });
 
+export const StepsFlowType = new GraphQLObjectType({
+  name: "StepsFlowType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    steps: { type: GraphQLList(ActivityBuilderStepTypeUnion) },
+    name: { type: GraphQLString },
+  }),
+});
+
+export const StepsFlowInputType = new GraphQLInputObjectType({
+  name: "StepsFlowInputType",
+  fields: () => ({
+    _id: { type: GraphQLID },
+    steps: { type: GraphQLList(ActivityBuilderStepTypeInputUnion) },
+    name: { type: GraphQLString },
+  }),
+});
+
+export const StepsFlowSchema = new Schema(
+  {
+    name: { type: String },
+    steps: [ActivityBuilderStepUnionSchema],
+  },
+  { timestamps: true, collation: { locale: "en", strength: 2 } }
+);
+
 export const ActivityBuilderStepTypeInputUnion = new GraphQLInputObjectType({
   name: "ActivityBuilderStepTypeInputUnion",
   fields: {
@@ -77,8 +103,7 @@ export const BuiltActivityType = new GraphQLObjectType({
     displayIcon: { type: GraphQLString },
     newDocRecommend: { type: GraphQLBoolean },
     disabled: { type: GraphQLBoolean },
-    // allow one of the subtypes of ActivityBuilderStepType
-    steps: { type: GraphQLList(ActivityBuilderStepTypeUnion) },
+    flowsList: { type: GraphQLList(StepsFlowType) },
   }),
 });
 
@@ -95,7 +120,7 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
     newDocRecommend: { type: GraphQLBoolean },
     disabled: { type: GraphQLBoolean },
     // TODO: ensure that this allows for the other subtypes of ActivityBuilderStepType
-    steps: { type: GraphQLList(ActivityBuilderStepTypeInputUnion) },
+    flowsList: { type: GraphQLList(StepsFlowInputType) },
   }),
 });
 
@@ -109,7 +134,7 @@ export const BuiltActivitySchema = new Schema(
     displayIcon: { type: String },
     disabled: { type: Boolean, default: false },
     newDocRecommend: { type: Boolean },
-    steps: [ActivityBuilderStepUnionSchema],
+    flowsList: [StepsFlowSchema],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
