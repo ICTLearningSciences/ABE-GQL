@@ -88,7 +88,7 @@ module.exports = {
       displayIcon: DisplayIcons.DEFAULT,
       flowsList: [
         {
-          _id: new ObjectId("5ffdf1231ee2c62322b49e9f"),
+          clientId: new ObjectId("5ffdf1231ee2c62322b49e9f"),
           name: "Test Flow",
           steps: [
             {

@@ -59,7 +59,7 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
 export const StepsFlowType = new GraphQLObjectType({
   name: "StepsFlowType",
   fields: () => ({
-    _id: { type: GraphQLID },
+    clientId: { type: GraphQLString },
     steps: { type: GraphQLList(ActivityBuilderStepTypeUnion) },
     name: { type: GraphQLString },
   }),
@@ -68,7 +68,7 @@ export const StepsFlowType = new GraphQLObjectType({
 export const StepsFlowInputType = new GraphQLInputObjectType({
   name: "StepsFlowInputType",
   fields: () => ({
-    _id: { type: GraphQLID },
+    clientId: { type: GraphQLString },
     steps: { type: GraphQLList(ActivityBuilderStepTypeInputUnion) },
     name: { type: GraphQLString },
   }),
@@ -77,6 +77,7 @@ export const StepsFlowInputType = new GraphQLInputObjectType({
 export const StepsFlowSchema = new Schema(
   {
     name: { type: String },
+    clientId: { type: String },
     steps: [ActivityBuilderStepUnionSchema],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
@@ -128,7 +129,7 @@ export const BuiltActivitySchema = new Schema(
   {
     title: { type: String },
     user: { type: String },
-    visibility: { type: String },
+    visibility: { type: String, default: "private" },
     activityType: { type: String },
     description: { type: String },
     displayIcon: { type: String },

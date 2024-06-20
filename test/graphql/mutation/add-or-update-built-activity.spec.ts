@@ -30,7 +30,7 @@ export const fullBuiltActivityQueryData = `
                       disabled
                       newDocRecommend
                       flowsList{
-                        _id
+                        clientId
                         name
                         steps{
                           ... on SystemMessageActivityStepType {
@@ -91,7 +91,7 @@ describe("update built activity", () => {
   it("unauthenticated user cannot update activity", async () => {
     const flowsListData = [
       {
-        _id: "5ffdf1231ea2c62320b49e1a",
+        clientId: "5ffdf1231ea2c62320b49e1a",
         name: "flow 1",
         steps: [
           {
@@ -124,7 +124,7 @@ describe("update built activity", () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
     const flowsListData = [
       {
-        _id: "5ffdf1231ee2c62320b49e1a",
+        clientId: "5ffdf1231ee2c62320b49e1a",
         name: "flow 1",
         steps: [
           {
@@ -158,7 +158,7 @@ describe("update built activity", () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const flowsListData = [
       {
-        _id: "5ffdf1231ee2c62320a49e1f",
+        clientId: "5ffdf1231ee2c62320a49e1f",
         name: "flow 1",
         steps: [
           {
@@ -183,7 +183,7 @@ describe("update built activity", () => {
         query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
           addOrUpdateBuiltActivity(activity: $activity) {
                         flowsList{
-                        _id
+                        clientId
                         name
                           steps{
                             ... on SystemMessageActivityStepType {
@@ -223,7 +223,7 @@ describe("update built activity", () => {
     expect(builtActivitesPre.length).to.equal(2);
     const flowsListData = [
       {
-        _id: "5ffdf1231ee2c62320b42e1f",
+        clientId: "67890",
         name: "flow 1",
         steps: [
           {
