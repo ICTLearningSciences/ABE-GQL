@@ -32,7 +32,7 @@ import {
   RequestUserInputActivityStepSchema,
   PromptActivityStepSchema,
 } from "./objects";
-import { ActivityBuilder } from "./types";
+import { ActivityBuilder, ActivityBuilderStepType } from "./types";
 
 // union the different step types
 export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
@@ -44,11 +44,11 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
   ],
   resolveType(value) {
     switch (value.stepType) {
-      case "Prompt":
+      case ActivityBuilderStepType.PROMPT:
         return PromptActivityStepType;
-      case "RequestUserInput":
+      case ActivityBuilderStepType.REQUEST_USER_INPUT:
         return RequestUserInputActivityStepType;
-      case "SystemMessage":
+      case ActivityBuilderStepType.SYSTEM_MESSAGE:
         return SystemMessageActivityStepType;
       default:
         throw new Error("invalid step type");
@@ -154,12 +154,12 @@ const ActivityBuilderModel = mongoose.model<
 >("BuiltActivity", BuiltActivitySchema);
 
 ActivityBuilderModel.discriminator(
-  "SystemMessage",
+  ActivityBuilderStepType.SYSTEM_MESSAGE,
   SystemMessageActivityStepSchema
 );
 
 ActivityBuilderModel.discriminator(
-  "RequestUserInput",
+  ActivityBuilderStepType.REQUEST_USER_INPUT,
   RequestUserInputActivityStepSchema
 );
 

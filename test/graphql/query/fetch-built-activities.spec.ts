@@ -13,6 +13,7 @@ import request from "supertest";
 import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 import { UserRole } from "../../../src/schemas/models/User";
 import { getToken } from "../../helpers";
+import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
 
 describe("fetch built activities", () => {
   let app: Express;
@@ -64,7 +65,7 @@ describe("fetch built activities", () => {
     ).to.equal(5);
     expect(
       response.body.data.fetchBuiltActivities[0].flowsList[0].steps[0].stepType
-    ).to.equal("SystemMessage");
+    ).to.equal(ActivityBuilderStepType.SYSTEM_MESSAGE);
   });
 
   it("authenticated users cannot see other users private activities", async () => {

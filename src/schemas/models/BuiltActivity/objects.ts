@@ -12,6 +12,7 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import { Schema } from "mongoose";
+import { ActivityBuilderStepType as _ActivityBuilderStepType } from "./types";
 
 export const ActivityBuilderStepType = new GraphQLObjectType({
   name: "ActivityBuilderStepType",
@@ -36,7 +37,10 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
   fields: () => ({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
-    stepType: { type: GraphQLString, value: "SystemMessage" },
+    stepType: {
+      type: GraphQLString,
+      value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
+    },
     message: { type: GraphQLString },
   }),
 });
@@ -46,7 +50,10 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
   fields: () => ({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
-    stepType: { type: GraphQLString, value: "SystemMessage" },
+    stepType: {
+      type: GraphQLString,
+      value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
+    },
     message: { type: GraphQLString },
   }),
 });
@@ -77,7 +84,10 @@ export const RequestUserInputActivityStepType = new GraphQLObjectType({
   fields: () => ({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
-    stepType: { type: GraphQLString, value: "RequestUserInput" },
+    stepType: {
+      type: GraphQLString,
+      value: _ActivityBuilderStepType.REQUEST_USER_INPUT,
+    },
     message: { type: GraphQLString },
     saveAsIntention: { type: GraphQLBoolean },
     saveResponseVariableName: { type: GraphQLString },
@@ -92,7 +102,10 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
     fields: () => ({
       stepId: { type: GraphQLString },
       jumpToStepId: { type: GraphQLString },
-      stepType: { type: GraphQLString, value: "RequestUserInput" },
+      stepType: {
+        type: GraphQLString,
+        value: _ActivityBuilderStepType.REQUEST_USER_INPUT,
+      },
       message: { type: GraphQLString },
       saveAsIntention: { type: GraphQLBoolean },
       saveResponseVariableName: { type: GraphQLString },
@@ -128,7 +141,7 @@ export const PromptActivityStepType = new GraphQLObjectType({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
 
-    stepType: { type: GraphQLString, value: "Prompt" },
+    stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
     promptText: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
@@ -144,7 +157,7 @@ export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
   fields: () => ({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
-    stepType: { type: GraphQLString, value: "Prompt" },
+    stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
     promptText: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
@@ -169,13 +182,16 @@ const ActivityBuilderStepSchema = new Schema(
 
 export const SystemMessageActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
-  stepType: { type: String, default: "SystemMessage" },
+  stepType: { type: String, default: _ActivityBuilderStepType.SYSTEM_MESSAGE },
   message: { type: String },
 });
 
 export const RequestUserInputActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
-  stepType: { type: String, default: "RequestUserInput" },
+  stepType: {
+    type: String,
+    default: _ActivityBuilderStepType.REQUEST_USER_INPUT,
+  },
   message: { type: String },
   saveAsIntention: { type: Boolean },
   saveResponseVariableName: { type: String },
@@ -192,7 +208,7 @@ export const JsonResponseDataSchema = new Schema({
 
 export const PromptActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
-  stepType: { type: String, default: "Prompt" },
+  stepType: { type: String, default: _ActivityBuilderStepType.PROMPT },
   promptText: { type: String },
   responseFormat: { type: String },
   includeChatLogContext: { type: Boolean },

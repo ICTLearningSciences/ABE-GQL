@@ -112,7 +112,7 @@ module.exports = {
             },
             {
               stepId: "4",
-              stepType: "Prompt",
+              stepType: ActivityBuilderStepType.PROMPT,
               promptText: "Please generate a nickname for {{name}}",
               responseFormat: "",
               jsonResponseData: [
@@ -130,7 +130,7 @@ module.exports = {
             },
             {
               stepId: "5",
-              stepType: "SystemMessage",
+              stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
               message:
                 "Thank you for participating in the test activity, {{nickname}}!",
               jumpToStepId: "1",

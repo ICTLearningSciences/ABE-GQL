@@ -27,9 +27,9 @@ export interface ActivityBuilder extends IActivity {
 }
 
 export enum ActivityBuilderStepType {
-  SYSTEM_MESSAGE = "SystemMessage",
-  REQUEST_USER_INPUT = "RequestUserInput",
-  PROMPT = "Prompt",
+  SYSTEM_MESSAGE = "SYSTEM_MESSAGE",
+  REQUEST_USER_INPUT = "REQUEST_USER_INPUT",
+  PROMPT = "PROMPT",
 }
 
 export interface ActivityBuilderStep {
@@ -38,7 +38,6 @@ export interface ActivityBuilderStep {
   jumpToStepId?: string;
 }
 
-// SystemMessage
 export interface SystemMessageActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.SYSTEM_MESSAGE;
   message: string;
