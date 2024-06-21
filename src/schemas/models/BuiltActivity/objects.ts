@@ -62,12 +62,14 @@ export const PredefinedResponseType = new GraphQLObjectType({
   name: "PredefinedResponseType",
   fields: () => ({
     message: { type: GraphQLString },
+    isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
   }),
 });
 
 export const PredefinedResponseSchema = new Schema({
   message: { type: String },
+  isArray: { type: Boolean },
   jumpToStepId: { type: String, require: false },
 });
 
@@ -75,6 +77,7 @@ export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
   name: "PredefinedResponseTypeInput",
   fields: () => ({
     message: { type: GraphQLString },
+    isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
   }),
 });

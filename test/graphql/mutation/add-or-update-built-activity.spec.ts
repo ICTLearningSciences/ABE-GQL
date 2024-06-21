@@ -50,6 +50,8 @@ export const fullBuiltActivityQueryData = `
                               disableFreeInput
                               predefinedResponses{
                                   message
+                                  isArray
+                                  jumpToStepId
                               }
                           }
 
@@ -244,6 +246,8 @@ describe("update built activity", () => {
             predefinedResponses: [
               {
                 message: "message 1",
+                isArray: false,
+                jumpToStepId: "jump to step id 1",
               },
             ],
           },
