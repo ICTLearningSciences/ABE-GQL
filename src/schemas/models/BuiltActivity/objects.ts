@@ -118,6 +118,7 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
 export const JsonResponseDataType = new GraphQLObjectType({
   name: "JsonResponseDataType",
   fields: () => ({
+    clientId: { type: GraphQLString },
     name: { type: GraphQLString },
     type: { type: GraphQLString },
     isRequired: { type: GraphQLBoolean },
@@ -128,6 +129,7 @@ export const JsonResponseDataType = new GraphQLObjectType({
 export const JsonResponseDataTypeInput = new GraphQLInputObjectType({
   name: "JsonResponseDataTypeInput",
   fields: () => ({
+    clientId: { type: GraphQLString },
     name: { type: GraphQLString },
     type: { type: GraphQLString },
     isRequired: { type: GraphQLBoolean },
@@ -200,6 +202,7 @@ export const RequestUserInputActivityStepSchema = new Schema({
 });
 
 export const JsonResponseDataSchema = new Schema({
+  clientId: { type: String },
   name: { type: String },
   type: { type: String },
   isRequired: { type: Boolean },

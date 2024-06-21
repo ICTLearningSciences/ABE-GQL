@@ -63,6 +63,7 @@ export const fullBuiltActivityQueryData = `
                               includeEssay
                               outputDataType
                               jsonResponseData{
+                                  clientId
                                   name
                                   type
                                   isRequired
@@ -253,6 +254,7 @@ describe("update built activity", () => {
             jumpToStepId: "123",
             jsonResponseData: [
               {
+                clientId: "client id 1",
                 name: "name 1",
                 type: "type 1",
                 isRequired: true,

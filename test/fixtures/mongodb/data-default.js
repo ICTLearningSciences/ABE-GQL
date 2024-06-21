@@ -117,6 +117,7 @@ module.exports = {
               responseFormat: "",
               jsonResponseData: [
                 {
+                  clientId: "123552345",
                   name: "nickname",
                   type: "string",
                   additionalInfo: "a nickname generated for the supplied name",
