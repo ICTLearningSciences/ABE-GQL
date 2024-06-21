@@ -48,6 +48,7 @@ export interface PredefinedResponse {
   message: string;
   isArray?: boolean;
   jumpToStepId?: string;
+  responseWeight?: number;
 }
 
 export interface RequestUserInputActivityStep extends ActivityBuilderStep {

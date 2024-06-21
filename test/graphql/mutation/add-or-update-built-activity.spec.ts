@@ -52,6 +52,7 @@ export const fullBuiltActivityQueryData = `
                                   message
                                   isArray
                                   jumpToStepId
+                                  responseWeight
                               }
                           }
 
@@ -248,6 +249,7 @@ describe("update built activity", () => {
                 message: "message 1",
                 isArray: false,
                 jumpToStepId: "jump to step id 1",
+                responseWeight: 1,
               },
             ],
           },

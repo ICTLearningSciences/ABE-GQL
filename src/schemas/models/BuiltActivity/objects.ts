@@ -10,6 +10,7 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLInputObjectType,
+  GraphQLInt,
 } from "graphql";
 import { Schema } from "mongoose";
 import { ActivityBuilderStepType as _ActivityBuilderStepType } from "./types";
@@ -64,6 +65,7 @@ export const PredefinedResponseType = new GraphQLObjectType({
     message: { type: GraphQLString },
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
+    responseWeight: { type: GraphQLInt },
   }),
 });
 
@@ -71,6 +73,7 @@ export const PredefinedResponseSchema = new Schema({
   message: { type: String },
   isArray: { type: Boolean },
   jumpToStepId: { type: String, require: false },
+  responseWeight: { type: Number },
 });
 
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
@@ -79,6 +82,7 @@ export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
     message: { type: GraphQLString },
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
+    responseWeight: { type: GraphQLInt },
   }),
 });
 
