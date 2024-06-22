@@ -65,7 +65,7 @@ export const PredefinedResponseType = new GraphQLObjectType({
     message: { type: GraphQLString },
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
-    responseWeight: { type: GraphQLInt },
+    responseWeight: { type: GraphQLString },
   }),
 });
 
@@ -73,7 +73,7 @@ export const PredefinedResponseSchema = new Schema({
   message: { type: String },
   isArray: { type: Boolean },
   jumpToStepId: { type: String, require: false },
-  responseWeight: { type: Number },
+  responseWeight: { type: String, default: "0" },
 });
 
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
@@ -82,7 +82,7 @@ export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
     message: { type: GraphQLString },
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
-    responseWeight: { type: GraphQLInt },
+    responseWeight: { type: GraphQLString },
   }),
 });
 
