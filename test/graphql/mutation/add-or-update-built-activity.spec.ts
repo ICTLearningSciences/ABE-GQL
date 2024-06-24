@@ -21,6 +21,7 @@ import { UserRole } from "../../../src/schemas/models/User";
 
 export const fullBuiltActivityQueryData = `
                       _id
+                      clientId
                       title
                       user
                       visibility
@@ -278,6 +279,7 @@ describe("update built activity", () => {
     ];
     const activity = {
       _id: "5ffdf1231ee2c62320b49e5f",
+      clientId: "123",
       activityType: "builder",
       title: "title 1",
       user: "5ffdf1231ee2c62320b49a99",

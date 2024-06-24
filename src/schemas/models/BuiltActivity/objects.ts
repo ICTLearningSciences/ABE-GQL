@@ -10,7 +10,6 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLInputObjectType,
-  GraphQLInt,
 } from "graphql";
 import { Schema } from "mongoose";
 import { ActivityBuilderStepType as _ActivityBuilderStepType } from "./types";
