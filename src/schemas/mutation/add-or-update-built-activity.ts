@@ -6,34 +6,43 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
-import ActivityModel, {
-  Activity,
-  ActivityInputType,
-  ActivityType,
-} from "../models/Activity";
+
+import BuiltActivityModel, {
+  BuiltActivityInputType,
+  BuiltActivityType,
+} from "../../schemas/models/BuiltActivity/BuiltActivity";
+import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
+import { idOrNew } from "../../helpers";
+import { UserRole } from "../../schemas/models/User";
 dotenv.config();
 
-export const addOrUpdateActivity = {
-  type: ActivityType,
+export const addOrUpdateBuiltActivity = {
+  type: BuiltActivityType,
   args: {
-    activity: { type: GraphQLNonNull(ActivityInputType) },
+    activity: { type: GraphQLNonNull(BuiltActivityInputType) },
   },
   async resolve(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _: any,
     args: {
-      activity: Activity;
+      activity: ActivityBuilder;
+    },
+    context: {
+      userRole?: string;
     }
   ) {
+    if (!context.userRole || context.userRole !== UserRole.ADMIN) {
+      throw new Error("unauthorized");
+    }
     try {
-      const updatedActivity = await ActivityModel.findOneAndUpdate(
+      const id = idOrNew(args.activity._id);
+      delete args.activity._id;
+      const updatedActivity = await BuiltActivityModel.findOneAndUpdate(
         {
-          _id: args.activity._id,
+          _id: id,
         },
         {
-          $set: {
-            ...args.activity,
-          },
+          ...args.activity,
         },
         {
           new: true,
@@ -47,4 +56,4 @@ export const addOrUpdateActivity = {
     }
   },
 };
-export default addOrUpdateActivity;
+export default addOrUpdateBuiltActivity;

@@ -4,47 +4,38 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLNonNull } from "graphql";
+import { GraphQLList, GraphQLObjectType } from "graphql";
 import * as dotenv from "dotenv";
-import ActivityModel, {
-  Activity,
-  ActivityInputType,
-  ActivityType,
-} from "../models/Activity";
+import BuiltActivityModel, {
+  BuiltActivityType,
+} from "../../schemas/models/BuiltActivity/BuiltActivity";
 dotenv.config();
 
-export const addOrUpdateActivity = {
-  type: ActivityType,
-  args: {
-    activity: { type: GraphQLNonNull(ActivityInputType) },
-  },
+export const fetchBuiltActivities = {
+  type: GraphQLList(BuiltActivityType),
   async resolve(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _: any,
-    args: {
-      activity: Activity;
+    _root: GraphQLObjectType,
+    _args: null,
+    context: {
+      userId?: string;
     }
   ) {
+    const { userId } = context;
     try {
-      const updatedActivity = await ActivityModel.findOneAndUpdate(
-        {
-          _id: args.activity._id,
-        },
-        {
-          $set: {
-            ...args.activity,
+      return await BuiltActivityModel.find({
+        $or: [
+          {
+            user: userId,
           },
-        },
-        {
-          new: true,
-          upsert: true,
-        }
-      );
-      return updatedActivity;
+          {
+            visibility: "public",
+          },
+        ],
+      });
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
     }
   },
 };
-export default addOrUpdateActivity;
+export default fetchBuiltActivities;

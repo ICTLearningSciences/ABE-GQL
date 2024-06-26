@@ -106,9 +106,12 @@ function getSubdomainFromRequest(req: Request): string {
   }
 }
 
-async function getUserRoleFromRequest(
-  req: Request
-): Promise<string | undefined> {
+interface JwtData {
+  userId: string;
+  userRole: string;
+}
+
+async function getDataFromRequest(req: Request): Promise<JwtData | undefined> {
   try {
     const splitAuthHeader = req.headers.authorization?.split(" ");
     if (
@@ -118,7 +121,10 @@ async function getUserRoleFromRequest(
       const token = req.headers.authorization?.split(" ")[1];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET);
-      return decodedJwt.role;
+      return {
+        userId: decodedJwt.id,
+        userRole: decodedJwt.role,
+      };
     }
     return undefined;
   } catch (err) {
@@ -143,6 +149,9 @@ export function createApp(): Express {
   app.use(
     "/graphql",
     graphqlHTTP(async (req: Request, res) => {
+      const jwtData = await getDataFromRequest(req);
+      const userRole = jwtData ? jwtData.userRole : undefined;
+      const userId = jwtData ? jwtData.userId : undefined;
       return {
         schema: publicSchema,
         graphiql: true,
@@ -150,7 +159,8 @@ export function createApp(): Express {
           req: req,
           res: res,
           subdomain: getSubdomainFromRequest(req),
-          userRole: await getUserRoleFromRequest(req),
+          userRole,
+          userId,
         },
       };
     })
