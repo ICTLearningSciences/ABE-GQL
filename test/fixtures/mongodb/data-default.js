@@ -115,15 +115,7 @@ module.exports = {
               stepType: ActivityBuilderStepType.PROMPT,
               promptText: "Please generate a nickname for {{name}}",
               responseFormat: "",
-              jsonResponseData: [
-                {
-                  clientId: "123552345",
-                  name: "nickname",
-                  type: "string",
-                  additionalInfo: "a nickname generated for the supplied name",
-                  isRequired: true,
-                },
-              ],
+              jsonResponseData: "stringified_json_response_data",
               includeChatLogContext: true,
               includeEssay: false,
               outputDataType: "JSON",

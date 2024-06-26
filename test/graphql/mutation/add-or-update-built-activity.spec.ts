@@ -66,13 +66,7 @@ export const fullBuiltActivityQueryData = `
                               includeChatLogContext
                               includeEssay
                               outputDataType
-                              jsonResponseData{
-                                  clientId
-                                  name
-                                  type
-                                  isRequired
-                                  additionalInfo
-                              }
+                              jsonResponseData
                               customSystemRole
                           }
                       }
@@ -259,15 +253,7 @@ describe("update built activity", () => {
             stepType: ActivityBuilderStepType.PROMPT,
             promptText: "prompt 1",
             jumpToStepId: "123",
-            jsonResponseData: [
-              {
-                clientId: "client id 1",
-                name: "name 1",
-                type: "type 1",
-                isRequired: true,
-                additionalInfo: "additional info 1",
-              },
-            ],
+            jsonResponseData: "stringified_json_response_data",
             responseFormat: "response format 1",
             includeChatLogContext: true,
             includeEssay: true,

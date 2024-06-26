@@ -121,28 +121,6 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
   }
 );
 
-export const JsonResponseDataType = new GraphQLObjectType({
-  name: "JsonResponseDataType",
-  fields: () => ({
-    clientId: { type: GraphQLString },
-    name: { type: GraphQLString },
-    type: { type: GraphQLString },
-    isRequired: { type: GraphQLBoolean },
-    additionalInfo: { type: GraphQLString },
-  }),
-});
-
-export const JsonResponseDataTypeInput = new GraphQLInputObjectType({
-  name: "JsonResponseDataTypeInput",
-  fields: () => ({
-    clientId: { type: GraphQLString },
-    name: { type: GraphQLString },
-    type: { type: GraphQLString },
-    isRequired: { type: GraphQLBoolean },
-    additionalInfo: { type: GraphQLString },
-  }),
-});
-
 export const PromptActivityStepType = new GraphQLObjectType({
   name: "PromptActivityStepType",
   fields: () => ({
@@ -155,7 +133,7 @@ export const PromptActivityStepType = new GraphQLObjectType({
     includeChatLogContext: { type: GraphQLBoolean },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
-    jsonResponseData: { type: GraphQLList(JsonResponseDataType) },
+    jsonResponseData: { type: GraphQLString },
     customSystemRole: { type: GraphQLString },
   }),
 });
@@ -171,7 +149,7 @@ export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
     includeChatLogContext: { type: GraphQLBoolean },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
-    jsonResponseData: { type: GraphQLList(JsonResponseDataTypeInput) },
+    jsonResponseData: { type: GraphQLString },
     customSystemRole: { type: GraphQLString },
   }),
 });
@@ -207,14 +185,6 @@ export const RequestUserInputActivityStepSchema = new Schema({
   predefinedResponses: [PredefinedResponseSchema],
 });
 
-export const JsonResponseDataSchema = new Schema({
-  clientId: { type: String },
-  name: { type: String },
-  type: { type: String },
-  isRequired: { type: Boolean },
-  additionalInfo: { type: String },
-});
-
 export const PromptActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
   stepType: { type: String, default: _ActivityBuilderStepType.PROMPT },
@@ -223,7 +193,7 @@ export const PromptActivityStepSchema = new Schema({
   includeChatLogContext: { type: Boolean },
   includeEssay: { type: Boolean },
   outputDataType: { type: String },
-  jsonResponseData: [JsonResponseDataSchema],
+  jsonResponseData: { type: String },
   customSystemRole: { type: String },
 });
 
