@@ -45,6 +45,7 @@ export interface SystemMessageActivityStep extends ActivityBuilderStep {
 
 // RequestUserInput
 export interface PredefinedResponse {
+  clientId: string;
   message: string;
   isArray?: boolean;
   jumpToStepId?: string;

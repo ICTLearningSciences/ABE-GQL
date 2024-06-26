@@ -61,6 +61,7 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
 export const PredefinedResponseType = new GraphQLObjectType({
   name: "PredefinedResponseType",
   fields: () => ({
+    clientId: { type: GraphQLString },
     message: { type: GraphQLString },
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
@@ -69,6 +70,7 @@ export const PredefinedResponseType = new GraphQLObjectType({
 });
 
 export const PredefinedResponseSchema = new Schema({
+  clientId: { type: String },
   message: { type: String },
   isArray: { type: Boolean },
   jumpToStepId: { type: String, require: false },
@@ -78,6 +80,7 @@ export const PredefinedResponseSchema = new Schema({
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
   name: "PredefinedResponseTypeInput",
   fields: () => ({
+    clientId: { type: GraphQLString },
     message: { type: GraphQLString },
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },

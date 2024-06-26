@@ -18,6 +18,7 @@ import {
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
+import { cli } from "winston/lib/winston/config";
 
 export const fullBuiltActivityQueryData = `
                       _id
@@ -50,6 +51,7 @@ export const fullBuiltActivityQueryData = `
                               saveResponseVariableName
                               disableFreeInput
                               predefinedResponses{
+                                  clientId
                                   message
                                   isArray
                                   jumpToStepId
@@ -241,6 +243,7 @@ describe("update built activity", () => {
             disableFreeInput: true,
             predefinedResponses: [
               {
+                clientId: "123",
                 message: "message 1",
                 isArray: false,
                 jumpToStepId: "jump to step id 1",
