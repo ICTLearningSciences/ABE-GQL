@@ -12,6 +12,13 @@ import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 
+export const fetchActivityVersionsQueryData = `
+    activity{
+    ${fullBuiltActivityQueryData}
+    }
+    versionTime
+`;
+
 describe("fetch built activity Versiopns", () => {
   let app: Express;
 
@@ -34,7 +41,7 @@ describe("fetch built activity Versiopns", () => {
             fetchBuiltActivityVersions(limit: $limit, filter: $filter, sortAscending: $sortAscending, sortBy: $sortBy) {
                         edges{
                             node{
-                                ${fullBuiltActivityQueryData}
+                                ${fetchActivityVersionsQueryData}
                             }
                         }
                     }
@@ -42,31 +49,34 @@ describe("fetch built activity Versiopns", () => {
         variables: {
           limit: 10,
           filter: JSON.stringify({
-            clientId: "built-activity-verions",
+            "activity.clientId": "built-activity-verions",
           }),
         },
       });
-
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchBuiltActivityVersions.edges).to.have.length(
       1
     );
+    delete response.body.data.fetchBuiltActivityVersions.edges[0].node
+      .versionTime;
     expect(
       response.body.data.fetchBuiltActivityVersions.edges
     ).to.deep.include.members([
       {
         node: {
-          _id: "5ffdf1231ee2c62320c49e2f",
-          clientId: "built-activity-verions",
-          title: "Private activity",
-          user: "5ffdf1231ee2c62320b49e99",
-          visibility: "private",
-          activityType: "builder",
-          description: "",
-          displayIcon: "DEFAULT",
-          disabled: null,
-          newDocRecommend: null,
-          flowsList: [],
+          activity: {
+            _id: "5ffdf1231ee2c62320c49e2f",
+            clientId: "built-activity-verions",
+            title: "Private activity",
+            user: "5ffdf1231ee2c62320b49e99",
+            visibility: "private",
+            activityType: "builder",
+            description: "",
+            displayIcon: "DEFAULT",
+            disabled: null,
+            newDocRecommend: null,
+            flowsList: [],
+          },
         },
       },
     ]);

@@ -5,17 +5,47 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose from "mongoose";
-import { BuiltActivityModel, BuiltActivitySchema } from "./BuiltActivity";
+import { BuiltActivitySchema, BuiltActivityType } from "./BuiltActivity";
 import { ActivityBuilder } from "./types";
+import {
+  PaginateQuery,
+  PaginateOptions,
+  PaginatedResolveResult,
+  pluginPagination,
+} from "../Paginatation";
+import { GraphQLObjectType, GraphQLString } from "graphql";
 
-export const ActivityVersionSchema = new mongoose.Schema(
-  {
-    ...BuiltActivitySchema.obj,
+export const ActivityVersionType = new GraphQLObjectType({
+  name: "ActivityVersionType",
+  fields: {
+    activity: { type: BuiltActivityType },
+    versionTime: { type: GraphQLString },
   },
-  { _id: false, timestamps: true }
-);
+});
 
-export default mongoose.model<ActivityBuilder, BuiltActivityModel>(
+export const ActivityVersionSchema = new mongoose.Schema({
+  activity: BuiltActivitySchema,
+  versionTime: {
+    type: Date,
+    required: true,
+  },
+});
+
+export interface ActivityVersion {
+  activity: ActivityBuilder;
+  versionTime: Date;
+}
+
+export interface ActivityVersionModel extends mongoose.Model<ActivityVersion> {
+  paginate(
+    query?: PaginateQuery<ActivityVersion>,
+    options?: PaginateOptions
+  ): Promise<PaginatedResolveResult<ActivityVersion>>;
+}
+
+pluginPagination(ActivityVersionSchema);
+
+export default mongoose.model<ActivityVersion, ActivityVersionModel>(
   "BuiltActivityVersion",
-  BuiltActivitySchema
+  ActivityVersionSchema
 );

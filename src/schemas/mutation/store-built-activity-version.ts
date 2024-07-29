@@ -4,32 +4,32 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import BuiltActivityVersionModel from "../models/BuiltActivity/BuiltActivityVersion";
+import BuiltActivityVersionModel, {
+  ActivityVersionType,
+} from "../models/BuiltActivity/BuiltActivityVersion";
 import { GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
-import { idOrNew } from "../../helpers";
-import {
-  BuiltActivityInputType,
-  BuiltActivityType,
-} from "../../schemas/models/BuiltActivity/BuiltActivity";
+import { BuiltActivityInputType } from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
 dotenv.config();
 
 export const storeBuiltActivityVersion = {
-  type: BuiltActivityType,
+  type: ActivityVersionType,
   args: {
     activity: { type: GraphQLNonNull(BuiltActivityInputType) },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async resolve(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _: any,
     args: {
       activity: ActivityBuilder;
     }
   ) {
     try {
-      delete args.activity._id;
-      const version = await BuiltActivityVersionModel.create(args.activity);
+      const version = await BuiltActivityVersionModel.create({
+        activity: args.activity,
+        versionTime: new Date().toISOString(),
+      });
       return version;
     } catch (e) {
       console.log(e);

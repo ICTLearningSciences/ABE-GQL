@@ -11,8 +11,8 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { fullBuiltActivityQueryData } from "./add-or-update-built-activity.spec";
 import { DisplayIcons } from "../../../src/constants";
+import { fetchActivityVersionsQueryData } from "../query/fetch-built-activity-versions.spec";
 
 describe("store built activity version", () => {
   let app: Express;
@@ -34,7 +34,7 @@ describe("store built activity version", () => {
       .send({
         query: `mutation StoreBuiltActivityVersion($activity: BuiltActivityInputType!) {
             storeBuiltActivityVersion(activity: $activity) {
-                        ${fullBuiltActivityQueryData}
+                        ${fetchActivityVersionsQueryData}
                     }
                 }`,
         variables: {
@@ -50,19 +50,22 @@ describe("store built activity version", () => {
           },
         },
       });
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
-    delete response.body.data.storeBuiltActivityVersion._id;
-    expect(response.body.data.storeBuiltActivityVersion).to.deep.equal({
-      clientId: "new-built-activity-verions",
-      title: "Private activity",
-      activityType: "builder",
-      user: "5ffdf1231ee2c62320b49e99",
-      visibility: "private",
-      description: "",
-      displayIcon: DisplayIcons.DEFAULT,
-      disabled: false,
-      newDocRecommend: false,
-      flowsList: [],
-    });
+    delete response.body.data.storeBuiltActivityVersion.activity._id;
+    expect(response.body.data.storeBuiltActivityVersion.activity).to.deep.equal(
+      {
+        clientId: "new-built-activity-verions",
+        title: "Private activity",
+        activityType: "builder",
+        user: "5ffdf1231ee2c62320b49e99",
+        visibility: "private",
+        description: "",
+        displayIcon: DisplayIcons.DEFAULT,
+        disabled: false,
+        newDocRecommend: false,
+        flowsList: [],
+      }
+    );
   });
 });
