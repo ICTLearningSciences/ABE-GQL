@@ -50,7 +50,6 @@ describe("store built activity version", () => {
           },
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     delete response.body.data.storeBuiltActivityVersion.activity._id;
     expect(response.body.data.storeBuiltActivityVersion.activity).to.deep.equal(

@@ -26,14 +26,14 @@ export const ActivityVersionType = new GraphQLObjectType({
 export const ActivityVersionSchema = new mongoose.Schema({
   activity: BuiltActivitySchema,
   versionTime: {
-    type: Date,
+    type: String,
     required: true,
   },
 });
 
 export interface ActivityVersion {
   activity: ActivityBuilder;
-  versionTime: Date;
+  versionTime: string;
 }
 
 export interface ActivityVersionModel extends mongoose.Model<ActivityVersion> {
