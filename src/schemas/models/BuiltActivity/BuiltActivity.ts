@@ -137,7 +137,7 @@ export const BuiltActivitySchema = new Schema(
     description: { type: String },
     displayIcon: { type: String },
     disabled: { type: Boolean, default: false },
-    newDocRecommend: { type: Boolean },
+    newDocRecommend: { type: Boolean, default: false },
     flowsList: [StepsFlowSchema],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
