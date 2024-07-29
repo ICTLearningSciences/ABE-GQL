@@ -5,10 +5,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose from "mongoose";
-import {
-  TimelinePointType,
-  Sender,
-} from "../../../src/schemas/models/DocTimeline";
+import { TimelinePointType } from "../../../src/schemas/models/DocTimeline";
 import { DisplayIcons } from "../../../src/constants";
 import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
 const { ObjectId } = mongoose.Types;
@@ -143,6 +140,38 @@ module.exports = {
       flowsList: [],
     },
   ],
+
+  builtactivityversions: [
+    {
+      activity: {
+        _id: new ObjectId("5ffdf1231ee2c62320c49e2f"),
+        clientId: "built-activity-verions",
+        title: "Private activity",
+        activityType: "builder",
+        user: "5ffdf1231ee2c62320b49e99",
+        visibility: "private",
+        description: "",
+        displayIcon: DisplayIcons.DEFAULT,
+        flowsList: [],
+      },
+      versionTime: new Date("2021-01-12T00:00:00.000Z"),
+    },
+    {
+      activity: {
+        _id: new ObjectId("5ffdf1231ee2c62320c49e2a"),
+        clientId: "built-activity-verions-2",
+        title: "Private activity",
+        activityType: "builder",
+        user: "5ffdf1231ee2c62320b49e99",
+        visibility: "private",
+        description: "",
+        displayIcon: DisplayIcons.DEFAULT,
+        flowsList: [],
+      },
+      versionTime: new Date("2021-01-12T00:00:00.000Z"),
+    },
+  ],
+
   useractivitystates: [
     {
       userId: new ObjectId("5ffdf1231ee2c62320b49e99"),

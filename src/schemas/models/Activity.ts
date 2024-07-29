@@ -197,7 +197,7 @@ export const ActivitySchema = new Schema(
     steps: [{ type: ActivityStepSchema }],
     prompt: { type: mongoose.Types.ObjectId, ref: "Prompt" },
     prompts: [{ type: ActivityPromptSchema }],
-    newDocRecommend: { type: Boolean },
+    newDocRecommend: { type: Boolean, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

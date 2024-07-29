@@ -9,16 +9,24 @@ export interface IActivity {
   activityType: "builder" | "gql";
 }
 
+export type ActivityBuilderStepUnion =
+  | SystemMessageActivityStep
+  | RequestUserInputActivityStep
+  | PromptActivityStep;
+
 export interface FlowItem {
-  _id: string;
+  clientId: string;
   name: string;
-  steps: ActivityBuilderStep[];
+  steps: ActivityBuilderStepUnion[];
 }
 
 export interface ActivityBuilder extends IActivity {
   _id: string;
+  clientId: string;
   activityType: "builder";
   title: string;
+  user: string;
+  visibility: string;
   description: string;
   displayIcon: string;
   newDocRecommend?: boolean;
