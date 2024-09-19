@@ -85,7 +85,11 @@ export const GoogleDocSchema = new Schema(
     documentIntention: IntentionSchema,
     currentDayIntention: IntentionSchema,
     assignmentDescription: { type: String },
-    service: { type: String, enum: Object.values(DocService) },
+    service: {
+      type: String,
+      enum: Object.values(DocService),
+      default: DocService.GOOGLE_DOCS,
+    },
     admin: { type: Boolean, default: false },
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },

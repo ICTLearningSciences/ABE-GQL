@@ -44,6 +44,7 @@ describe("fetch google doc versions", () => {
                         createdAt
                       }
                       assignmentDescription
+                      service
                       createdAt
                     }
                 }`,
@@ -65,6 +66,7 @@ describe("fetch google doc versions", () => {
           createdAt: "2000-10-12T20:49:41.599Z",
         },
         assignmentDescription: "test-assignment-description",
+        service: "GOOGLE_DOCS",
         user: "5ffdf1231ee2c62320b49e99",
         title: "Test Document",
       },
@@ -74,6 +76,7 @@ describe("fetch google doc versions", () => {
         documentIntention: null,
         currentDayIntention: null,
         assignmentDescription: null,
+        service: "GOOGLE_DOCS",
         title: "Test Admin Document",
         user: "5ffdf1231ee2c62320b49e99",
       },
