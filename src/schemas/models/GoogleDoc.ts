@@ -21,6 +21,11 @@ import GoogleDocVersionsModel, {
   IntentionSchema,
 } from "./GoogleDocVersion";
 
+export enum DocService {
+  GOOGLE_DOCS = "GOOGLE_DOCS",
+  MICROSOFT_WORD = "MICROSOFT_WORD",
+}
+
 export interface GoogleDoc {
   googleDocId: string;
   deleted: boolean;
@@ -28,6 +33,7 @@ export interface GoogleDoc {
   documentIntention: IIntention;
   currentDayIntention: IIntention;
   assignmentDescription: string;
+  service: DocService;
   admin: boolean;
   user: User["_id"];
 }
@@ -42,6 +48,7 @@ export const GoogleDocType = new GraphQLObjectType({
     documentIntention: { type: IntentionObjectType },
     currentDayIntention: { type: IntentionObjectType },
     assignmentDescription: { type: GraphQLString },
+    service: { type: GraphQLString },
     title: {
       type: GraphQLString,
       resolve: async (doc: GoogleDoc) => {
@@ -66,6 +73,7 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
     documentIntention: { type: IntentionInputType },
     currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
+    service: { type: GraphQLString },
     title: { type: GraphQLString },
   }),
 });
@@ -77,6 +85,7 @@ export const GoogleDocSchema = new Schema(
     documentIntention: IntentionSchema,
     currentDayIntention: IntentionSchema,
     assignmentDescription: { type: String },
+    service: { type: String, enum: Object.values(DocService) },
     admin: { type: Boolean, default: false },
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },
