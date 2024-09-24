@@ -35,6 +35,7 @@ import fetchBuiltActivities from "./query/fetch-built-activities";
 import addOrUpdateBuiltActivity from "./mutation/add-or-update-built-activity";
 import fetchBuiltActivityVersions from "./query/fetch-built-activity-versions";
 import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
+import loginMicrosoft from "./mutation/login-microsoft";
 
 const PublicRootQuery = new GraphQLObjectType({
   name: "PublicRootQueryType",
@@ -73,6 +74,7 @@ const PublicMutation = new GraphQLObjectType({
     addOrUpdateActivity,
     addOrUpdateBuiltActivity,
     storeBuiltActivityVersion,
+    loginMicrosoft,
   },
 });
 
