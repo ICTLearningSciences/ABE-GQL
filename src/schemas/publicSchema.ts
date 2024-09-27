@@ -28,6 +28,7 @@ import updateUserActivityState from "./mutation/update-user-activity-state";
 import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
 import { docVersions } from "./query/fetch-paged-doc-versions";
+import fetchMostRecentVersion from "./query/fetch-most-recent-version";
 import deleteGoogleDoc from "./mutation/delete-google-doc";
 import addOrUpdateActivity from "./mutation/add-or-update-activity";
 import fetchActivities from "./query/fetch-activities";
@@ -35,6 +36,7 @@ import fetchBuiltActivities from "./query/fetch-built-activities";
 import addOrUpdateBuiltActivity from "./mutation/add-or-update-built-activity";
 import fetchBuiltActivityVersions from "./query/fetch-built-activity-versions";
 import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
+import loginMicrosoft from "./mutation/login-microsoft";
 
 const PublicRootQuery = new GraphQLObjectType({
   name: "PublicRootQueryType",
@@ -52,6 +54,7 @@ const PublicRootQuery = new GraphQLObjectType({
     docVersions,
     fetchBuiltActivities,
     fetchBuiltActivityVersions,
+    fetchMostRecentVersion,
   },
 });
 
@@ -73,6 +76,7 @@ const PublicMutation = new GraphQLObjectType({
     addOrUpdateActivity,
     addOrUpdateBuiltActivity,
     storeBuiltActivityVersion,
+    loginMicrosoft,
   },
 });
 

@@ -68,6 +68,7 @@ describe("store google doc", () => {
                           createdAt
                       }
                       assignmentDescription
+                      service
                   }
                 }`,
         variables: {
@@ -76,6 +77,7 @@ describe("store google doc", () => {
             user: "5ffdf1231ee2c62320b49e99",
             admin: true,
             title: "test_title_input",
+            service: "GOOGLE_DOCS",
           },
         },
       });
@@ -87,6 +89,7 @@ describe("store google doc", () => {
       documentIntention: null,
       currentDayIntention: null,
       assignmentDescription: null,
+      service: "GOOGLE_DOCS",
     });
   });
 
