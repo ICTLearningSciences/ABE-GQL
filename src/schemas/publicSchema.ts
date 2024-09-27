@@ -28,6 +28,7 @@ import updateUserActivityState from "./mutation/update-user-activity-state";
 import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
 import { docVersions } from "./query/fetch-paged-doc-versions";
+import fetchMostRecentVersion from "./query/fetch-most-recent-version";
 import deleteGoogleDoc from "./mutation/delete-google-doc";
 import addOrUpdateActivity from "./mutation/add-or-update-activity";
 import fetchActivities from "./query/fetch-activities";
@@ -53,6 +54,7 @@ const PublicRootQuery = new GraphQLObjectType({
     docVersions,
     fetchBuiltActivities,
     fetchBuiltActivityVersions,
+    fetchMostRecentVersion,
   },
 });
 
