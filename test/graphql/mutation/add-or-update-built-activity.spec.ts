@@ -71,6 +71,19 @@ export const fullBuiltActivityQueryData = `
                               jsonResponseData
                               customSystemRole
                           }
+
+                          ... on ConditionalActivityStepType {
+                              stepId
+                              stepType
+                              jumpToStepId
+                              conditionals{
+                                  stateDataKey
+                                  checking
+                                  operation
+                                  expectedValue
+                                  targetStepId
+                              }
+                          }
                       }
                       }
 `;
@@ -174,6 +187,18 @@ describe("update built activity", () => {
             stepType: ActivityBuilderStepType.PROMPT,
             promptText: "prompt 1",
           },
+          {
+            stepType: ActivityBuilderStepType.CONDITIONAL,
+            conditionals: [
+              {
+                stateDataKey: "state data key 1",
+                checking: "checking 1",
+                operation: "operation 1",
+                expectedValue: "expected value 1",
+                targetStepId: "target step id 1",
+              },
+            ],
+          },
         ],
       },
     ];
@@ -200,6 +225,17 @@ describe("update built activity", () => {
                             ... on PromptActivityStepType{
                                 stepType
                                 promptText
+                            }
+
+                            ... on ConditionalActivityStepType {
+                                stepType
+                                conditionals{
+                                    stateDataKey
+                                    checking
+                                    operation
+                                    expectedValue
+                                    targetStepId
+                                }
                             }
                         }
                         }
@@ -262,6 +298,20 @@ describe("update built activity", () => {
             includeEssay: true,
             outputDataType: "JSON",
             customSystemRole: "custom system role 1",
+          },
+          {
+            stepId: "101112",
+            stepType: ActivityBuilderStepType.CONDITIONAL,
+            jumpToStepId: "101112",
+            conditionals: [
+              {
+                stateDataKey: "state data key 1",
+                checking: "checking 1",
+                operation: "operation 1",
+                expectedValue: "expected value 1",
+                targetStepId: "target step id 1",
+              },
+            ],
           },
         ],
       },
