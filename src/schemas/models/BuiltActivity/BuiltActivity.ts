@@ -31,6 +31,8 @@ import {
   SystemMessageActivityStepSchema,
   RequestUserInputActivityStepSchema,
   PromptActivityStepSchema,
+  ConditionalActivityStepType,
+  ConditionalActivityStepTypeInput,
 } from "./objects";
 import { ActivityBuilder, ActivityBuilderStepType } from "./types";
 
@@ -41,6 +43,7 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
     PromptActivityStepType,
     RequestUserInputActivityStepType,
     SystemMessageActivityStepType,
+    ConditionalActivityStepType,
   ],
   resolveType(value) {
     switch (value.stepType) {
@@ -50,6 +53,8 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
         return RequestUserInputActivityStepType;
       case ActivityBuilderStepType.SYSTEM_MESSAGE:
         return SystemMessageActivityStepType;
+      case ActivityBuilderStepType.CONDITIONAL:
+        return ConditionalActivityStepType;
       default:
         throw new Error("invalid step type");
     }
@@ -89,6 +94,7 @@ export const ActivityBuilderStepTypeInputUnion = new GraphQLInputObjectType({
     ...PromptActivityStepTypeInput.getFields(),
     ...RequestUserInputActivityStepTypeInput.getFields(),
     ...SystemMessageActivityStepTypeInput.getFields(),
+    ...ConditionalActivityStepTypeInput.getFields(),
   },
 });
 
