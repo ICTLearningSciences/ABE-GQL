@@ -11,8 +11,10 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import { UserRole } from "../../../src/schemas/models/User";
+import { getToken } from "../../helpers";
 
-describe("update user activity state", () => {
+describe("add or update activity", () => {
   let app: Express;
 
   beforeEach(async () => {
@@ -27,8 +29,10 @@ describe("update user activity state", () => {
   });
 
   it(`can update existing activity`, async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.ADMIN); //user with role "ADMIN"
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation AddOrUpdateActivity($activity: ActivityInputType!) {
           addOrUpdateActivity(activity: $activity) {

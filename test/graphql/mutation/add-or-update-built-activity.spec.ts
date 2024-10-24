@@ -18,7 +18,6 @@ import {
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
-import { cli } from "winston/lib/winston/config";
 
 export const fullBuiltActivityQueryData = `
                       _id
@@ -102,7 +101,7 @@ describe("update built activity", () => {
     await mongoUnit.drop();
   });
 
-  it("unauthenticated user cannot update activity", async () => {
+  it("unauthenticated user cannot see addOrUpdateBuiltActivity", async () => {
     const flowsListData = [
       {
         clientId: "5ffdf1231ea2c62320b49e1a",
@@ -130,11 +129,15 @@ describe("update built activity", () => {
           },
         },
       });
-    expect(response.status).to.equal(200);
-    expect(response.body.errors[0].message).to.equal("unauthorized");
+    expect(response.status).to.equal(400);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("Cannot query field")
+      )
+    ).to.exist;
   });
 
-  it("USER cannot update activity", async () => {
+  it("USER cannot see addOrUpdateBuiltActivity", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
     const flowsListData = [
       {
@@ -164,8 +167,12 @@ describe("update built activity", () => {
           },
         },
       });
-    expect(response.status).to.equal(200);
-    expect(response.body.errors[0].message).to.equal("unauthorized");
+    expect(response.status).to.equal(400);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("Cannot query field")
+      )
+    ).to.exist;
   });
 
   it(`can update existing activity`, async () => {

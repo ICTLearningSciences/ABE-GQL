@@ -8,7 +8,7 @@ import express, { Express, Request } from "express";
 import { graphqlHTTP } from "express-graphql";
 import bodyParser from "body-parser";
 import cors from "cors";
-import publicSchema from "./schemas/publicSchema";
+import { getAuthenticatedSchema } from "./schemas/publicSchema";
 import * as dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 dotenv.config();
@@ -24,6 +24,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 //START MIDDLEWARE
 import mongoose from "mongoose";
 import privateSchema from "./schemas/privateSchema";
+import { UserRole } from "schemas/models/User";
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 const authorization = (req: any, res: any, next: any) => {
@@ -150,10 +151,10 @@ export function createApp(): Express {
     "/graphql",
     graphqlHTTP(async (req: Request, res) => {
       const jwtData = await getDataFromRequest(req);
-      const userRole = jwtData ? jwtData.userRole : undefined;
+      const userRole = jwtData ? (jwtData.userRole as UserRole) : UserRole.USER;
       const userId = jwtData ? jwtData.userId : undefined;
       return {
-        schema: publicSchema,
+        schema: getAuthenticatedSchema(userRole),
         graphiql: true,
         context: {
           req: req,

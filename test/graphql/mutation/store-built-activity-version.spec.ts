@@ -13,6 +13,8 @@ import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { DisplayIcons } from "../../../src/constants";
 import { fetchActivityVersionsQueryData } from "../query/fetch-built-activity-versions.spec";
+import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/models/User";
 
 describe("store built activity version", () => {
   let app: Express;
@@ -29,8 +31,10 @@ describe("store built activity version", () => {
   });
 
   it(`can store an activity version`, async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //user with role "ADMIN"
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation StoreBuiltActivityVersion($activity: BuiltActivityInputType!) {
             storeBuiltActivityVersion(activity: $activity) {
