@@ -139,6 +139,26 @@ module.exports = {
       displayIcon: DisplayIcons.DEFAULT,
       flowsList: [],
     },
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320c49e3f"),
+      title: "Private activity 2",
+      activityType: "builder",
+      user: "5ffdf1231ee2c62320c4933f",
+      visibility: "private",
+      description: "",
+      displayIcon: DisplayIcons.DEFAULT,
+      flowsList: [],
+    },
+    {
+      _id: new ObjectId("5ffdf1231ee2c62322c49e3f"),
+      title: "Private activity 3",
+      activityType: "builder",
+      user: "5ffdf1231ee2c62320b49a99",
+      visibility: "private",
+      description: "",
+      displayIcon: DisplayIcons.DEFAULT,
+      flowsList: [],
+    },
   ],
 
   builtactivityversions: [

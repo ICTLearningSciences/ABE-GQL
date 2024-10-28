@@ -36,7 +36,7 @@ import addOrUpdateBuiltActivity from "./mutation/add-or-update-built-activity";
 import fetchBuiltActivityVersions from "./query/fetch-built-activity-versions";
 import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
 import { UserRole } from "./models/User";
-
+import copyBuiltActivity from "./mutation/copy-built-activity";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -77,6 +77,7 @@ const contentManagerMutations = {
   storeBuiltActivityVersion,
   configUpdateByKey,
   configUpdate,
+  copyBuiltActivity,
 };
 
 const adminMutations = {

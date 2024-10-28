@@ -4,28 +4,24 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLNonNull } from "graphql";
+import { GraphQLNonNull, GraphQLString } from "graphql";
 import * as dotenv from "dotenv";
 
 import BuiltActivityModel, {
-  BuiltActivityInputType,
   BuiltActivityType,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
-import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
-import { idOrNew } from "../../helpers";
-import { UserRole } from "../../schemas/models/User";
 dotenv.config();
 
-export const addOrUpdateBuiltActivity = {
+export const copyBuiltActivity = {
   type: BuiltActivityType,
   args: {
-    activity: { type: GraphQLNonNull(BuiltActivityInputType) },
+    activityIdToCopy: { type: GraphQLNonNull(GraphQLString) },
   },
   async resolve(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _: any,
     args: {
-      activity: ActivityBuilder;
+      activityIdToCopy: string;
     },
     context: {
       userRole?: string;
@@ -37,35 +33,22 @@ export const addOrUpdateBuiltActivity = {
     }
     try {
       const existingActivity = await BuiltActivityModel.findById(
-        args.activity._id
+        args.activityIdToCopy
       );
-      if (existingActivity) {
-        if (
-          context.userRole !== UserRole.ADMIN &&
-          context.userId !== `${existingActivity.user}`
-        ) {
-          throw new Error("unauthorized");
-        }
+      if (!existingActivity) {
+        throw new Error("activity not found");
       }
-      const id = idOrNew(args.activity._id);
-      delete args.activity._id;
-      const updatedActivity = await BuiltActivityModel.findOneAndUpdate(
-        {
-          _id: id,
-        },
-        {
-          ...args.activity,
-        },
-        {
-          new: true,
-          upsert: true,
-        }
-      );
-      return updatedActivity;
+      const _activity = existingActivity.toObject();
+      delete _activity._id;
+      const createdActivity = await BuiltActivityModel.create({
+        ..._activity,
+        user: context.userId,
+      });
+      return createdActivity;
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
     }
   },
 };
-export default addOrUpdateBuiltActivity;
+export default copyBuiltActivity;

@@ -9,6 +9,7 @@ import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityType,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
+import { UserRole } from "../../schemas/models/User";
 dotenv.config();
 
 export const fetchBuiltActivities = {
@@ -18,20 +19,25 @@ export const fetchBuiltActivities = {
     _args: null,
     context: {
       userId?: string;
+      userRole?: UserRole;
     }
   ) {
-    const { userId } = context;
+    const { userId, userRole } = context;
     try {
-      return await BuiltActivityModel.find({
-        $or: [
-          {
-            user: userId,
-          },
-          {
-            visibility: "public",
-          },
-        ],
-      });
+      return await BuiltActivityModel.find(
+        userRole === UserRole.ADMIN
+          ? {}
+          : {
+              $or: [
+                {
+                  user: userId,
+                },
+                {
+                  visibility: "public",
+                },
+              ],
+            }
+      );
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
