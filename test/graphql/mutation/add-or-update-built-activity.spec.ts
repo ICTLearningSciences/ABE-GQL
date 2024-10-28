@@ -301,7 +301,7 @@ describe("update built activity", () => {
     );
   });
 
-  it("content manager cannot update activity if they don't own it", async () => {
+  it("content manager cannot update activity if they don't own it and its set to private", async () => {
     const token = await getToken(
       "5ffdf1231ee2c62320c4933f",
       UserRole.CONTENT_MANAGER
@@ -339,10 +339,88 @@ describe("update built activity", () => {
     expect(response.body.errors[0].message).to.equal("Error: unauthorized");
   });
 
+  it("content manager cannot update activity if they don't own it and its set to read-only", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320c4933f",
+      UserRole.CONTENT_MANAGER
+    );
+    const flowsListData = [
+      {
+        clientId: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+            jumpToStepId: "456",
+            stepId: "123",
+          },
+        ],
+      },
+    ];
+    const activity = {
+      _id: "5ffdf1231ee2c62320c44e2f",
+      flowsList: flowsListData,
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+          addOrUpdateBuiltActivity(activity: $activity) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
+        variables: { activity },
+      });
+    expect(response.body.errors).to.exist;
+    expect(response.body.errors[0].message).to.equal("Error: unauthorized");
+  });
+
+  it("content manager can update activity if they don't own it and its set to editable", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320c4933f",
+      UserRole.CONTENT_MANAGER
+    );
+    const flowsListData = [
+      {
+        clientId: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+            jumpToStepId: "456",
+            stepId: "123",
+          },
+        ],
+      },
+    ];
+    const activity = {
+      _id: "5ffdf1231ee2c62320c44d3f",
+      flowsList: flowsListData,
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+          addOrUpdateBuiltActivity(activity: $activity) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
+        variables: { activity },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.addOrUpdateBuiltActivity.flowsList).to.eql(
+      activity.flowsList
+    );
+  });
+
   it("admin can create new activity", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const builtActivitesPre = await BuiltActivityModel.find();
-    expect(builtActivitesPre.length).to.equal(4);
+    expect(builtActivitesPre.length).to.equal(6);
     const flowsListData = [
       {
         clientId: "67890",
@@ -407,7 +485,7 @@ describe("update built activity", () => {
       activityType: "builder",
       title: "title 1",
       user: "5ffdf1231ee2c62320b49a99",
-      visibility: "public",
+      visibility: "editable",
       description: "description 1",
       displayIcon: "display icon 1",
       newDocRecommend: true,
@@ -429,7 +507,7 @@ describe("update built activity", () => {
       });
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
-    expect(builtActivitesPost.length).to.equal(5);
+    expect(builtActivitesPost.length).to.equal(7);
     const savedActivity = builtActivitesPost.find(
       (a) => a._id.toString() === activity._id
     );
@@ -492,7 +570,7 @@ describe("update built activity", () => {
     expect(preUpdate!.flowsList[0].steps.length).to.equal(5);
   });
 
-  it("admins can update other users activites", async () => {
+  it("admins can update other users private activities", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const updateActivity = {
       _id: "5ffdf1231ee2c62320c49e2f",

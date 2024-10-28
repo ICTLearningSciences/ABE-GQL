@@ -10,6 +10,7 @@ import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityInputType,
   BuiltActivityType,
+  BuiltActivityVisibility,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
 import { idOrNew } from "../../helpers";
@@ -42,7 +43,8 @@ export const addOrUpdateBuiltActivity = {
       if (existingActivity) {
         if (
           context.userRole !== UserRole.ADMIN &&
-          context.userId !== `${existingActivity.user}`
+          context.userId !== `${existingActivity.user}` &&
+          existingActivity.visibility !== BuiltActivityVisibility.EDITABLE
         ) {
           throw new Error("unauthorized");
         }

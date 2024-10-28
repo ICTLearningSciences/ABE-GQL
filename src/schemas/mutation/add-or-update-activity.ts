@@ -11,6 +11,7 @@ import ActivityModel, {
   ActivityInputType,
   ActivityType,
 } from "../models/Activity";
+import { UserRole } from "../models/User";
 dotenv.config();
 
 export const addOrUpdateActivity = {
@@ -23,8 +24,15 @@ export const addOrUpdateActivity = {
     _: any,
     args: {
       activity: Activity;
+    },
+    context: {
+      userRole?: UserRole;
     }
   ) {
+    const { userRole } = context;
+    if (userRole !== UserRole.ADMIN) {
+      throw new Error("unauthorized");
+    }
     try {
       const updatedActivity = await ActivityModel.findOneAndUpdate(
         {

@@ -36,6 +36,12 @@ import {
 } from "./objects";
 import { ActivityBuilder, ActivityBuilderStepType } from "./types";
 
+export enum BuiltActivityVisibility {
+  PRIVATE = "private",
+  READ_ONLY = "read-only",
+  EDITABLE = "editable",
+}
+
 // union the different step types
 export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
   name: "ActivityBuilderStepTypeUnion",
@@ -138,7 +144,10 @@ export const BuiltActivitySchema = new Schema(
     title: { type: String },
     user: { type: String },
     clientId: { type: String },
-    visibility: { type: String, default: "private" },
+    visibility: {
+      type: String,
+      default: BuiltActivityVisibility.READ_ONLY,
+    },
     activityType: { type: String },
     description: { type: String },
     displayIcon: { type: String },

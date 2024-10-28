@@ -8,6 +8,7 @@ import { GraphQLList, GraphQLObjectType } from "graphql";
 import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityType,
+  BuiltActivityVisibility,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { UserRole } from "../../schemas/models/User";
 dotenv.config();
@@ -33,7 +34,10 @@ export const fetchBuiltActivities = {
                   user: userId,
                 },
                 {
-                  visibility: "public",
+                  visibility: BuiltActivityVisibility.READ_ONLY,
+                },
+                {
+                  visibility: BuiltActivityVisibility.EDITABLE,
                 },
               ],
             }

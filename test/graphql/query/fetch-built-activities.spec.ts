@@ -44,7 +44,7 @@ describe("fetch built activities", () => {
       });
 
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchBuiltActivities.length).to.equal(1);
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(3);
     expect(response.body.data.fetchBuiltActivities[0].title).to.equal(
       "Test AI Response Data"
     );
@@ -55,7 +55,7 @@ describe("fetch built activities", () => {
       "5ffdf1231ee2c62320b49e99"
     );
     expect(response.body.data.fetchBuiltActivities[0].visibility).to.equal(
-      "public"
+      "editable"
     );
     expect(
       response.body.data.fetchBuiltActivities[0].flowsList.length
@@ -87,7 +87,7 @@ describe("fetch built activities", () => {
         },
       });
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchBuiltActivities.length).to.equal(2); // can only see public activity/their own private activities
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(4); // can only see editable/read-only activities
     const publicActivity = response.body.data.fetchBuiltActivities.find(
       (a: any) => a._id === "5ffdf1231ee2c62320b49e2f"
     );

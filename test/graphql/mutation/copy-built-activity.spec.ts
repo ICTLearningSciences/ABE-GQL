@@ -104,7 +104,7 @@ describe("update built activity", () => {
       UserRole.CONTENT_MANAGER
     );
     const builtActivitesPre = await BuiltActivityModel.find();
-    expect(builtActivitesPre.length).to.equal(4);
+    const prebuiltLength = builtActivitesPre.length;
 
     const response = await request(app)
       .post("/graphql")
@@ -123,7 +123,7 @@ describe("update built activity", () => {
     const createdActivity = response.body.data.copyBuiltActivity;
     expect(createdActivity.title).to.equal("Test AI Response Data");
     const builtActivitesPost = await BuiltActivityModel.find();
-    expect(builtActivitesPost.length).to.equal(5);
+    expect(builtActivitesPost.length).to.equal(prebuiltLength + 1);
   });
 
   it("can update subfield of existing activity", async () => {
