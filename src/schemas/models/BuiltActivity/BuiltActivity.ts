@@ -129,6 +129,7 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
     clientId: { type: GraphQLString },
     user: { type: GraphQLString },
     visibility: { type: GraphQLString },
+    deleted: { type: GraphQLBoolean },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
@@ -144,6 +145,7 @@ export const BuiltActivitySchema = new Schema(
     title: { type: String },
     user: { type: String },
     clientId: { type: String },
+    deleted: { type: Boolean, default: false },
     visibility: {
       type: String,
       default: BuiltActivityVisibility.READ_ONLY,

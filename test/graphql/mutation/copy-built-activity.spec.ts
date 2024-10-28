@@ -15,76 +15,9 @@ import { ActivityBuilder } from "../../../src/schemas/models/BuiltActivity/types
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
+import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 
-export const fullBuiltActivityQueryData = `
-                      _id
-                      clientId
-                      title
-                      user
-                      visibility
-                      activityType
-                      description
-                      displayIcon
-                      disabled
-                      newDocRecommend
-                      flowsList{
-                        clientId
-                        name
-                        steps{
-                          ... on SystemMessageActivityStepType {
-                              stepId
-                              stepType
-                              jumpToStepId
-                              message
-                          }
-
-                          ... on RequestUserInputActivityStepType {
-                              stepId
-                              stepType
-                              jumpToStepId
-                              message
-                              saveAsIntention
-                              saveResponseVariableName
-                              disableFreeInput
-                              predefinedResponses{
-                                  clientId
-                                  message
-                                  isArray
-                                  jumpToStepId
-                                  responseWeight
-                              }
-                          }
-
-                          ... on PromptActivityStepType{
-                              stepId
-                              stepType
-                              jumpToStepId
-                              promptText
-                              responseFormat
-                              includeChatLogContext
-                              includeEssay
-                              outputDataType
-                              jsonResponseData
-                              customSystemRole
-                          }
-
-                          ... on ConditionalActivityStepType {
-                              stepId
-                              stepType
-                              jumpToStepId
-                              conditionals{
-                                  stateDataKey
-                                  checking
-                                  operation
-                                  expectedValue
-                                  targetStepId
-                              }
-                          }
-                      }
-                      }
-`;
-
-describe("update built activity", () => {
+describe("copy built activity", () => {
   let app: Express;
 
   beforeEach(async () => {
@@ -124,65 +57,5 @@ describe("update built activity", () => {
     expect(createdActivity.title).to.equal("Test AI Response Data");
     const builtActivitesPost = await BuiltActivityModel.find();
     expect(builtActivitesPost.length).to.equal(prebuiltLength + 1);
-  });
-
-  it("can update subfield of existing activity", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
-    const preUpdate: ActivityBuilder | null = await BuiltActivityModel.findOne({
-      _id: "5ffdf1231ee2c62320b49e2f",
-    });
-    expect(preUpdate).to.not.be.null;
-    expect(preUpdate!.flowsList[0].steps.length).to.equal(5);
-    expect(preUpdate!.description).to.not.equal("new description");
-
-    const updateActivity = {
-      _id: "5ffdf1231ee2c62320b49e2f",
-      description: "new description",
-    };
-    const response = await request(app)
-      .post("/graphql")
-      .set("Authorization", `bearer ${token}`)
-      .send({
-        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
-        addOrUpdateBuiltActivity(activity: $activity) {
-            ${fullBuiltActivityQueryData}
-            }
-       }`,
-        variables: {
-          activity: updateActivity,
-        },
-      });
-    expect(response.status).to.equal(200);
-    const postUpdate = await BuiltActivityModel.findOne({
-      _id: "5ffdf1231ee2c62320b49e2f",
-    });
-    expect(postUpdate).to.not.be.null;
-    expect(postUpdate!.description).to.equal("new description");
-    expect(preUpdate!.flowsList[0].steps.length).to.equal(5);
-  });
-
-  it("admins can update other users activites", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
-    const updateActivity = {
-      _id: "5ffdf1231ee2c62320c49e2f",
-      description: "new description",
-    };
-    const response = await request(app)
-      .post("/graphql")
-      .set("Authorization", `bearer ${token}`)
-      .send({
-        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
-        addOrUpdateBuiltActivity(activity: $activity) {
-            ${fullBuiltActivityQueryData}
-            }
-       }`,
-        variables: {
-          activity: updateActivity,
-        },
-      });
-    expect(response.status).to.equal(200);
-    expect(response.body.data.addOrUpdateBuiltActivity.description).to.equal(
-      "new description"
-    );
   });
 });

@@ -4,57 +4,57 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLList, GraphQLObjectType } from "graphql";
+import { GraphQLNonNull, GraphQLString } from "graphql";
 import * as dotenv from "dotenv";
-import BuiltActivityModel, {
-  BuiltActivityType,
-  BuiltActivityVisibility,
-} from "../../schemas/models/BuiltActivity/BuiltActivity";
+
+import BuiltActivityModel from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { UserRole } from "../../schemas/models/User";
 dotenv.config();
 
-export const fetchBuiltActivities = {
-  type: GraphQLList(BuiltActivityType),
+export const deleteBuiltActivity = {
+  type: GraphQLString,
+  args: {
+    activityIdToDelete: { type: GraphQLNonNull(GraphQLString) },
+  },
   async resolve(
-    _root: GraphQLObjectType,
-    _args: null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _: any,
+    args: {
+      activityIdToDelete: string;
+    },
     context: {
+      userRole?: string;
       userId?: string;
-      userRole?: UserRole;
     }
   ) {
-    const { userId, userRole } = context;
+    if (
+      !context.userRole ||
+      (context.userRole !== UserRole.ADMIN &&
+        context.userRole !== UserRole.CONTENT_MANAGER)
+    ) {
+      throw new Error("unauthorized");
+    }
     try {
-      return await BuiltActivityModel.find(
-        userRole === UserRole.ADMIN
-          ? {
-              $or: [{ deleted: false }, { deleted: { $exists: false } }],
-            }
-          : {
-              $and: [
-                {
-                  $or: [{ deleted: false }, { deleted: { $exists: false } }],
-                },
-                {
-                  $or: [
-                    {
-                      user: userId,
-                    },
-                    {
-                      visibility: BuiltActivityVisibility.READ_ONLY,
-                    },
-                    {
-                      visibility: BuiltActivityVisibility.EDITABLE,
-                    },
-                  ],
-                },
-              ],
-            }
+      const existingActivity = await BuiltActivityModel.findById(
+        args.activityIdToDelete
       );
+      if (!existingActivity) {
+        throw new Error("activity not found");
+      }
+      if (
+        context.userRole !== UserRole.ADMIN &&
+        existingActivity.user !== context.userId
+      ) {
+        throw new Error("unauthorized");
+      }
+      await BuiltActivityModel.findByIdAndUpdate(args.activityIdToDelete, {
+        deleted: true,
+      });
+      return args.activityIdToDelete;
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
     }
   },
 };
-export default fetchBuiltActivities;
+export default deleteBuiltActivity;

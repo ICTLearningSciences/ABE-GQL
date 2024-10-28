@@ -27,6 +27,7 @@ export interface ActivityBuilder extends IActivity {
   activityType: "builder";
   title: string;
   user: string;
+  deleted: boolean;
   visibility: string;
   description: string;
   displayIcon: string;
