@@ -24,7 +24,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 //START MIDDLEWARE
 import mongoose from "mongoose";
 import privateSchema from "./schemas/privateSchema";
-import { UserRole } from "schemas/models/User";
+import { UserRole } from "./schemas/models/User";
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 const authorization = (req: any, res: any, next: any) => {
@@ -153,6 +153,7 @@ export function createApp(): Express {
       const jwtData = await getDataFromRequest(req);
       const userRole = jwtData ? (jwtData.userRole as UserRole) : UserRole.USER;
       const userId = jwtData ? jwtData.userId : undefined;
+
       return {
         schema: getAuthenticatedSchema(userRole),
         graphiql: true,
