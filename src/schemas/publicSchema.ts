@@ -35,48 +35,74 @@ import fetchBuiltActivities from "./query/fetch-built-activities";
 import addOrUpdateBuiltActivity from "./mutation/add-or-update-built-activity";
 import fetchBuiltActivityVersions from "./query/fetch-built-activity-versions";
 import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
+import { UserRole } from "./models/User";
+import copyBuiltActivity from "./mutation/copy-built-activity";
+import deleteBuiltActivity from "./mutation/delete-built-activity";
+const publicQueries = {
+  fetchGoogleDocVersions,
+  fetchGoogleDocs,
+  fetchAdminGoogleDocs,
+  fetchPromptRuns,
+  fetchPrompts,
+  fetchConfig,
+  fetchDocGoals,
+  fetchActivities,
+  fetchUserActivityStates,
+  fetchDocTimeline,
+  docVersions,
+  fetchBuiltActivities,
+  fetchBuiltActivityVersions,
+};
 
-const PublicRootQuery = new GraphQLObjectType({
-  name: "PublicRootQueryType",
-  fields: {
-    fetchGoogleDocVersions,
-    fetchGoogleDocs,
-    fetchAdminGoogleDocs,
-    fetchPromptRuns,
-    fetchPrompts,
-    fetchConfig,
-    fetchDocGoals,
-    fetchActivities,
-    fetchUserActivityStates,
-    fetchDocTimeline,
-    docVersions,
-    fetchBuiltActivities,
-    fetchBuiltActivityVersions,
-  },
-});
+const getAuthenticatedQueries = () => {
+  return publicQueries;
+};
 
-const PublicMutation = new GraphQLObjectType({
-  name: "PublicMutation",
-  fields: {
-    submitGoogleDocVersion,
-    loginGoogle,
-    refreshAccessToken,
-    storeGoogleDoc,
-    storePromptRun,
-    storePrompt,
-    storePrompts,
-    configUpdate,
-    configUpdateByKey,
-    updateUserActivityState,
-    storeDocTimeline,
-    deleteGoogleDoc,
-    addOrUpdateActivity,
-    addOrUpdateBuiltActivity,
-    storeBuiltActivityVersion,
-  },
-});
+const publicMutations = {
+  submitGoogleDocVersion,
+  loginGoogle,
+  refreshAccessToken,
+  storeGoogleDoc,
+  storePromptRun,
+  storePrompt,
+  storePrompts,
+  updateUserActivityState,
+  storeDocTimeline,
+  deleteGoogleDoc,
+};
 
-export default new GraphQLSchema({
-  query: PublicRootQuery,
-  mutation: PublicMutation,
-});
+const contentManagerMutations = {
+  ...publicMutations,
+  addOrUpdateActivity,
+  addOrUpdateBuiltActivity,
+  storeBuiltActivityVersion,
+  configUpdateByKey,
+  configUpdate,
+  copyBuiltActivity,
+  deleteBuiltActivity,
+};
+
+const adminMutations = {
+  ...contentManagerMutations,
+};
+
+const getAuthenticatedMutations = (userRole: UserRole) => {
+  return userRole === UserRole.ADMIN
+    ? adminMutations
+    : userRole === UserRole.CONTENT_MANAGER
+    ? contentManagerMutations
+    : publicMutations;
+};
+
+export function getAuthenticatedSchema(userRole: UserRole): GraphQLSchema {
+  return new GraphQLSchema({
+    query: new GraphQLObjectType({
+      name: "AuthenticatedQuery",
+      fields: getAuthenticatedQueries(),
+    }),
+    mutation: new GraphQLObjectType({
+      name: "AuthenticatedMutation",
+      fields: getAuthenticatedMutations(userRole),
+    }),
+  });
+}

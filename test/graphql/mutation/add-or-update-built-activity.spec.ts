@@ -18,7 +18,6 @@ import {
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
-import { cli } from "winston/lib/winston/config";
 
 export const fullBuiltActivityQueryData = `
                       _id
@@ -102,7 +101,7 @@ describe("update built activity", () => {
     await mongoUnit.drop();
   });
 
-  it("unauthenticated user cannot update activity", async () => {
+  it("unauthenticated user cannot see addOrUpdateBuiltActivity", async () => {
     const flowsListData = [
       {
         clientId: "5ffdf1231ea2c62320b49e1a",
@@ -130,11 +129,15 @@ describe("update built activity", () => {
           },
         },
       });
-    expect(response.status).to.equal(200);
-    expect(response.body.errors[0].message).to.equal("unauthorized");
+    expect(response.status).to.equal(400);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("Cannot query field")
+      )
+    ).to.exist;
   });
 
-  it("USER cannot update activity", async () => {
+  it("USER cannot see addOrUpdateBuiltActivity", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
     const flowsListData = [
       {
@@ -164,11 +167,15 @@ describe("update built activity", () => {
           },
         },
       });
-    expect(response.status).to.equal(200);
-    expect(response.body.errors[0].message).to.equal("unauthorized");
+    expect(response.status).to.equal(400);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("Cannot query field")
+      )
+    ).to.exist;
   });
 
-  it(`can update existing activity`, async () => {
+  it(`admins can create new activity`, async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const flowsListData = [
       {
@@ -254,10 +261,166 @@ describe("update built activity", () => {
     });
   });
 
-  it("can create new activity", async () => {
+  it("content manager can update activity if they own it", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320c4933f",
+      UserRole.CONTENT_MANAGER
+    );
+    const flowsListData = [
+      {
+        clientId: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+            jumpToStepId: "456",
+            stepId: "123",
+          },
+        ],
+      },
+    ];
+    const activity = {
+      _id: "5ffdf1231ee2c62320c49e3f",
+      flowsList: flowsListData,
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+          addOrUpdateBuiltActivity(activity: $activity) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
+        variables: { activity },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.addOrUpdateBuiltActivity.flowsList).to.eql(
+      activity.flowsList
+    );
+  });
+
+  it("content manager cannot update activity if they don't own it and its set to private", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320c4933f",
+      UserRole.CONTENT_MANAGER
+    );
+    const flowsListData = [
+      {
+        clientId: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+            jumpToStepId: "456",
+            stepId: "123",
+          },
+        ],
+      },
+    ];
+    const activity = {
+      _id: "5ffdf1231ee2c62320c49e2f",
+      flowsList: flowsListData,
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+          addOrUpdateBuiltActivity(activity: $activity) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
+        variables: { activity },
+      });
+    expect(response.body.errors).to.exist;
+    expect(response.body.errors[0].message).to.equal("Error: unauthorized");
+  });
+
+  it("content manager cannot update activity if they don't own it and its set to read-only", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320c4933f",
+      UserRole.CONTENT_MANAGER
+    );
+    const flowsListData = [
+      {
+        clientId: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+            jumpToStepId: "456",
+            stepId: "123",
+          },
+        ],
+      },
+    ];
+    const activity = {
+      _id: "5ffdf1231ee2c62320c44e2f",
+      flowsList: flowsListData,
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+          addOrUpdateBuiltActivity(activity: $activity) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
+        variables: { activity },
+      });
+    expect(response.body.errors).to.exist;
+    expect(response.body.errors[0].message).to.equal("Error: unauthorized");
+  });
+
+  it("content manager can update activity if they don't own it and its set to editable", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320c4933f",
+      UserRole.CONTENT_MANAGER
+    );
+    const flowsListData = [
+      {
+        clientId: "5ffdf1231ee2c62320a49e1f",
+        name: "flow 1",
+        steps: [
+          {
+            stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
+            message: "message 1",
+            jumpToStepId: "456",
+            stepId: "123",
+          },
+        ],
+      },
+    ];
+    const activity = {
+      _id: "5ffdf1231ee2c62320c44d3f",
+      flowsList: flowsListData,
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+          addOrUpdateBuiltActivity(activity: $activity) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
+        variables: { activity },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.addOrUpdateBuiltActivity.flowsList).to.eql(
+      activity.flowsList
+    );
+  });
+
+  it("admin can create new activity", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const builtActivitesPre = await BuiltActivityModel.find();
-    expect(builtActivitesPre.length).to.equal(2);
+    expect(builtActivitesPre.length).to.equal(6);
     const flowsListData = [
       {
         clientId: "67890",
@@ -322,7 +485,7 @@ describe("update built activity", () => {
       activityType: "builder",
       title: "title 1",
       user: "5ffdf1231ee2c62320b49a99",
-      visibility: "public",
+      visibility: "editable",
       description: "description 1",
       displayIcon: "display icon 1",
       newDocRecommend: true,
@@ -344,7 +507,7 @@ describe("update built activity", () => {
       });
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
-    expect(builtActivitesPost.length).to.equal(3);
+    expect(builtActivitesPost.length).to.equal(7);
     const savedActivity = builtActivitesPost.find(
       (a) => a._id.toString() === activity._id
     );
@@ -405,5 +568,30 @@ describe("update built activity", () => {
     expect(postUpdate).to.not.be.null;
     expect(postUpdate!.description).to.equal("new description");
     expect(preUpdate!.flowsList[0].steps.length).to.equal(5);
+  });
+
+  it("admins can update other users private activities", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
+    const updateActivity = {
+      _id: "5ffdf1231ee2c62320c49e2f",
+      description: "new description",
+    };
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateBuiltActivity($activity: BuiltActivityInputType!) {
+        addOrUpdateBuiltActivity(activity: $activity) {
+            ${fullBuiltActivityQueryData}
+            }
+       }`,
+        variables: {
+          activity: updateActivity,
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.addOrUpdateBuiltActivity.description).to.equal(
+      "new description"
+    );
   });
 });

@@ -8,7 +8,9 @@ import { GraphQLList, GraphQLObjectType } from "graphql";
 import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityType,
+  BuiltActivityVisibility,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
+import { UserRole } from "../../schemas/models/User";
 dotenv.config();
 
 export const fetchBuiltActivities = {
@@ -18,20 +20,37 @@ export const fetchBuiltActivities = {
     _args: null,
     context: {
       userId?: string;
+      userRole?: UserRole;
     }
   ) {
-    const { userId } = context;
+    const { userId, userRole } = context;
     try {
-      return await BuiltActivityModel.find({
-        $or: [
-          {
-            user: userId,
-          },
-          {
-            visibility: "public",
-          },
-        ],
-      });
+      return await BuiltActivityModel.find(
+        userRole === UserRole.ADMIN
+          ? {
+              $or: [{ deleted: false }, { deleted: { $exists: false } }],
+            }
+          : {
+              $and: [
+                {
+                  $or: [{ deleted: false }, { deleted: { $exists: false } }],
+                },
+                {
+                  $or: [
+                    {
+                      user: userId,
+                    },
+                    {
+                      visibility: BuiltActivityVisibility.READ_ONLY,
+                    },
+                    {
+                      visibility: BuiltActivityVisibility.EDITABLE,
+                    },
+                  ],
+                },
+              ],
+            }
+      );
     } catch (e) {
       console.log(e);
       throw new Error(String(e));

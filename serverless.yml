@@ -6,6 +6,9 @@ plugins:
   - serverless-plugin-typescript
   - serverless-domain-manager
 
+build:
+  esbuild: false
+
 custom:
   domain:
     dev: api-dev.abewriting.org
@@ -100,6 +103,8 @@ functions:
               - "https://abewriting.org/"
               - "http://local.abewriting.org"
               - "http://local.abewriting.org/"
+              - "https://ictusc.sharepoint.com"
+              - "https://ictusc.sharepoint.com/"
             allowCredentials: true
             headers:
               - Content-Type

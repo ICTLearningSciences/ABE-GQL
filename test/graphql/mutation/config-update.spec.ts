@@ -40,7 +40,7 @@ describe("configUpdate", () => {
     expect(response.status).to.not.equal(200);
   });
 
-  it("does not accept USER", async () => {
+  it("USER cannot update config", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER); //user with role "USER"
     const response = await request(app)
       .post("/graphql")
@@ -53,10 +53,12 @@ describe("configUpdate", () => {
       }`,
         variables: { config: {} },
       });
-    expect(response.status).to.equal(200);
-    expect(response.body.errors[0].message).to.equal(
-      "you do not have permission to edit config"
-    );
+    expect(response.status).to.equal(400);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("Cannot query field")
+      )
+    ).to.exist;
   });
 
   it("ADMIN can update config", async () => {

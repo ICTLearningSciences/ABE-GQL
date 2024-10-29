@@ -44,7 +44,7 @@ describe("fetch built activities", () => {
       });
 
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchBuiltActivities.length).to.equal(1);
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(3);
     expect(response.body.data.fetchBuiltActivities[0].title).to.equal(
       "Test AI Response Data"
     );
@@ -55,7 +55,7 @@ describe("fetch built activities", () => {
       "5ffdf1231ee2c62320b49e99"
     );
     expect(response.body.data.fetchBuiltActivities[0].visibility).to.equal(
-      "public"
+      "editable"
     );
     expect(
       response.body.data.fetchBuiltActivities[0].flowsList.length
@@ -68,8 +68,11 @@ describe("fetch built activities", () => {
     ).to.equal(ActivityBuilderStepType.SYSTEM_MESSAGE);
   });
 
-  it("authenticated users cannot see other users private activities", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //user with role "ADMIN"
+  it("content managers can only see public activities and their own private activities", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320b49a99",
+      UserRole.CONTENT_MANAGER
+    );
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
@@ -80,19 +83,30 @@ describe("fetch built activities", () => {
                   }
       }`,
         variables: {
-          limit: 1,
+          limit: 2,
         },
       });
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchBuiltActivities.length).to.equal(1);
-    const privateActivity = response.body.data.fetchBuiltActivities.find(
+    expect(response.body.data.fetchBuiltActivities.length).to.equal(4); // can only see editable/read-only activities
+    const publicActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62320b49e2f"
+    );
+    expect(publicActivity).to.not.be.undefined;
+    expect(publicActivity.title).to.equal("Test AI Response Data");
+    const ownedActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62322c49e3f"
+    );
+    expect(ownedActivity).to.not.be.undefined;
+    expect(ownedActivity.title).to.equal("Private activity 3");
+
+    const otherPrivateActivity = response.body.data.fetchBuiltActivities.find(
       (a: any) => a._id === "5ffdf1231ee2c62320c49e2f"
     );
-    expect(privateActivity).to.be.undefined;
+    expect(otherPrivateActivity).to.be.undefined;
   });
 
-  it("authenticated users can fetch their own private activites", async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.ADMIN); //user with role "ADMIN"
+  it("admins can see all activities", async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN);
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
@@ -102,16 +116,22 @@ describe("fetch built activities", () => {
                       ${fullBuiltActivityQueryData}
                   }
       }`,
-        variables: {
-          limit: 1,
-        },
       });
     expect(response.status).to.equal(200);
-    expect(response.body.data.fetchBuiltActivities.length).to.equal(2);
-    const privateActivity = response.body.data.fetchBuiltActivities.find(
-      (a: any) => a._id === "5ffdf1231ee2c62320c49e2f"
+    const publicActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62320b49e2f"
     );
-    expect(privateActivity).to.not.be.undefined;
-    expect(privateActivity.title).to.equal("Private activity");
+    expect(publicActivity).to.not.be.undefined;
+    expect(publicActivity.title).to.equal("Test AI Response Data");
+    const user1PrivateActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62322c49e3f"
+    );
+    expect(user1PrivateActivity).to.not.be.undefined;
+    expect(user1PrivateActivity.title).to.equal("Private activity 3");
+
+    const user2PrivateActivity = response.body.data.fetchBuiltActivities.find(
+      (a: any) => a._id === "5ffdf1231ee2c62320c49e3f"
+    );
+    expect(user2PrivateActivity).to.not.be.undefined;
   });
 });

@@ -10,6 +10,7 @@ import * as dotenv from "dotenv";
 import BuiltActivityModel, {
   BuiltActivityInputType,
   BuiltActivityType,
+  BuiltActivityVisibility,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
 import { idOrNew } from "../../helpers";
@@ -29,13 +30,24 @@ export const addOrUpdateBuiltActivity = {
     },
     context: {
       userRole?: string;
+      userId?: string;
     }
   ) {
-    if (!context.userRole || context.userRole !== UserRole.ADMIN) {
+    if (!context.userRole) {
       throw new Error("unauthorized");
     }
     try {
       const id = idOrNew(args.activity._id);
+      const existingActivity = await BuiltActivityModel.findById(id);
+      if (existingActivity) {
+        if (
+          context.userRole !== UserRole.ADMIN &&
+          context.userId !== `${existingActivity.user}` &&
+          existingActivity.visibility !== BuiltActivityVisibility.EDITABLE
+        ) {
+          throw new Error("unauthorized");
+        }
+      }
       delete args.activity._id;
       const updatedActivity = await BuiltActivityModel.findOneAndUpdate(
         {
