@@ -4,8 +4,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLObjectType } from "graphql";
-import UserSchema, { User, UserInputType } from "../models/User";
+import { GraphQLObjectType, GraphQLString } from "graphql";
+import UserSchema from "../models/User";
 import {
   UserAccessTokenType,
   UserAccessToken,
@@ -13,6 +13,49 @@ import {
   setTokenCookie,
   generateRefreshToken,
 } from "../types/user-access-token";
+import axios from "axios";
+
+export interface MicrosoftGraphUser {
+  id: string;
+  displayName: string;
+  mail: string;
+}
+
+export interface MicrosoftGraphUserFunc {
+  (accessToken: string): Promise<MicrosoftGraphUser>;
+}
+
+let _microsoftGraphUserOverride: MicrosoftGraphUserFunc;
+
+export function overrideMicrosoftGraphUser(f: MicrosoftGraphUserFunc): void {
+  _microsoftGraphUserOverride = f;
+}
+
+export function restoreMicrosoftGraphUser(): void {
+  _microsoftGraphUserOverride = undefined;
+}
+
+async function getUserInfo(accessToken: string): Promise<MicrosoftGraphUser> {
+  if (_microsoftGraphUserOverride) {
+    return _microsoftGraphUserOverride(accessToken);
+  }
+  try {
+    const res = await axios.get("https://graph.microsoft.com/v1.0/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    console.log(res.data);
+    return {
+      id: res.data.id,
+      displayName: res.data.displayName,
+      mail: res.data.mail,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`Failed to fetch Microsoft user info: ${error.message}`);
+    }
+    throw error;
+  }
+}
 
 /**
  * TODO: temporary faux login until we figure out OAuth with Microsoft
@@ -20,17 +63,18 @@ import {
 export const loginMicrosoft = {
   type: UserAccessTokenType,
   args: {
-    user: { type: UserInputType },
+    accessToken: { type: GraphQLString },
   },
   resolve: async (
     _root: GraphQLObjectType,
     args: {
-      user: User;
+      accessToken: string;
     },
     context: any // eslint-disable-line  @typescript-eslint/no-explicit-any
   ): Promise<UserAccessToken> => {
-    const { googleId, name, email } = args.user;
-    const idTransform = `microsoft-${googleId}`;
+    const { accessToken } = args;
+    const { id, displayName, mail } = await getUserInfo(accessToken);
+    const idTransform = `microsoft-${id}`;
     try {
       const user = await UserSchema.findOneAndUpdate(
         {
@@ -39,8 +83,8 @@ export const loginMicrosoft = {
         {
           $set: {
             googleId: idTransform,
-            name: name,
-            email: email,
+            name: displayName,
+            email: mail,
             lastLoginAt: new Date(),
           },
         },

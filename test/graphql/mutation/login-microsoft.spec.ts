@@ -10,27 +10,48 @@ import { expect } from "chai";
 import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import {
+  MicrosoftGraphUser,
+  MicrosoftGraphUserFunc,
+  overrideMicrosoftGraphUser,
+  restoreMicrosoftGraphUser,
+} from "../../../src/schemas/mutation/login-microsoft";
 
 describe("login with microsoft", () => {
   let app: Express;
+  let microsoftGraphUserFunc: MicrosoftGraphUserFunc;
+
+  function microsoftGraphUserFuncOverride(
+    accessToken: string
+  ): Promise<MicrosoftGraphUser> {
+    return microsoftGraphUserFunc(accessToken);
+  }
 
   beforeEach(async () => {
+    overrideMicrosoftGraphUser(microsoftGraphUserFuncOverride);
     await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
     app = await createApp();
     await appStart();
   });
 
   afterEach(async () => {
+    restoreMicrosoftGraphUser();
     await appStop();
     await mongoUnit.drop();
   });
 
-  it(`creates new user`, async () => {
+  it(`Logs in with microsoft`, async () => {
+    microsoftGraphUserFunc = (accessToken: string) =>
+      Promise.resolve<MicrosoftGraphUser>({
+        id: "someid",
+        displayName: "somename",
+        mail: "x@y.com",
+      });
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation LoginMicrosoft($user: UserInputType) {
-        loginMicrosoft(user: $user) {
+        query: `mutation LoginMicrosoft($accessToken: String) {
+        loginMicrosoft(accessToken: $accessToken) {
           user {
             name
             email
@@ -40,21 +61,17 @@ describe("login with microsoft", () => {
         }
       }`,
         variables: {
-          user: {
-            googleId: "123",
-            name: "John Doe",
-            email: "johndoe@gmail.com",
-          },
+          accessToken: "123",
         },
       });
     expect(response.status).to.equal(200);
     expect(response.body).to.have.deep.nested.property(
       "data.loginMicrosoft.user.name",
-      "John Doe"
+      "somename"
     );
     expect(response.body).to.have.deep.nested.property(
       "data.loginMicrosoft.user.email",
-      "johndoe@gmail.com"
+      "x@y.com"
     );
   });
 });

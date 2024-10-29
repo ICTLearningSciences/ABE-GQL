@@ -28,6 +28,7 @@ export enum DocService {
 
 export interface GoogleDoc {
   googleDocId: string;
+  wordDocId: string;
   deleted: boolean;
   title: string;
   documentIntention: IIntention;
@@ -42,6 +43,7 @@ export const GoogleDocType = new GraphQLObjectType({
   name: "GoogleDocType",
   fields: () => ({
     googleDocId: { type: GraphQLString },
+    wordDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     deleted: { type: GraphQLBoolean },
     admin: { type: GraphQLBoolean },
@@ -68,19 +70,21 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
   name: "GoogleDocInputType",
   fields: () => ({
     googleDocId: { type: GraphQLString },
+    title: { type: GraphQLString },
+    wordDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionInputType },
     currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
     service: { type: GraphQLString },
-    title: { type: GraphQLString },
   }),
 });
 
 export const GoogleDocSchema = new Schema(
   {
     googleDocId: { type: String, required: true },
+    wordDocId: { type: String },
     deleted: { type: Boolean, default: false },
     documentIntention: IntentionSchema,
     currentDayIntention: IntentionSchema,
