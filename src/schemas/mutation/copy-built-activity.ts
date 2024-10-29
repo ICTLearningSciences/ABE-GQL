@@ -6,6 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import * as dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
 
 import BuiltActivityModel, {
   BuiltActivityType,
@@ -43,6 +44,9 @@ export const copyBuiltActivity = {
       const createdActivity = await BuiltActivityModel.create({
         ..._activity,
         user: context.userId,
+        clientId: uuidv4(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
       return createdActivity;
     } catch (e) {
