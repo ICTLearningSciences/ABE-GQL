@@ -37,9 +37,8 @@ export const addOrUpdateBuiltActivity = {
       throw new Error("unauthorized");
     }
     try {
-      const existingActivity = await BuiltActivityModel.findById(
-        args.activity._id
-      );
+      const id = idOrNew(args.activity._id);
+      const existingActivity = await BuiltActivityModel.findById(id);
       if (existingActivity) {
         if (
           context.userRole !== UserRole.ADMIN &&
@@ -49,7 +48,6 @@ export const addOrUpdateBuiltActivity = {
           throw new Error("unauthorized");
         }
       }
-      const id = idOrNew(args.activity._id);
       delete args.activity._id;
       const updatedActivity = await BuiltActivityModel.findOneAndUpdate(
         {
