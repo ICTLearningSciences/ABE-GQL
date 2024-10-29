@@ -11,12 +11,13 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { DisplayIcons } from "../../../src/constants";
-import { fetchActivityVersionsQueryData } from "../query/fetch-built-activity-versions.spec";
+import { ActivityBuilder } from "../../../src/schemas/models/BuiltActivity/types";
+import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
+import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 
-describe("store built activity version", () => {
+describe("copy built activity", () => {
   let app: Express;
 
   beforeEach(async () => {
@@ -30,45 +31,31 @@ describe("store built activity version", () => {
     await mongoUnit.drop();
   });
 
-  it(`can store an activity version`, async () => {
-    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.ADMIN); //user with role "ADMIN"
+  it("users can make a copy of an existing activity", async () => {
+    const token = await getToken(
+      "5ffdf1231ee2c62320b49a99",
+      UserRole.CONTENT_MANAGER
+    );
+    const builtActivitesPre = await BuiltActivityModel.find();
+    const prebuiltLength = builtActivitesPre.length;
+
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation StoreBuiltActivityVersion($activity: BuiltActivityInputType!) {
-            storeBuiltActivityVersion(activity: $activity) {
-                        ${fetchActivityVersionsQueryData}
-                    }
-                }`,
+        query: `mutation CopyBuiltActivity($activityIdToCopy: String!) {
+          copyBuiltActivity(activityIdToCopy: $activityIdToCopy) {
+                ${fullBuiltActivityQueryData}
+              }
+         }`,
         variables: {
-          activity: {
-            clientId: "new-built-activity-verions",
-            title: "Private activity",
-            activityType: "builder",
-            user: "5ffdf1231ee2c62320b49e99",
-            visibility: "private",
-            description: "",
-            displayIcon: DisplayIcons.DEFAULT,
-            flowsList: [],
-          },
+          activityIdToCopy: "5ffdf1231ee2c62320b49e2f",
         },
       });
     expect(response.status).to.equal(200);
-    delete response.body.data.storeBuiltActivityVersion.activity._id;
-    expect(response.body.data.storeBuiltActivityVersion.activity).to.deep.equal(
-      {
-        clientId: "new-built-activity-verions",
-        title: "Private activity",
-        activityType: "builder",
-        user: "5ffdf1231ee2c62320b49e99",
-        visibility: "private",
-        description: "",
-        displayIcon: DisplayIcons.DEFAULT,
-        disabled: false,
-        newDocRecommend: false,
-        flowsList: [],
-      }
-    );
+    const createdActivity = response.body.data.copyBuiltActivity;
+    expect(createdActivity.title).to.equal("Test AI Response Data");
+    const builtActivitesPost = await BuiltActivityModel.find();
+    expect(builtActivitesPost.length).to.equal(prebuiltLength + 1);
   });
 });

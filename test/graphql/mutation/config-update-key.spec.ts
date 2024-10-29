@@ -28,7 +28,7 @@ describe("config update by key", () => {
     await mongoUnit.drop();
   });
 
-  it("does not accept USER", async () => {
+  it("USER cannot update config", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER); //user with role "USER"
     const response = await request(app)
       .post("/graphql")
@@ -44,10 +44,12 @@ describe("config update by key", () => {
           value: ["Hello, world!"],
         },
       });
-    expect(response.status).to.equal(200);
-    expect(response.body.errors[0].message).to.equal(
-      "you do not have permission to edit config"
-    );
+    expect(response.status).to.equal(400);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("Cannot query field")
+      )
+    ).to.exist;
   });
 
   it("updates subdomain config, not global", async () => {

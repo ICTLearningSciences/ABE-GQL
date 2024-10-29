@@ -21,6 +21,7 @@ import {
 
 export enum UserRole {
   USER = "USER",
+  CONTENT_MANAGER = "CONTENT_MANAGER",
   ADMIN = "ADMIN",
 }
 

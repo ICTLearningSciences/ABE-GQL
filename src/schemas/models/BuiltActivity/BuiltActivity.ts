@@ -31,8 +31,16 @@ import {
   SystemMessageActivityStepSchema,
   RequestUserInputActivityStepSchema,
   PromptActivityStepSchema,
+  ConditionalActivityStepType,
+  ConditionalActivityStepTypeInput,
 } from "./objects";
 import { ActivityBuilder, ActivityBuilderStepType } from "./types";
+
+export enum BuiltActivityVisibility {
+  PRIVATE = "private",
+  READ_ONLY = "read-only",
+  EDITABLE = "editable",
+}
 
 // union the different step types
 export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
@@ -41,6 +49,7 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
     PromptActivityStepType,
     RequestUserInputActivityStepType,
     SystemMessageActivityStepType,
+    ConditionalActivityStepType,
   ],
   resolveType(value) {
     switch (value.stepType) {
@@ -50,6 +59,8 @@ export const ActivityBuilderStepTypeUnion = new GraphQLUnionType({
         return RequestUserInputActivityStepType;
       case ActivityBuilderStepType.SYSTEM_MESSAGE:
         return SystemMessageActivityStepType;
+      case ActivityBuilderStepType.CONDITIONAL:
+        return ConditionalActivityStepType;
       default:
         throw new Error("invalid step type");
     }
@@ -89,6 +100,7 @@ export const ActivityBuilderStepTypeInputUnion = new GraphQLInputObjectType({
     ...PromptActivityStepTypeInput.getFields(),
     ...RequestUserInputActivityStepTypeInput.getFields(),
     ...SystemMessageActivityStepTypeInput.getFields(),
+    ...ConditionalActivityStepTypeInput.getFields(),
   },
 });
 
@@ -117,6 +129,7 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
     clientId: { type: GraphQLString },
     user: { type: GraphQLString },
     visibility: { type: GraphQLString },
+    deleted: { type: GraphQLBoolean },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     displayIcon: { type: GraphQLString },
@@ -132,7 +145,11 @@ export const BuiltActivitySchema = new Schema(
     title: { type: String },
     user: { type: String },
     clientId: { type: String },
-    visibility: { type: String, default: "private" },
+    deleted: { type: Boolean, default: false },
+    visibility: {
+      type: String,
+      default: BuiltActivityVisibility.READ_ONLY,
+    },
     activityType: { type: String },
     description: { type: String },
     displayIcon: { type: String },

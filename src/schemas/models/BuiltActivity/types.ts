@@ -12,7 +12,8 @@ export interface IActivity {
 export type ActivityBuilderStepUnion =
   | SystemMessageActivityStep
   | RequestUserInputActivityStep
-  | PromptActivityStep;
+  | PromptActivityStep
+  | LogicOperationActivityStep;
 
 export interface FlowItem {
   clientId: string;
@@ -26,6 +27,7 @@ export interface ActivityBuilder extends IActivity {
   activityType: "builder";
   title: string;
   user: string;
+  deleted: boolean;
   visibility: string;
   description: string;
   displayIcon: string;
@@ -38,6 +40,7 @@ export enum ActivityBuilderStepType {
   SYSTEM_MESSAGE = "SYSTEM_MESSAGE",
   REQUEST_USER_INPUT = "REQUEST_USER_INPUT",
   PROMPT = "PROMPT",
+  CONDITIONAL = "CONDITIONAL",
 }
 
 export interface ActivityBuilderStep {
@@ -49,6 +52,37 @@ export interface ActivityBuilderStep {
 export interface SystemMessageActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.SYSTEM_MESSAGE;
   message: string;
+}
+
+export enum NumericOperations {
+  GREATER_THAN = ">",
+  LESS_THAN = "<",
+  EQUALS = "==",
+  NOT_EQUALS = "!=",
+  GREATER_THAN_EQUALS = ">=",
+  LESS_THAN_EQUALS = "<=",
+}
+
+export enum Checking {
+  // array or string
+  LENGTH = "LENGTH",
+  // string, boolean, number
+  VALUE = "VALUE",
+  // array or string
+  CONTAINS = "CONTAINS",
+}
+
+export interface LogicStepConditional {
+  stateDataKey: string;
+  checking: Checking;
+  operation: NumericOperations;
+  expectedValue: string;
+  targetStepId: string;
+}
+
+export interface LogicOperationActivityStep extends ActivityBuilderStep {
+  stepType: ActivityBuilderStepType.CONDITIONAL;
+  conditionals: LogicStepConditional[];
 }
 
 // RequestUserInput
