@@ -136,7 +136,7 @@ async function getDataFromRequest(req: Request): Promise<JwtData | undefined> {
 export function createApp(): Express {
   const app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(express.json());
+  app.use(express.json({ limit: "2mb" }));
   app.use(cors(corsOptions));
   app.use(
     "/graphqlPrivate",
