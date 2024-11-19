@@ -21,13 +21,20 @@ import GoogleDocVersionsModel, {
   IntentionSchema,
 } from "./GoogleDocVersion";
 
+export enum DocService {
+  GOOGLE_DOCS = "GOOGLE_DOCS",
+  MICROSOFT_WORD = "MICROSOFT_WORD",
+}
+
 export interface GoogleDoc {
   googleDocId: string;
+  wordDocId: string;
   deleted: boolean;
   title: string;
   documentIntention: IIntention;
   currentDayIntention: IIntention;
   assignmentDescription: string;
+  service: DocService;
   admin: boolean;
   user: User["_id"];
 }
@@ -36,12 +43,14 @@ export const GoogleDocType = new GraphQLObjectType({
   name: "GoogleDocType",
   fields: () => ({
     googleDocId: { type: GraphQLString },
+    wordDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     deleted: { type: GraphQLBoolean },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionObjectType },
     currentDayIntention: { type: IntentionObjectType },
     assignmentDescription: { type: GraphQLString },
+    service: { type: GraphQLString },
     title: {
       type: GraphQLString,
       resolve: async (doc: GoogleDoc) => {
@@ -61,22 +70,30 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
   name: "GoogleDocInputType",
   fields: () => ({
     googleDocId: { type: GraphQLString },
+    title: { type: GraphQLString },
+    wordDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionInputType },
     currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
-    title: { type: GraphQLString },
+    service: { type: GraphQLString },
   }),
 });
 
 export const GoogleDocSchema = new Schema(
   {
     googleDocId: { type: String, required: true },
+    wordDocId: { type: String },
     deleted: { type: Boolean, default: false },
     documentIntention: IntentionSchema,
     currentDayIntention: IntentionSchema,
     assignmentDescription: { type: String },
+    service: {
+      type: String,
+      enum: Object.values(DocService),
+      default: DocService.GOOGLE_DOCS,
+    },
     admin: { type: Boolean, default: false },
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },

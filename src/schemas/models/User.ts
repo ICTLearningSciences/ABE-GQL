@@ -5,7 +5,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { GraphQLString, GraphQLObjectType, GraphQLID } from "graphql";
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLInputObjectType,
+} from "graphql";
 import { DateType } from "../types/date";
 import {
   PaginatedResolveResult,
@@ -32,6 +37,17 @@ export const UserType = new GraphQLObjectType({
   name: "User",
   fields: () => ({
     _id: { type: GraphQLID },
+    googleId: { type: GraphQLString },
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    userRole: { type: GraphQLString },
+    lastLoginAt: { type: DateType },
+  }),
+});
+
+export const UserInputType = new GraphQLInputObjectType({
+  name: "UserInputType",
+  fields: () => ({
     googleId: { type: GraphQLString },
     name: { type: GraphQLString },
     email: { type: GraphQLString },

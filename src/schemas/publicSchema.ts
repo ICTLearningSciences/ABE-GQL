@@ -28,6 +28,7 @@ import updateUserActivityState from "./mutation/update-user-activity-state";
 import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
 import { docVersions } from "./query/fetch-paged-doc-versions";
+import fetchMostRecentVersion from "./query/fetch-most-recent-version";
 import deleteGoogleDoc from "./mutation/delete-google-doc";
 import addOrUpdateActivity from "./mutation/add-or-update-activity";
 import fetchActivities from "./query/fetch-activities";
@@ -38,6 +39,8 @@ import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
 import { UserRole } from "./models/User";
 import copyBuiltActivity from "./mutation/copy-built-activity";
 import deleteBuiltActivity from "./mutation/delete-built-activity";
+import loginMicrosoft from "./mutation/login-microsoft";
+
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -52,6 +55,7 @@ const publicQueries = {
   docVersions,
   fetchBuiltActivities,
   fetchBuiltActivityVersions,
+  fetchMostRecentVersion,
 };
 
 const getAuthenticatedQueries = () => {
@@ -69,6 +73,7 @@ const publicMutations = {
   updateUserActivityState,
   storeDocTimeline,
   deleteGoogleDoc,
+  loginMicrosoft,
 };
 
 const contentManagerMutations = {
