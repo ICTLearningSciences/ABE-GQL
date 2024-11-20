@@ -27,6 +27,7 @@ export const deleteBuiltActivity = {
       userId?: string;
     }
   ) {
+    console.log("test");
     if (
       !context.userRole ||
       (context.userRole !== UserRole.ADMIN &&

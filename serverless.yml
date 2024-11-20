@@ -31,7 +31,7 @@ custom:
   stages:
     dev:
       MONGO_URI: ${ssm:/ABE/dev/mongo_uri, ''}
-      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,.dev.abewriting.org,.dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/,https://ictusc.sharepoint.com/,https://ictusc.sharepoint.com,ictusc.sharepoint.com,https://localhost:3000,https://localhost:3000/"
+      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,.dev.abewriting.org,.dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/,https://ictusc.sharepoint.com/,https://ictusc.sharepoint.com,ictusc.sharepoint.com,https://localhost:3000,https://localhost:3000/,https://*.web.core.windows.net/,https://*.web.core.windows.net"
       JWT_SECRET: ${ssm:/ABE/dev/jwt_secret, ''}
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenDev"
@@ -96,7 +96,8 @@ functions:
           method: ANY
           cors:
             origins:
-              # "*"
+              - "https://*.web.core.windows.net/"
+              - "https://*.web.core.windows.net"
               - "https://*.abewriting.org"
               - "https://*.abewriting.org/"
               - "https://abewriting.org"
