@@ -63,7 +63,7 @@ describe("config", () => {
     expect(response.body.data.fetchConfig).to.eql(config);
   });
 
-  it("serves config from Settings with subdomain", async () => {
+  it("ORIGIN: serves config from Settings with subdomain", async () => {
     const config: Config = {
       aiSystemPrompt: ["Hello, world!"],
       displayedGoalActivities: [
@@ -102,6 +102,115 @@ describe("config", () => {
       .send({
         query: `query {
           fetchConfig {
+            aiSystemPrompt
+            displayedGoalActivities{
+              goal
+              activities{
+                activity
+                disabled
+              }
+              builtActivities{
+                activity
+                disabled  
+              }
+            }
+            colorTheme{
+              headerColor
+            }
+            exampleGoogleDocs
+            overrideAiModel{
+              serviceName
+              model
+            }
+            availableAiServiceModels{
+              serviceName
+              models
+            }
+            headerTitle
+            orgName
+            loginScreenTitle
+          }
+        }`,
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.fetchConfig).to.eql({
+      ...config,
+      aiSystemPrompt: ["army system prompt"],
+      displayedGoalActivities: [
+        {
+          goal: "goal 1",
+          activities: [
+            {
+              activity: "activity 1",
+              disabled: false,
+            },
+          ],
+          builtActivities: [
+            {
+              activity: "built activity 1",
+              disabled: false,
+            },
+          ],
+        },
+      ],
+      colorTheme: {
+        headerColor: "#000000",
+      },
+      exampleGoogleDocs: ["hello"],
+      overrideAiModel: {
+        serviceName: AiServiceNames.AZURE,
+        model: "model",
+      },
+      availableAiServiceModels: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          models: ["gpt-3.5-turbo"],
+        },
+      ],
+      headerTitle: "header title",
+      orgName: "org name",
+      loginScreenTitle: "login screen title",
+    });
+  });
+
+  it("PARAM: serves config from Settings with subdomain", async () => {
+    const config: Config = {
+      aiSystemPrompt: ["Hello, world!"],
+      displayedGoalActivities: [
+        {
+          goal: "goal 1",
+          activities: [
+            {
+              activity: "activity 1",
+              disabled: false,
+            },
+          ],
+          builtActivities: [
+            {
+              activity: "built activity 1",
+              disabled: false,
+            },
+          ],
+        },
+      ],
+      colorTheme: {
+        headerColor: "#000000",
+      },
+      exampleGoogleDocs: ["hello"],
+      overrideAiModel: {
+        serviceName: AiServiceNames.AZURE,
+        model: "model",
+      },
+      headerTitle: "header title",
+      orgName: "org name",
+      loginScreenTitle: "login screen title",
+    };
+    await ConfigModel.saveConfig(config);
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `query {
+          fetchConfig(subdomain: "army") {
             aiSystemPrompt
             displayedGoalActivities{
               goal

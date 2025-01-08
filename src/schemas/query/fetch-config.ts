@@ -5,18 +5,25 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import ConfigModel, { Config, ConfigType } from "../models/Config";
-import { GraphQLObjectType } from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
 
 export const fetchConfig = {
   type: ConfigType,
+  args: {
+    subdomain: { type: GraphQLString },
+  },
   resolve: async (
     _root: GraphQLObjectType,
-    _: unknown,
+    args: {
+      subdomain?: string;
+    },
     context: {
       subdomain: string;
     }
   ): Promise<Config> => {
-    return await ConfigModel.getConfig({ subdomain: context.subdomain });
+    return await ConfigModel.getConfig({
+      subdomain: args.subdomain || context.subdomain,
+    });
   },
 };
 
