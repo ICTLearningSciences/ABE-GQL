@@ -2,13 +2,17 @@
 
 service: abe-graphql
 
+frameworkVersion: "4"
+
 plugins:
-  - serverless-plugin-typescript
   - serverless-domain-manager
 
 build:
-  esbuild: false
-
+  esbuild:
+    bundle: true
+    minify: true
+    external:
+      - "mongoose"
 custom:
   domain:
     dev: api-dev.abewriting.org

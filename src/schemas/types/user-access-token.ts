@@ -35,7 +35,7 @@ export async function getRefreshedAccessToken(
   const { user } = refreshToken;
 
   // replace old refresh token with a new one and save
-  const newRefreshToken = await generateRefreshToken(user);
+  const newRefreshToken = await generateRefreshToken(user as any);
   await newRefreshToken.save();
   setTokenCookie(res, newRefreshToken.token);
 
@@ -44,7 +44,7 @@ export async function getRefreshedAccessToken(
   await refreshToken.save();
 
   // generate new jwt
-  return generateJwtToken(user);
+  return generateJwtToken(user as any);
 }
 
 export async function revokeToken(token: string): Promise<void> {
