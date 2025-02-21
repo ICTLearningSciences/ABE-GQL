@@ -189,4 +189,4 @@ export const PromptRunSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("PromptRun", PromptRunSchema);
+export default mongoose.model<PromptRun>("PromptRun", PromptRunSchema);

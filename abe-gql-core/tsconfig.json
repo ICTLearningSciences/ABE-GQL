@@ -4,6 +4,7 @@
     "inlineSources": true,
     "esModuleInterop": true,
     "allowJs": true,
+    "declaration": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "lib": ["es2018"],
