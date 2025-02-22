@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@vendia/serverless-express": "^4.10.1",
+    "mongoose": "^8.2.0",
     "abe-gql-core": "file:../abe-gql-core",
     "jsonschema": "^1.5.0",
     "source-map-support": "^0.5.21",
