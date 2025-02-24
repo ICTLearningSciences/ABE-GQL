@@ -11,15 +11,25 @@ build:
   esbuild:
     bundle: true
     minify: true
-    format: esm
     platform: node
+    format: esm
     target: node18
     external:
       - "mongoose"
     banner:
+    # There is a bug in esbuild’s support for producing ESM modules,
+    # where external modules like Node.js built-in modules are loaded using require,
+    # even though the transpiled code is in ESM format.
+    # https://github.com/evanw/esbuild/pull/2067#issuecomment-1152399288
+    # https://bajtos.net/posts/2022-05-bundling-nodejs-for-aws-lambda/
       js: |
         import {createRequire} from 'module';
         const require = createRequire(import.meta.url);
+
+package:
+  individually: true
+  patterns:
+    - package.json
 
 custom:
   domain:

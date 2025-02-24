@@ -19,11 +19,9 @@ async function setup(event: any, context: any) {
 }
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
-function handler(event: any, context: any) {
+export function handler(event: any, context: any) {
   if (serverlessExpressInstance)
     return serverlessExpressInstance(event, context);
 
   return setup(event, context);
 }
-
-exports.handler = handler;
