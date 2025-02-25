@@ -2,7 +2,7 @@
   "name": "",
   "version": "1.0.0",
   "description": "",
-  "main": "myfirstfunction/index.js",
+  "main": "graphql/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
