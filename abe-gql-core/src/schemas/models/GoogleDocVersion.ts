@@ -170,6 +170,9 @@ export const GDocVersionSchema = new Schema(
 );
 
 pluginPagination(GDocVersionSchema);
+
+GDocVersionSchema.index({ createdAt: -1, _id: -1 });
+
 export default mongoose.model<IGDocVersion, GDocVersionModel>(
   "GoogleDocVersion",
   GDocVersionSchema

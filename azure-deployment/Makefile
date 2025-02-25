@@ -15,16 +15,20 @@ logout:
 fetch-app-settings:
 	func azure functionapp fetch-app-settings $(APP_NAME)
 
+.PHONY: update-core
+update-core:
+	cd ../abe-gql-core && npm install
+
 .PHONY: deploy
 deploy:
-	# npm run build
+	make update-core
 	func azure functionapp publish $(APP_NAME) --typescript --env $(ENV)
 
 #Develop
 .PHONY: develop
 develop:
 	make fetch-app-settings
-	cd ../abe-gql-core && npm run build
+	make update-core
 	npm install
 	func start --inspect-brk --build
 

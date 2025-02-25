@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import mongoose from "mongoose";
 import requireEnv from "./require-env";
 import { logger } from "./logging";
+import GoogleDocVersion from "../schemas/models/GoogleDocVersion";
 
 /**
  * Connect mongoose using env variables:
@@ -26,6 +27,7 @@ export default async function mongooseConnect(uri: string): Promise<void> {
       process.env.MONGO_QUERY_STRING || ""
     }`;
   mongoose.set("strictQuery", false);
+  GoogleDocVersion.syncIndexes()
   await mongoose.connect(mongoUri);
   logger.info(
     "mongoose: connection successful " + mongoUri.replace(/^.*@/g, "")
