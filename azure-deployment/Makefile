@@ -17,13 +17,14 @@ fetch-app-settings:
 
 .PHONY: deploy
 deploy:
-	npm run build
+	# npm run build
 	func azure functionapp publish $(APP_NAME) --typescript --env $(ENV)
 
 #Develop
 .PHONY: develop
 develop:
 	make fetch-app-settings
-	npm run build
-	func start --inspect-brk --build --verbose
+	cd ../abe-gql-core && npm run build
+	npm install
+	func start --inspect-brk --build
 
