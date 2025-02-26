@@ -17,11 +17,12 @@ fetch-app-settings:
 
 .PHONY: update-core
 update-core:
-	cd ../abe-gql-core && npm install
+	cd ../abe-gql-core && npm install && npm run build
 
 .PHONY: deploy
 deploy:
 	make update-core
+	npm install
 	func azure functionapp publish $(APP_NAME) --typescript --env $(ENV)
 
 #Develop
