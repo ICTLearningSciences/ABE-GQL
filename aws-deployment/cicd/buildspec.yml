@@ -12,6 +12,7 @@ phases:
   pre_build:
     on-failure: ABORT # or CONTINUE
     commands:
+      - cd aws-deployment
       - npm run test:format
       - npm run test:license
       - npm run test:lint
@@ -21,6 +22,7 @@ phases:
 
   build:
     commands:
+      - cd aws-deployment
       # this is just to compile ts; serverless will run its own build at deploy
       - npm run build
 

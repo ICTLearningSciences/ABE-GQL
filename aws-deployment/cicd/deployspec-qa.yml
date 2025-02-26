@@ -11,5 +11,7 @@ phases:
       - n 18 # workaround https://github.com/aws/aws-codebuild-docker-images/issues/490
   build:
     commands:
+      - cd aws-deployment
       - echo Deploying stack
       - npm run deploy:qa
+
