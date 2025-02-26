@@ -1,5 +1,5 @@
 ENV ?= dev
-APP_NAME=$(ENV)-abe-function-app-mongo
+APP_NAME=$(ENV)-abe-fa-mongo
 
 #login/logout commands
 .PHONY: login
