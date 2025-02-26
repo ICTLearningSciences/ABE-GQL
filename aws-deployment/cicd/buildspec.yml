@@ -7,7 +7,9 @@ phases:
     commands:
       - n 18 # workaround https://github.com/aws/aws-codebuild-docker-images/issues/490
 
-  test-core:
+  # test core
+  pre_build:
+    on-failure: ABORT
     commands:
       - cd abe-gql-core
       - NODE_ENV=dev npm ci
@@ -19,13 +21,10 @@ phases:
       - npm run test
       - cd ..
 
-  pre_build:
-    on-failure: ABORT # or CONTINUE
+  build:
     commands:
       - cd aws-deployment
       - NODE_ENV=dev npm ci
-  build:
-    commands:
       # this is just to compile ts; serverless will run its own build at deploy
       - npm run build
 
