@@ -13,6 +13,7 @@ phases:
     commands:
       - cd abe-gql-core
       - NODE_ENV=dev npm ci
+      - npm run build
       - npm run test:format
       - npm run test:license
       - npm run test:lint
