@@ -27,7 +27,7 @@ export default async function mongooseConnect(uri: string): Promise<void> {
       process.env.MONGO_QUERY_STRING || ""
     }`;
   mongoose.set("strictQuery", false);
-  GoogleDocVersion.syncIndexes()
+  GoogleDocVersion.syncIndexes();
   await mongoose.connect(mongoUri);
   logger.info(
     "mongoose: connection successful " + mongoUri.replace(/^.*@/g, "")
