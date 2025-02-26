@@ -2,6 +2,7 @@ name: test
 on: push
 defaults:
   run:
+    shell: bash
     working-directory: aws-deployment
 jobs:
   test:
@@ -12,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "18.13"
+      - name: print working directory
+        run: pwd && ls -la
       - name: install
         run: npm ci
       # - name: test audit
