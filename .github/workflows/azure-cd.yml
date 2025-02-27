@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - azure-cicd
-
+defaults:
+  run:
+    shell: bash
+    working-directory: azure-deployment
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -25,5 +28,4 @@ jobs:
 
     - name: Deploy Azure Function App
       run: |
-        cd azure-deployment
         make deploy
