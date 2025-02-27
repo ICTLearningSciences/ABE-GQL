@@ -73,7 +73,7 @@ export const UserSchema = new Schema<User, UserModel>(
     email: { type: String },
     userRole: {
       type: String,
-      enum: [UserRole.USER, UserRole.ADMIN],
+      enum: [UserRole.USER, UserRole.ADMIN, UserRole.CONTENT_MANAGER],
       default: UserRole.USER,
     },
     lastLoginAt: { type: Date },
