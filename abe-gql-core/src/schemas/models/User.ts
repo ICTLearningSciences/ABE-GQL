@@ -10,6 +10,7 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLList,
 } from "graphql";
 import { DateType } from "../types/date";
 import {
@@ -31,6 +32,8 @@ export interface User extends Document {
   email: string;
   userRole: UserRole;
   lastLoginAt: Date;
+  classroomCode: string;
+  previousClassroomCodes: string[];
 }
 
 export const UserType = new GraphQLObjectType({
@@ -42,19 +45,26 @@ export const UserType = new GraphQLObjectType({
     email: { type: GraphQLString },
     userRole: { type: GraphQLString },
     lastLoginAt: { type: DateType },
+    classroomCode: { type: GraphQLString },
+    previousClassroomCodes: { type: new GraphQLList(GraphQLString) },
   }),
 });
 
 export const UserInputType = new GraphQLInputObjectType({
   name: "UserInputType",
   fields: () => ({
-    googleId: { type: GraphQLString },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
-    userRole: { type: GraphQLString },
-    lastLoginAt: { type: DateType },
+    classroomCode: { type: GraphQLString },
+    previousClassroomCodes: { type: new GraphQLList(GraphQLString) },
   }),
 });
+
+export interface IUserInputType {
+  name?: string;
+  email?: string;
+  classroomCode?: string;
+}
 
 export const UserSchema = new Schema<User, UserModel>(
   {
@@ -67,6 +77,8 @@ export const UserSchema = new Schema<User, UserModel>(
       default: UserRole.USER,
     },
     lastLoginAt: { type: Date },
+    classroomCode: { type: String },
+    previousClassroomCodes: { type: [String], default: [] },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

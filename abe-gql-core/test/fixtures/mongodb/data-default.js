@@ -546,6 +546,7 @@ module.exports = {
       email: "johnadmindoe@gmail.com",
       userRole: "ADMIN",
       lastLoginAt: "2000-10-12T20:49:41.599+00:00",
+      classroomCode: "previous-classroom-code",
     },
   ],
   doctimelines: [
