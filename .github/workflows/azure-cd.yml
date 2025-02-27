@@ -26,6 +26,4 @@ jobs:
       with:
         azcliversion: latest
         inlineScript: |
-          ls -la
-          cd azure-deployment
-          make deploy
+          func azure functionapp publish dev-abe-fa-mongo --typescript --env dev
