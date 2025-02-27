@@ -78,7 +78,6 @@ describe("update user info", () => {
           },
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     const updatedUser = response.body.data.updateUserInfo;
     expect(updatedUser.classroomCode).to.equal("5ffdf1231ee2c62320b49e2f");

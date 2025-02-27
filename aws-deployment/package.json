@@ -6,9 +6,9 @@
   "scripts": {
     "build": "tsc",
     "deps:update": "npx ncu -u",
-    "deploy:dev": "NODE_OPTIONS=--max_old_space_size=4000 sls deploy -s dev --region us-east-1",
-    "deploy:qa": "NODE_OPTIONS=--max_old_space_size=4000 sls deploy -s qa --region us-east-1",
-    "deploy:prod": "NODE_OPTIONS=--max_old_space_size=4000 sls deploy -s prod --region us-east-1"
+    "deploy:dev": "NODE_OPTIONS=--max_old_space_size=4000 npx sls deploy -s dev --region us-east-1 --aws-profile abe",
+    "deploy:qa": "NODE_OPTIONS=--max_old_space_size=4000 npx sls deploy -s qa --region us-east-1 --aws-profile abe",
+    "deploy:prod": "NODE_OPTIONS=--max_old_space_size=4000 npx sls deploy -s prod --region us-east-1 --aws-profile abe"
   },
   "dependencies": {
     "@vendia/serverless-express": "^4.10.1",
