@@ -10,6 +10,7 @@ import GDocVersionModel, {
 } from "../models/GoogleDocVersion";
 import { GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
+import UserModel from "../models/User";
 dotenv.config();
 
 export const submitGoogleDocVersion = {
@@ -18,12 +19,28 @@ export const submitGoogleDocVersion = {
     googleDocData: { type: GraphQLNonNull(GDocVersionInputType) },
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async resolve(_: any, args: any) {
+  async resolve(
+    _: any,
+    args: any,
+    context: {
+      userId: string;
+    }
+  ) {
     try {
-      const doc = await GDocVersionModel.create({ ...args.googleDocData });
+      if (!context.userId) {
+        throw new Error("authenticated user required");
+      }
+      const user = await UserModel.findById(context.userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const doc = await GDocVersionModel.create({
+        ...args.googleDocData,
+        userId: user._id,
+        userClassroomCode: user.classroomCode,
+      });
       return doc;
     } catch (e) {
-      console.log(e);
       throw new Error(String(e));
     }
   },

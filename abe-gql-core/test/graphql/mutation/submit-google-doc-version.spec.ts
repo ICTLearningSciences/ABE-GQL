@@ -11,6 +11,8 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/models/User";
 
 describe("submit google doc version", () => {
   let app: Express;
@@ -26,9 +28,37 @@ describe("submit google doc version", () => {
     await mongoUnit.drop();
   });
 
-  it(`throws an error if google doc data was not provided`, async () => {
+  it("throws error for unauthenticated user", async () => {
+    const newGoogleDocData = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      plainText: "hello, world!",
+    };
     const response = await request(app)
       .post("/graphql")
+      .send({
+        query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
+                    submitGoogleDocVersion(googleDocData: $googleDocData) {
+                      docId
+                      plainText
+                    }
+                }`,
+        variables: {
+          googleDocData: newGoogleDocData,
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("authenticated user required")
+      )
+    ).to.exist;
+  });
+
+  it(`throws an error if google doc data was not provided`, async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.USER);
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
@@ -46,6 +76,8 @@ describe("submit google doc version", () => {
                       title
                       lastModifyingUser
                       modifiedTime
+                      userId
+                      userClassroomCode
                     }
                 }`,
         variables: {
@@ -57,6 +89,7 @@ describe("submit google doc version", () => {
   });
 
   it(`can submit new google doc data`, async () => {
+    const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.USER);
     const newGoogleDocData = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
@@ -87,33 +120,12 @@ describe("submit google doc version", () => {
     };
     const response = await request(app)
       .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
       .send({
         query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainText
-                      lastChangedId
-                      sessionId
-                      sessionIntention {
-                        description
-                      }
-                      documentIntention {
-                        description
-                      }
-                      dayIntention {
-                        description
-                      }
-                      chatLog {
-                        sender
-                        message
-                        displayType
-                        bulletPoints
-                      }
-                      activity
-                      intent
-                      title
-                      lastModifyingUser
-                      modifiedTime
                     }
                 }`,
         variables: {
@@ -151,6 +163,8 @@ describe("submit google doc version", () => {
                       title
                       lastModifyingUser
                       modifiedTime
+                      userId
+                      userClassroomCode
                     }
                 }`,
         variables: {
@@ -159,7 +173,11 @@ describe("submit google doc version", () => {
       });
     expect(response2.status).to.equal(200);
     expect(response2.body.data.fetchGoogleDocVersions).to.deep.include.members([
-      newGoogleDocData,
+      {
+        ...newGoogleDocData,
+        userId: "5ffdf1231ee2c62320b49a99",
+        userClassroomCode: "previous-classroom-code",
+      },
     ]);
   });
 });
