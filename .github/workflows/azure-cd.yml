@@ -26,4 +26,6 @@ jobs:
       with:
         azcliversion: latest
         inlineScript: |
+          ls -la
+          cd azure-deployment
           make deploy
