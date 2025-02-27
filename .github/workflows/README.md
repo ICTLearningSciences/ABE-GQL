@@ -1,4 +1,3 @@
 azure-cd.yml
- - had to create a service principal:
-    - $ az ad sp create-for-rbac --name "myGitHubAction" --role contributor --scopes /subscriptions/<subscription-id> --sdk-auth
-    - add the output to github secrets as AZURE_CREDENTIALS
+ - had to download a publish profile from azure and add it to the github secrets as AZURE_FUNCTIONAPP_PUBLISH_PROFILE 
+   - https://learn.microsoft.com/en-us/azure/azure-functions/functions-how-to-github-actions?tabs=linux%2Cjavascript&pivots=method-manual#download-your-publish-profile
