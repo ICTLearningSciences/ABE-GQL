@@ -1,0 +1,27 @@
+name: Azure CD
+
+on:
+  push:
+    branches:
+      - azure-cicd
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/azure-cli:latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to Azure
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      run: |
+        echo "$AZURE_CREDENTIALS" > azure_credentials.json
+        az login --service-principal -u $(jq -r .clientId azure_credentials.json) -p $(jq -r .clientSecret azure_credentials.json) --tenant $(jq -r .tenantId azure_credentials.json)
+
+    - name: Deploy Azure Function App
+      run: |
+        cd azure-deployment
+        make deploy
