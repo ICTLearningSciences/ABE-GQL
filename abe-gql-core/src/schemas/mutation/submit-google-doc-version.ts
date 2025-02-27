@@ -7,8 +7,9 @@ The full terms of this copyright and license should always be found in the root 
 import GDocVersionModel, {
   GDocVersionObjectType,
   GDocVersionInputType,
+  IGDocVersion,
 } from "../models/GoogleDocVersion";
-import { GraphQLNonNull } from "graphql";
+import { GraphQLNonNull, GraphQLObjectType } from "graphql";
 import * as dotenv from "dotenv";
 import UserModel from "../models/User";
 dotenv.config();
@@ -18,10 +19,11 @@ export const submitGoogleDocVersion = {
   args: {
     googleDocData: { type: GraphQLNonNull(GDocVersionInputType) },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async resolve(
-    _: any,
-    args: any,
+    _root: GraphQLObjectType,
+    args: {
+      googleDocData: IGDocVersion;
+    },
     context: {
       userId: string;
     }
