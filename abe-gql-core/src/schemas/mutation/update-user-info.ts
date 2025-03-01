@@ -10,6 +10,7 @@ import UserModel, {
   UserInputType,
   UserType,
   IUserInputType,
+  ClassroomCode,
 } from "../models/User";
 
 export const updateUserInfo = {
@@ -33,16 +34,22 @@ export const updateUserInfo = {
     if (!user) {
       throw new Error("user not found");
     }
+    const inputClassroomCode: ClassroomCode | undefined = args.userInfo
+      .classroomCode
+      ? {
+          code: args.userInfo.classroomCode,
+          createdAt: new Date(),
+        }
+      : undefined;
+    delete args.userInfo.classroomCode;
     if (
-      args.userInfo.classroomCode &&
-      user.classroomCode !== args.userInfo.classroomCode
+      inputClassroomCode &&
+      user.classroomCode?.code !== inputClassroomCode.code
     ) {
-      if (user.classroomCode) {
-        user.previousClassroomCodes.push(user.classroomCode);
-      }
-      user.classroomCode = args.userInfo.classroomCode;
+      user.previousClassroomCodes.push(user.classroomCode);
+      user.classroomCode = inputClassroomCode;
     }
-    await user.updateOne(args.userInfo);
+    user.set(args.userInfo);
     await user.save();
     return user;
   },

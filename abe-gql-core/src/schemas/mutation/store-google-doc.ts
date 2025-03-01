@@ -46,7 +46,7 @@ export const submitGoogleDoc = {
           ...args.googleDoc,
           admin: args.googleDoc.admin,
           $setOnInsert: {
-            userClassroomCode: user.classroomCode,
+            userClassroomCode: user.classroomCode.code,
           },
         },
         {

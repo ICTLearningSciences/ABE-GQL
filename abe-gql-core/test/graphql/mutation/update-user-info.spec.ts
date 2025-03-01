@@ -12,13 +12,19 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
+import { ClassroomCode, UserRole } from "../../../src/schemas/models/User";
 
 export const fullUserQueryData = `
   name
   email
-  classroomCode
-  previousClassroomCodes
+  classroomCode{
+    code
+    createdAt
+  }
+  previousClassroomCodes{
+    code
+    createdAt
+  }
 `;
 
 describe("update user info", () => {
@@ -80,11 +86,13 @@ describe("update user info", () => {
       });
     expect(response.status).to.equal(200);
     const updatedUser = response.body.data.updateUserInfo;
-    expect(updatedUser.classroomCode).to.equal("5ffdf1231ee2c62320b49e2f");
+    expect(updatedUser.classroomCode.code).to.equal("5ffdf1231ee2c62320b49e2f");
     expect(updatedUser.name).to.equal("John Admin Doe");
     expect(updatedUser.email).to.equal("johnadmindoe@gmail.com");
-    expect(updatedUser.previousClassroomCodes).to.deep.equal([
-      "previous-classroom-code",
-    ]);
+    const previousClassroomCode = updatedUser.previousClassroomCodes.find(
+      (code: ClassroomCode) => code.code === "previous-classroom-code"
+    );
+    expect(previousClassroomCode).to.exist;
+    expect(previousClassroomCode.createdAt).to.exist;
   });
 });
