@@ -46,7 +46,9 @@ export const updateUserInfo = {
       inputClassroomCode &&
       user.classroomCode?.code !== inputClassroomCode.code
     ) {
-      user.previousClassroomCodes.push(user.classroomCode);
+      if (user.classroomCode) {
+        user.previousClassroomCodes.push(user.classroomCode);
+      }
       user.classroomCode = inputClassroomCode;
     }
     user.set(args.userInfo);
