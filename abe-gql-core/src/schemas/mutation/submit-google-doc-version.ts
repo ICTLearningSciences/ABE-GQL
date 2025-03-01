@@ -7,44 +7,24 @@ The full terms of this copyright and license should always be found in the root 
 import GDocVersionModel, {
   GDocVersionObjectType,
   GDocVersionInputType,
-  IGDocVersion,
 } from "../models/GoogleDocVersion";
-import { GraphQLNonNull, GraphQLObjectType } from "graphql";
-import * as dotenv from "dotenv";
-import UserModel from "../models/User";
-dotenv.config();
+import { GraphQLNonNull } from "graphql";
 
 export const submitGoogleDocVersion = {
   type: GDocVersionObjectType,
   args: {
     googleDocData: { type: GraphQLNonNull(GDocVersionInputType) },
   },
-  async resolve(
-    _root: GraphQLObjectType,
-    args: {
-      googleDocData: IGDocVersion;
-    },
-    context: {
-      userId: string;
-    }
-  ) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async resolve(_: any, args: any) {
     try {
-      if (!context.userId) {
-        throw new Error("authenticated user required");
-      }
-      const user = await UserModel.findById(context.userId);
-      if (!user) {
-        throw new Error("User not found");
-      }
-      const doc = await GDocVersionModel.create({
-        ...args.googleDocData,
-        userId: user._id,
-        userClassroomCode: user.classroomCode,
-      });
+      const doc = await GDocVersionModel.create({ ...args.googleDocData });
       return doc;
     } catch (e) {
+      console.log(e);
       throw new Error(String(e));
     }
   },
 };
+
 export default submitGoogleDocVersion;

@@ -538,6 +538,7 @@ module.exports = {
       email: "johndoe@gmail.com",
       userRole: "USER",
       lastLoginAt: "2000-10-12T20:49:41.599+00:00",
+      classroomCode: "john-doe-classroom-code",
     },
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49a99"),

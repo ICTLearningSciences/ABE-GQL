@@ -115,8 +115,6 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     modifiedTime: { type: DateType },
     createdAt: { type: DateType },
     updatedAt: { type: DateType },
-    userId: { type: GraphQLString },
-    userClassroomCode: { type: GraphQLString },
   }),
 });
 
@@ -136,8 +134,6 @@ export interface IGDocVersion {
   modifiedTime: Date;
   createdAt: Date;
   updatedAt: Date;
-  userId: string;
-  userClassroomCode: string;
 }
 
 export interface GDocVersionModel extends mongoose.Model<IGDocVersion> {
@@ -169,8 +165,6 @@ export const GDocVersionSchema = new Schema(
     title: String,
     lastModifyingUser: String,
     modifiedTime: Date,
-    userId: String,
-    userClassroomCode: String,
   },
   { timestamps: true }
 );
