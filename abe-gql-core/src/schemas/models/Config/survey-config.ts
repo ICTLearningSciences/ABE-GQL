@@ -4,27 +4,29 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import GDocVersionModel, {
-  GDocVersionObjectType,
-  GDocVersionInputType,
-} from "../models/GoogleDocVersion";
-import { GraphQLNonNull } from "graphql";
+import {
+  GraphQLInputObjectType,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql";
 
-export const submitGoogleDocVersion = {
-  type: GDocVersionObjectType,
-  args: {
-    googleDocData: { type: GraphQLNonNull(GDocVersionInputType) },
+export const SurveyConfigType = new GraphQLObjectType({
+  name: "SurveyConfigType",
+  fields: {
+    surveyLink: { type: GraphQLString },
+    surveyQueryParam: { type: GraphQLString },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async resolve(_: any, args: any) {
-    try {
-      const doc = await GDocVersionModel.create({ ...args.googleDocData });
-      return doc;
-    } catch (e) {
-      console.log(e);
-      throw new Error(String(e));
-    }
-  },
-};
+});
 
-export default submitGoogleDocVersion;
+export const SurveyConfigInputType = new GraphQLInputObjectType({
+  name: "SurveyConfigInputType",
+  fields: {
+    surveyLink: { type: GraphQLString },
+    surveyQueryParam: { type: GraphQLString },
+  },
+});
+
+export interface SurveyConfig {
+  surveyLink: string;
+  surveyQueryParam: string;
+}

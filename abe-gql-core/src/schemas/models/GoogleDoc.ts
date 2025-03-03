@@ -37,6 +37,7 @@ export interface GoogleDoc {
   service: DocService;
   admin: boolean;
   user: User["_id"];
+  userClassroomCode: string;
 }
 
 export const GoogleDocType = new GraphQLObjectType({
@@ -63,6 +64,7 @@ export const GoogleDocType = new GraphQLObjectType({
       },
     },
     createdAt: { type: DateType },
+    userClassroomCode: { type: GraphQLString },
   }),
 });
 
@@ -97,6 +99,7 @@ export const GoogleDocSchema = new Schema(
     admin: { type: Boolean, default: false },
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },
+    userClassroomCode: { type: String },
   },
   { timestamps: true }
 );

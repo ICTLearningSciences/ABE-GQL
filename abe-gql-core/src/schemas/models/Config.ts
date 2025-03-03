@@ -13,6 +13,7 @@ import {
   GraphQLBoolean,
 } from "graphql";
 import OrgModel from "./Organization";
+import { SurveyConfig, SurveyConfigType } from "./Config/survey-config";
 
 export interface ConfigEntry {
   key: string;
@@ -118,6 +119,7 @@ export interface Config {
   headerTitle?: string;
   orgName?: string;
   loginScreenTitle?: string;
+  surveyConfig?: SurveyConfig;
 }
 
 type ConfigKey = keyof Config;
@@ -132,6 +134,7 @@ export const ConfigKeys: ConfigKey[] = [
   "headerTitle",
   "orgName",
   "loginScreenTitle",
+  "surveyConfig",
 ];
 
 export function getDefaultConfig(): Config {
@@ -146,6 +149,10 @@ export function getDefaultConfig(): Config {
     headerTitle: "",
     orgName: "",
     loginScreenTitle: "",
+    surveyConfig: {
+      surveyLink: "",
+      surveyQueryParam: "",
+    },
   };
 }
 
@@ -198,6 +205,7 @@ export const ConfigType = new GraphQLObjectType({
     headerTitle: { type: GraphQLString },
     orgName: { type: GraphQLString },
     loginScreenTitle: { type: GraphQLString },
+    surveyConfig: { type: SurveyConfigType },
   }),
 });
 

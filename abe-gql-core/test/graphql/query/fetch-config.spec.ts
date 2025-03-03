@@ -36,18 +36,30 @@ describe("config", () => {
         query: `query {
           fetchConfig {
             aiSystemPrompt
+            surveyConfig {
+              surveyLink
+              surveyQueryParam
+            }
           }
         }`,
       });
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchConfig).to.eql({
       aiSystemPrompt: [],
+      surveyConfig: {
+        surveyLink: "",
+        surveyQueryParam: "",
+      },
     });
   });
 
   it(`serves config from Settings`, async () => {
     const config: Config = {
       aiSystemPrompt: ["Hello, world!"],
+      surveyConfig: {
+        surveyLink: "https://example.com",
+        surveyQueryParam: "param",
+      },
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -56,6 +68,10 @@ describe("config", () => {
         query: `query {
           fetchConfig {
             aiSystemPrompt
+            surveyConfig {
+              surveyLink
+              surveyQueryParam
+            } 
           }
         }`,
       });

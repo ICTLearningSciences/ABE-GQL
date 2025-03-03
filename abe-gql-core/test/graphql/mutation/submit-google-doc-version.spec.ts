@@ -11,6 +11,8 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/models/User";
 
 describe("submit google doc version", () => {
   let app: Express;
@@ -92,28 +94,6 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainText
-                      lastChangedId
-                      sessionId
-                      sessionIntention {
-                        description
-                      }
-                      documentIntention {
-                        description
-                      }
-                      dayIntention {
-                        description
-                      }
-                      chatLog {
-                        sender
-                        message
-                        displayType
-                        bulletPoints
-                      }
-                      activity
-                      intent
-                      title
-                      lastModifyingUser
-                      modifiedTime
                     }
                 }`,
         variables: {
@@ -159,7 +139,9 @@ describe("submit google doc version", () => {
       });
     expect(response2.status).to.equal(200);
     expect(response2.body.data.fetchGoogleDocVersions).to.deep.include.members([
-      newGoogleDocData,
+      {
+        ...newGoogleDocData,
+      },
     ]);
   });
 });

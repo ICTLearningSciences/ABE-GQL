@@ -11,6 +11,7 @@ import GoogleDocModel, {
 } from "../models/GoogleDoc";
 import { GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
+import UserModel from "../models/User";
 dotenv.config();
 
 export const submitGoogleDoc = {
@@ -32,6 +33,10 @@ export const submitGoogleDoc = {
       if (!args.googleDoc.googleDocId) {
         throw new Error("googleDocId is required");
       }
+      const user = await UserModel.findById(args.googleDoc.user);
+      if (!user) {
+        throw new Error("user not found");
+      }
       const doc = await GoogleDocModel.findOneAndUpdate(
         {
           googleDocId: args.googleDoc.googleDocId,
@@ -40,6 +45,9 @@ export const submitGoogleDoc = {
         {
           ...args.googleDoc,
           admin: args.googleDoc.admin,
+          $setOnInsert: {
+            userClassroomCode: user.classroomCode.code,
+          },
         },
         {
           upsert: true,
