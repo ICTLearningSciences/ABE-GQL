@@ -11,6 +11,7 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
+import GoogleDocModel from "../../../src/schemas/models/GoogleDoc";
 
 describe("store google doc", () => {
   let app: Express;
@@ -139,6 +140,63 @@ describe("store google doc", () => {
       },
       assignmentDescription: "test_assignment",
       createdAt: "2021-01-13T00:00:00.000Z",
+    });
+  });
+
+  it(`submitting a new google doc pulls classroomCode from user`, async () => {
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `mutation StoreGoogleDoc($googleDoc: GoogleDocInputType!) {
+            storeGoogleDoc(googleDoc: $googleDoc) {
+                googleDocId
+                user
+                userClassroomCode
+                    }
+                }`,
+        variables: {
+          googleDoc: {
+            googleDocId: "test_store_google_doc",
+            user: "5ffdf1231ee2c62320b49e99",
+          },
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.storeGoogleDoc).to.eql({
+      googleDocId: "test_store_google_doc",
+      user: "5ffdf1231ee2c62320b49e99",
+      userClassroomCode: "john-doe-classroom-code",
+    });
+  });
+
+  it(`updating an existing doc info does not change classroomCode`, async () => {
+    await GoogleDocModel.create({
+      googleDocId: "test_store_google_doc",
+      user: "5ffdf1231ee2c62320b49e99",
+      userClassroomCode: "john-doe-old-classroom-code",
+    });
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `mutation StoreGoogleDoc($googleDoc: GoogleDocInputType!) {
+            storeGoogleDoc(googleDoc: $googleDoc) {
+                googleDocId
+                user
+                userClassroomCode
+                    }
+                }`,
+        variables: {
+          googleDoc: {
+            googleDocId: "test_store_google_doc",
+            user: "5ffdf1231ee2c62320b49e99",
+          },
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.storeGoogleDoc).to.eql({
+      googleDocId: "test_store_google_doc",
+      user: "5ffdf1231ee2c62320b49e99",
+      userClassroomCode: "john-doe-old-classroom-code",
     });
   });
 });

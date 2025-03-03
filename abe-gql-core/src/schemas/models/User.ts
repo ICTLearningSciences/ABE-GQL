@@ -10,6 +10,7 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLList,
 } from "graphql";
 import { DateType } from "../types/date";
 import {
@@ -25,13 +26,28 @@ export enum UserRole {
   ADMIN = "ADMIN",
 }
 
+export interface ClassroomCode {
+  code: string;
+  createdAt: Date;
+}
+
 export interface User extends Document {
   googleId: string;
   name: string;
   email: string;
   userRole: UserRole;
   lastLoginAt: Date;
+  classroomCode: ClassroomCode;
+  previousClassroomCodes: ClassroomCode[];
 }
+
+export const ClassroomCodeType = new GraphQLObjectType({
+  name: "ClassroomCode",
+  fields: () => ({
+    code: { type: GraphQLString },
+    createdAt: { type: DateType },
+  }),
+});
 
 export const UserType = new GraphQLObjectType({
   name: "User",
@@ -42,18 +58,37 @@ export const UserType = new GraphQLObjectType({
     email: { type: GraphQLString },
     userRole: { type: GraphQLString },
     lastLoginAt: { type: DateType },
+    classroomCode: { type: ClassroomCodeType },
+    previousClassroomCodes: { type: new GraphQLList(ClassroomCodeType) },
+  }),
+});
+
+export const ClassroomCodeInputType = new GraphQLInputObjectType({
+  name: "ClassroomCodeInputType",
+  fields: () => ({
+    code: { type: GraphQLString },
+    createdAt: { type: DateType },
   }),
 });
 
 export const UserInputType = new GraphQLInputObjectType({
   name: "UserInputType",
   fields: () => ({
-    googleId: { type: GraphQLString },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
-    userRole: { type: GraphQLString },
-    lastLoginAt: { type: DateType },
+    classroomCode: { type: GraphQLString },
   }),
+});
+
+export interface IUserInputType {
+  name?: string;
+  email?: string;
+  classroomCode?: string;
+}
+
+export const ClassroomCodeSchema = new Schema<ClassroomCode>({
+  code: { type: String },
+  createdAt: { type: Date },
 });
 
 export const UserSchema = new Schema<User, UserModel>(
@@ -63,10 +98,12 @@ export const UserSchema = new Schema<User, UserModel>(
     email: { type: String },
     userRole: {
       type: String,
-      enum: [UserRole.USER, UserRole.ADMIN],
+      enum: [UserRole.USER, UserRole.ADMIN, UserRole.CONTENT_MANAGER],
       default: UserRole.USER,
     },
     lastLoginAt: { type: Date },
+    classroomCode: { type: ClassroomCodeSchema },
+    previousClassroomCodes: { type: [ClassroomCodeSchema], default: [] },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

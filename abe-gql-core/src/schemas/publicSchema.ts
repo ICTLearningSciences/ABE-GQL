@@ -40,6 +40,7 @@ import { UserRole } from "./models/User";
 import copyBuiltActivity from "./mutation/copy-built-activity";
 import deleteBuiltActivity from "./mutation/delete-built-activity";
 import loginMicrosoft from "./mutation/login-microsoft";
+import updateUserInfo from "./mutation/update-user-info";
 
 const publicQueries = {
   fetchGoogleDocVersions,
@@ -74,6 +75,7 @@ const publicMutations = {
   storeDocTimeline,
   deleteGoogleDoc,
   loginMicrosoft,
+  updateUserInfo,
 };
 
 const contentManagerMutations = {
