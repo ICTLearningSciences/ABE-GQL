@@ -1,5 +1,9 @@
 name: test
 on: push
+defaults:
+  run:
+    shell: bash
+    working-directory: abe-gql-core
 jobs:
   test:
     name: test

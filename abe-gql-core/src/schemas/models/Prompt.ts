@@ -60,4 +60,4 @@ export const PromptSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Prompt", PromptSchema);
+export default mongoose.model<Prompt>("Prompt", PromptSchema);

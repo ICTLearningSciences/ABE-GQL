@@ -1,8 +1,9 @@
 {
-  "name": "graphql",
+  "name": "abe-gql-core",
   "version": "1.0.0",
   "description": "serverless graphql for ABE",
-  "main": "index.js",
+  "main": "dist/exported-functions.js",
+  "types": "dist/exported-functions.d.ts",
   "scripts": {
     "build": "tsc",
     "deps:update": "npx ncu -u",
@@ -27,10 +28,8 @@
     "@types/chai": "^4.3.5",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/supertest": "^2.0.12",
-    "@vendia/serverless-express": "^4.10.1",
     "@xapi/cmi5": "^1.1.6",
     "ajv": "^8.11.0",
-    "aws-lambda": "^1.0.7",
     "axios": "^1.6.7",
     "base64url": "^3.0.1",
     "chai": "^4.3.7",
@@ -48,7 +47,6 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.134",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.13",
     "@types/mocha": "^10.0.1",
@@ -62,8 +60,6 @@
     "mocha": "^10.2.0",
     "mongo-unit": "^3.3.0",
     "prettier": "^2.8.8",
-    "serverless-domain-manager": "^7.0.2",
-    "serverless-plugin-typescript": "^2.1.2",
     "ts-node": "^10.9.1",
     "tsconfig": "^7.0.0",
     "tsconfig-paths": "^4.2.0"

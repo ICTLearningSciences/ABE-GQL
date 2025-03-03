@@ -4,30 +4,24 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import mongoose from "mongoose";
-import requireEnv from "./require-env";
-import { logger } from "./logging";
+require("source-map-support/register");
+import serverlessExpress from "@vendia/serverless-express";
+import { createApp, appStart } from "abe-gql-core";
 
-/**
- * Connect mongoose using env variables:
- * MONGO_USER
- * MONGO_PASSWORD
- * MONGO_HOST (includes port, may also be a comma-sep list of host1:port1,host2:port2 for replicate set)
- * MONGO_DB - database name
- * MONGO_QUERY_STRING - query string
- */
-export default async function mongooseConnect(uri: string): Promise<void> {
-  const mongoUri =
-    uri ||
-    process.env.MONGO_URI ||
-    `mongodb://${requireEnv("MONGO_USER")}:${requireEnv(
-      "MONGO_PASSWORD"
-    )}@${requireEnv("MONGO_HOST")}/${requireEnv("MONGO_DB")}${
-      process.env.MONGO_QUERY_STRING || ""
-    }`;
-  mongoose.set("strictQuery", false);
-  await mongoose.connect(mongoUri);
-  logger.info(
-    "mongoose: connection successful " + mongoUri.replace(/^.*@/g, "")
-  );
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+let serverlessExpressInstance: any;
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+async function setup(event: any, context: any) {
+  await appStart();
+  serverlessExpressInstance = serverlessExpress({ app: createApp() });
+  return serverlessExpressInstance(event, context);
+}
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+export function handler(event: any, context: any) {
+  if (serverlessExpressInstance)
+    return serverlessExpressInstance(event, context);
+
+  return setup(event, context);
 }
