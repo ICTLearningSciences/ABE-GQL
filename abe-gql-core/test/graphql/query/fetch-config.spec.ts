@@ -39,6 +39,7 @@ describe("config", () => {
             surveyConfig {
               surveyLink
               surveyQueryParam
+              surveyClassroomParam
             }
           }
         }`,
@@ -49,6 +50,7 @@ describe("config", () => {
       surveyConfig: {
         surveyLink: "",
         surveyQueryParam: "",
+        surveyClassroomParam: "",
       },
     });
   });
@@ -59,6 +61,7 @@ describe("config", () => {
       surveyConfig: {
         surveyLink: "https://example.com",
         surveyQueryParam: "param",
+        surveyClassroomParam: "classroomParam",
       },
     };
     await ConfigModel.saveConfig(config);
@@ -71,6 +74,7 @@ describe("config", () => {
             surveyConfig {
               surveyLink
               surveyQueryParam
+              surveyClassroomParam
             } 
           }
         }`,
