@@ -152,6 +152,7 @@ export function getDefaultConfig(): Config {
     surveyConfig: {
       surveyLink: "",
       surveyQueryParam: "",
+      surveyClassroomParam: "",
     },
   };
 }

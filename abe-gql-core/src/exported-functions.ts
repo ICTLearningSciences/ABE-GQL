@@ -6,4 +6,22 @@ The full terms of this copyright and license should always be found in the root 
 */
 import createApp, { appStart, appStop } from "./app";
 
-export { createApp, appStart, appStop };
+import { addOrUpdateBuiltActivity } from "./schemas/mutation/add-or-update-built-activity";
+import { copyBuiltActivity } from "./schemas/mutation/copy-built-activity";
+import { deleteBuiltActivity } from "./schemas/mutation/delete-built-activity";
+import { storeBuiltActivityVersion } from "./schemas/mutation/store-built-activity-version";
+
+import { fetchBuiltActivities } from "./schemas/query/fetch-built-activities";
+import fetchBuiltActivityVersions from "./schemas/query/fetch-built-activity-versions";
+
+export {
+  createApp,
+  appStart,
+  appStop,
+  addOrUpdateBuiltActivity,
+  copyBuiltActivity,
+  deleteBuiltActivity,
+  storeBuiltActivityVersion,
+  fetchBuiltActivities,
+  fetchBuiltActivityVersions,
+};

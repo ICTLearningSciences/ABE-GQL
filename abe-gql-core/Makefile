@@ -35,3 +35,7 @@ test: node_modules/mocha
 
 node_modules/prettier:
 	npm ci
+
+.PHONY: publish
+publish:
+	npm publish

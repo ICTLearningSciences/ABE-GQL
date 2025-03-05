@@ -15,6 +15,7 @@ export const SurveyConfigType = new GraphQLObjectType({
   fields: {
     surveyLink: { type: GraphQLString },
     surveyQueryParam: { type: GraphQLString },
+    surveyClassroomParam: { type: GraphQLString },
   },
 });
 
@@ -23,10 +24,12 @@ export const SurveyConfigInputType = new GraphQLInputObjectType({
   fields: {
     surveyLink: { type: GraphQLString },
     surveyQueryParam: { type: GraphQLString },
+    surveyClassroomParam: { type: GraphQLString },
   },
 });
 
 export interface SurveyConfig {
   surveyLink: string;
   surveyQueryParam: string;
+  surveyClassroomParam: string;
 }
