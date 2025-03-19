@@ -44,7 +44,7 @@ export const updateUserInfo = {
     delete args.userInfo.classroomCode;
     if (
       inputClassroomCode &&
-      user.classroomCode?.code !== inputClassroomCode.code
+      user.classroomCode?.code !== inputClassroomCode?.code
     ) {
       if (user.classroomCode) {
         user.previousClassroomCodes.push(user.classroomCode);
