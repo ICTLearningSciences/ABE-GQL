@@ -69,6 +69,7 @@ export const fullBuiltActivityQueryData = `
                               outputDataType
                               jsonResponseData
                               customSystemRole
+                              webSearch
                           }
 
                           ... on ConditionalActivityStepType {
@@ -461,6 +462,7 @@ describe("update built activity", () => {
             includeEssay: true,
             outputDataType: "JSON",
             customSystemRole: "custom system role 1",
+            webSearch: true,
           },
           {
             stepId: "101112",

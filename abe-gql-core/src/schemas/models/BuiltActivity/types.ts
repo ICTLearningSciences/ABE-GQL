@@ -119,4 +119,5 @@ export interface PromptActivityStep extends ActivityBuilderStep {
   outputDataType: string;
   jsonResponseData?: string;
   customSystemRole: string;
+  webSearch: boolean;
 }

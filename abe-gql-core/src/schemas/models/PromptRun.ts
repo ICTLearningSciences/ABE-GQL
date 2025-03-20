@@ -42,6 +42,7 @@ export interface AiPromptStep {
   includeChatLogContext?: boolean;
   jsonValidation?: string;
   responseFormat?: string;
+  webSearch?: boolean;
 }
 
 export interface PromptRun {
@@ -97,6 +98,7 @@ export const AiPromptStepType = new GraphQLObjectType({
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
+    webSearch: { type: GraphQLBoolean },
   }),
 });
 
@@ -110,6 +112,7 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
+    webSearch: { type: GraphQLBoolean },
   }),
 });
 
@@ -152,6 +155,7 @@ export const AiPromptStepSchema = new Schema({
   },
   jsonValidation: { type: String, required: false, default: "" },
   responseFormat: { type: String, required: false, default: "" },
+  webSearch: { type: Boolean, required: false, default: false },
 });
 
 export const PromptRunType = new GraphQLObjectType({

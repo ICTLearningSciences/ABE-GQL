@@ -45,6 +45,7 @@ describe("store prompt run", () => {
                     jsonValidation
                     includeChatLogContext
                     responseFormat
+                    webSearch
                     targetAiServiceModel{
                       serviceName
                       model
@@ -77,6 +78,7 @@ describe("store prompt run", () => {
                 serviceName: "store_test_service_name",
                 model: "store_test_model",
               },
+              webSearch: true,
             },
           ],
           aiSteps: [
@@ -109,6 +111,7 @@ describe("store prompt run", () => {
             serviceName: "store_test_service_name",
             model: "store_test_model",
           },
+          webSearch: true,
         },
       ],
       aiSteps: [
