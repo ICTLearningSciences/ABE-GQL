@@ -116,6 +116,7 @@ module.exports = {
               includeChatLogContext: true,
               includeEssay: false,
               outputDataType: "JSON",
+              webSearch: true,
               customSystemRole: "user",
             },
             {
