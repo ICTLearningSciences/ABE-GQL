@@ -24,6 +24,7 @@ export enum AiServiceNames {
   AZURE = "AZURE",
   OPEN_AI = "OPEN_AI",
   GEMINI = "GEMINI",
+  CAMO_GPT = "CAMO_GPT",
 }
 
 export interface AiModelService {
@@ -114,7 +115,9 @@ export interface Config {
   exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
-  availableAiServiceModels?: Record<AiServiceNames, string[]>;
+  availableAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
+  emailAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
+  approvedEmailsForAiModels?: string[];
   colorTheme?: Partial<ColorThemeConfig>;
   headerTitle?: string;
   orgName?: string;
@@ -131,6 +134,8 @@ export const ConfigKeys: ConfigKey[] = [
   "overrideAiModel",
   "defaultAiModel",
   "availableAiServiceModels",
+  "emailAiServiceModels",
+  "approvedEmailsForAiModels",
   "headerTitle",
   "orgName",
   "loginScreenTitle",
@@ -145,6 +150,8 @@ export function getDefaultConfig(): Config {
     overrideAiModel: undefined,
     defaultAiModel: undefined,
     availableAiServiceModels: undefined,
+    emailAiServiceModels: undefined,
+    approvedEmailsForAiModels: [],
     colorTheme: {},
     headerTitle: "",
     orgName: "",
@@ -202,6 +209,10 @@ export const ConfigType = new GraphQLObjectType({
     availableAiServiceModels: {
       type: GraphQLList(AvailabeAiServiceModelsType),
     },
+    emailAiServiceModels: {
+      type: GraphQLList(AvailabeAiServiceModelsType),
+    },
+    approvedEmailsForAiModels: { type: GraphQLList(GraphQLString) },
     colorTheme: { type: ColorThemeConfigType },
     headerTitle: { type: GraphQLString },
     orgName: { type: GraphQLString },

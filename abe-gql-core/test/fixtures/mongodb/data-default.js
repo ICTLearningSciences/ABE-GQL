@@ -33,6 +33,19 @@ module.exports = {
             },
           ],
         },
+        {
+          key: "emailAiServiceModels",
+          value: [
+            {
+              serviceName: "CAMO_GPT",
+              models: ["Minstrel7B"],
+            },
+          ],
+        },
+        {
+          key: "approvedEmailsForAiModels",
+          value: ["test@test.com"],
+        },
       ],
     },
   ],
