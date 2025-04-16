@@ -100,6 +100,7 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
 export const GDocVersionObjectType = new GraphQLObjectType({
   name: "GDocVersionObjectType",
   fields: () => ({
+    _id: { type: GraphQLString },
     docId: { type: GraphQLString },
     plainText: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
@@ -119,6 +120,7 @@ export const GDocVersionObjectType = new GraphQLObjectType({
 });
 
 export interface IGDocVersion {
+  _id: string;
   docId: string;
   plainText: string;
   lastChangedId: string;
