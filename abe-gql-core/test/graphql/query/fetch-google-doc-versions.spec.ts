@@ -79,7 +79,6 @@ describe("fetch google doc versions", () => {
           googleDocId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchGoogleDocVersions).to.deep.include.members([
       {

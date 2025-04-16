@@ -145,7 +145,6 @@ describe("store doc timeline", () => {
           docTimeline: newDocTimeline,
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.storeDocTimeline).to.eql(newDocTimeline);
   });
@@ -160,7 +159,6 @@ describe("store doc timeline", () => {
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
-    console.log(JSON.stringify(response0.body, null, 2));
     expect(response0.status).to.equal(200);
     expect(response0.body.data.fetchDocTimeline).to.eql(existingTimeline);
 
@@ -176,7 +174,6 @@ describe("store doc timeline", () => {
           },
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.storeDocTimeline).to.eql({
       user: "5ffdf1231ee2c62320b49e99",
@@ -193,7 +190,6 @@ describe("store doc timeline", () => {
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
-    console.log(JSON.stringify(response2.body, null, 2));
     expect(response2.status).to.equal(200);
     expect(response2.body.data.fetchDocTimeline).to.eql({
       ...existingTimeline,
@@ -211,7 +207,6 @@ describe("store doc timeline", () => {
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
-    console.log(JSON.stringify(response0.body, null, 2));
     expect(response0.status).to.equal(200);
     expect(
       response0.body.data.fetchDocTimeline.timelinePoints[0].changeSummary
@@ -235,7 +230,6 @@ describe("store doc timeline", () => {
           },
         },
       });
-    console.log(JSON.stringify(updateResponse.body, null, 2));
     expect(updateResponse.status).to.equal(200);
     expect(
       updateResponse.body.data.storeDocTimeline.timelinePoints[0].changeSummary
