@@ -4,41 +4,39 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLNonNull, GraphQLString } from "graphql";
+import { GraphQLNonNull, GraphQLList } from "graphql";
 import * as dotenv from "dotenv";
 
 import DocVersionTextModel, {
   DocVersionTextType,
+  DocVersionTextInputType,
+  DocVersionText,
 } from "../models/DocVersionText";
 dotenv.config();
 
-export const addOrUpdateDocVersionText = {
-  type: DocVersionTextType,
+export const addOrUpdateDocVersionTexts = {
+  type: GraphQLList(DocVersionTextType),
   args: {
-    versionId: { type: GraphQLNonNull(GraphQLString) },
-    docId: { type: GraphQLNonNull(GraphQLString) },
-    plainText: { type: GraphQLNonNull(GraphQLString) },
+    docVersionTexts: {
+      type: GraphQLNonNull(GraphQLList(DocVersionTextInputType)),
+    },
   },
   async resolve(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _: any,
     args: {
-      versionId: string;
-      docId: string;
-      plainText: string;
+      docVersionTexts: DocVersionText[];
     }
   ) {
     try {
-      const updatedDocVersionText = await DocVersionTextModel.create({
-        versionId: args.versionId,
-        docId: args.docId,
-        plainText: args.plainText,
-      });
-      return updatedDocVersionText;
+      const updatedDocVersionTexts = await DocVersionTextModel.create(
+        args.docVersionTexts
+      );
+      return updatedDocVersionTexts;
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
     }
   },
 };
-export default addOrUpdateDocVersionText;
+export default addOrUpdateDocVersionTexts;

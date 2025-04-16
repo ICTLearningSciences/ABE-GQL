@@ -28,14 +28,14 @@ describe("add doc version text", () => {
     await mongoUnit.drop();
   });
 
-  it(`can add doc version text`, async () => {
+  it(`can add doc version texts`, async () => {
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.ADMIN); //user with role "ADMIN"
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddDocVersionText($versionId: String!, $docId: String!, $plainText: String!) {
-          addOrUpdateDocVersionText(versionId: $versionId, docId: $docId, plainText: $plainText) {
+        query: `mutation AddDocVersionTexts($docVersionTexts: [DocVersionTextInputType]!) {
+          addOrUpdateDocVersionTexts(docVersionTexts: $docVersionTexts) {
                 _id
                 versionId
                 docId
@@ -44,20 +44,24 @@ describe("add doc version text", () => {
               
          }`,
         variables: {
-          versionId: "5ffdf1231ee2c62320b49e9f",
-          docId: "5ffdf1231ee2c62320b49e99",
-          plainText: "test_new_activity_title",
+          docVersionTexts: [
+            {
+              versionId: "5ffdf1231ee2c62320b49e9f",
+              docId: "5ffdf1231ee2c62320b49e99",
+              plainText: "test_new_activity_title",
+            },
+          ],
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
-    expect(response.body.data.addOrUpdateDocVersionText.versionId).to.eql(
+    expect(response.body.data.addOrUpdateDocVersionTexts.length).to.eql(1);
+    expect(response.body.data.addOrUpdateDocVersionTexts[0].versionId).to.eql(
       "5ffdf1231ee2c62320b49e9f"
     );
-    expect(response.body.data.addOrUpdateDocVersionText.docId).to.eql(
+    expect(response.body.data.addOrUpdateDocVersionTexts[0].docId).to.eql(
       "5ffdf1231ee2c62320b49e99"
     );
-    expect(response.body.data.addOrUpdateDocVersionText.plainText).to.eql(
+    expect(response.body.data.addOrUpdateDocVersionTexts[0].plainText).to.eql(
       "test_new_activity_title"
     );
   });

@@ -19,6 +19,15 @@ export interface DocVersionText extends Document {
   plainText: string;
 }
 
+export const DocVersionTextInputType = new GraphQLInputObjectType({
+  name: "DocVersionTextInputType",
+  fields: () => ({
+    versionId: { type: GraphQLString },
+    docId: { type: GraphQLString },
+    plainText: { type: GraphQLString },
+  }),
+});
+
 export const DocVersionTextType = new GraphQLObjectType({
   name: "DocVersionTextType",
   fields: () => ({

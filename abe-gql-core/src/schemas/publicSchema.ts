@@ -41,7 +41,7 @@ import copyBuiltActivity from "./mutation/copy-built-activity";
 import deleteBuiltActivity from "./mutation/delete-built-activity";
 import loginMicrosoft from "./mutation/login-microsoft";
 import updateUserInfo from "./mutation/update-user-info";
-import addOrUpdateDocVersionText from "./mutation/add-doc-version-text";
+import addOrUpdateDocVersionTexts from "./mutation/add-doc-version-texts";
 import fetchDocTextVersions from "./query/fetch-doc-text-versions";
 
 const publicQueries = {
@@ -79,7 +79,7 @@ const publicMutations = {
   deleteGoogleDoc,
   loginMicrosoft,
   updateUserInfo,
-  addOrUpdateDocVersionText,
+  addOrUpdateDocVersionTexts,
 };
 
 const contentManagerMutations = {
