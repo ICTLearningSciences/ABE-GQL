@@ -111,6 +111,10 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
+      emailAiServiceModels: {
+        [AiServiceNames.CAMO_GPT]: ["Minstrel7B"],
+      },
+      approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",
       loginScreenTitle: "login screen title",
@@ -146,6 +150,11 @@ describe("config", () => {
               serviceName
               models
             }
+            emailAiServiceModels{
+              serviceName
+              models
+            }
+            approvedEmailsForAiModels
             headerTitle
             orgName
             loginScreenTitle
@@ -187,6 +196,13 @@ describe("config", () => {
           models: ["gpt-3.5-turbo"],
         },
       ],
+      emailAiServiceModels: [
+        {
+          serviceName: AiServiceNames.CAMO_GPT,
+          models: ["Minstrel7B"],
+        },
+      ],
+      approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",
       loginScreenTitle: "login screen title",
@@ -255,6 +271,11 @@ describe("config", () => {
               serviceName
               models
             }
+            emailAiServiceModels{
+              serviceName
+              models
+            }
+            approvedEmailsForAiModels
             headerTitle
             orgName
             loginScreenTitle
@@ -296,6 +317,13 @@ describe("config", () => {
           models: ["gpt-3.5-turbo"],
         },
       ],
+      emailAiServiceModels: [
+        {
+          serviceName: AiServiceNames.CAMO_GPT,
+          models: ["Minstrel7B"],
+        },
+      ],
+      approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",
       loginScreenTitle: "login screen title",
