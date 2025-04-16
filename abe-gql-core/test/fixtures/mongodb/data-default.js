@@ -579,24 +579,7 @@ module.exports = {
         {
           versionTime: "2021-01-12T00:00:00.000Z",
           type: TimelinePointType.START,
-          version: {
-            docId: "doc_od",
-            plainText: "test",
-            lastChangedId: "test",
-            chatLog: [
-              {
-                sender: "USER",
-                message: "test",
-              },
-            ],
-            activity: "test",
-            intent: "test",
-            title: "test",
-            lastModifyingUser: "test",
-            createdAt: new Date("2021-01-12T00:00:00.000Z"),
-            modifiedTime: new Date("2021-01-12T00:00:00.000Z"),
-            updatedAt: new Date("2021-01-12T00:00:00.000Z"),
-          },
+          version: "version_id",
           intent: "test",
           changeSummary: "test",
           userInputSummary: "test",
@@ -613,24 +596,7 @@ module.exports = {
         {
           versionTime: "2021-01-12T00:00:00.000Z",
           type: TimelinePointType.NEW_ACTIVITY,
-          version: {
-            docId: "doc_od",
-            plainText: "test_2",
-            lastChangedId: "test_2",
-            chatLog: [
-              {
-                sender: "USER",
-                message: "test",
-              },
-            ],
-            activity: "test_2",
-            intent: "test_2",
-            title: "test_2",
-            lastModifyingUser: "test_2",
-            createdAt: new Date("2021-01-12T00:00:00.000Z"),
-            modifiedTime: new Date("2021-01-12T00:00:00.000Z"),
-            updatedAt: new Date("2021-01-12T00:00:00.000Z"),
-          },
+          version: "version_id",
           intent: "test_2",
           changeSummary: "test_2",
           userInputSummary: "test_2",

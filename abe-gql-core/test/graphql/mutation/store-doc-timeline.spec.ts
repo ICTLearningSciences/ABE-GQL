@@ -39,19 +39,7 @@ describe("store doc timeline", () => {
         timelinePoints{
             type
             versionTime
-            version{
-                docId
-                plainText
-                lastChangedId
-                chatLog{
-                    sender
-                    message
-                }
-                activity
-                intent
-                title
-                lastModifyingUser
-            }
+            version
             intent
             changeSummary
             userInputSummary
@@ -70,19 +58,7 @@ describe("store doc timeline", () => {
           timelinePoints{
               type
               versionTime
-              version{
-                  docId
-                  plainText
-                  lastChangedId
-                  chatLog{
-                      sender
-                      message
-                  }
-                  activity
-                  intent
-                  title
-                  lastModifyingUser
-              }
+              version
               intent
               changeSummary
               changeSummaryStatus
@@ -101,21 +77,7 @@ describe("store doc timeline", () => {
       {
         type: TimelinePointType.START,
         versionTime: "2021-01-12T00:00:00.000Z",
-        version: {
-          docId: "test_store_doc_timeline",
-          plainText: "test",
-          lastChangedId: "test",
-          chatLog: [
-            {
-              sender: Sender.USER,
-              message: "test",
-            },
-          ],
-          activity: "test",
-          intent: "test",
-          title: "test",
-          lastModifyingUser: "test",
-        },
+        version: "version_id",
         intent: "test",
         changeSummary: "test",
         changeSummaryStatus: AiGenerationStatus.COMPLETED,
@@ -134,21 +96,7 @@ describe("store doc timeline", () => {
       {
         versionTime: "2021-01-12T00:00:00.000Z",
         type: TimelinePointType.START,
-        version: {
-          docId: "doc_od",
-          plainText: "test",
-          lastChangedId: "test",
-          chatLog: [
-            {
-              sender: "USER",
-              message: "test",
-            },
-          ],
-          activity: "test",
-          intent: "test",
-          title: "test",
-          lastModifyingUser: "test",
-        },
+        version: "version_id",
         intent: "test",
         changeSummary: "test",
         changeSummaryStatus: AiGenerationStatus.COMPLETED,
