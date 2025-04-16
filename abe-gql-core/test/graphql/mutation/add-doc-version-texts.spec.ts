@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 
 import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
-import { Express, response } from "express";
+import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
@@ -40,8 +40,7 @@ describe("add doc version text", () => {
                 versionId
                 docId
                 plainText
-                }
-              
+              }
          }`,
         variables: {
           docVersionTexts: [
