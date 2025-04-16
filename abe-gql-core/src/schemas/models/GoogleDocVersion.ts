@@ -120,6 +120,7 @@ export const GDocVersionObjectType = new GraphQLObjectType({
 });
 
 export interface IGDocVersion {
+  _id: string;
   docId: string;
   plainText: string;
   lastChangedId: string;

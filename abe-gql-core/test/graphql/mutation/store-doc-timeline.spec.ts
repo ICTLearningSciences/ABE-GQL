@@ -39,7 +39,7 @@ describe("store doc timeline", () => {
         timelinePoints{
             type
             versionTime
-            version
+            versionId
             intent
             changeSummary
             userInputSummary
@@ -58,7 +58,20 @@ describe("store doc timeline", () => {
           timelinePoints{
               type
               versionTime
-              version
+              versionId
+              version{
+                  docId
+                  plainText
+                  lastChangedId
+                  chatLog{
+                      sender
+                      message
+                  }
+                  activity
+                  intent
+                  title
+                  lastModifyingUser
+              }
               intent
               changeSummary
               changeSummaryStatus
@@ -77,7 +90,7 @@ describe("store doc timeline", () => {
       {
         type: TimelinePointType.START,
         versionTime: "2021-01-12T00:00:00.000Z",
-        version: "version_id",
+        versionId: "5ffdf1231ee2c62320b49e88",
         intent: "test",
         changeSummary: "test",
         changeSummaryStatus: AiGenerationStatus.COMPLETED,
@@ -96,7 +109,22 @@ describe("store doc timeline", () => {
       {
         versionTime: "2021-01-12T00:00:00.000Z",
         type: TimelinePointType.START,
-        version: "version_id",
+        versionId: "5ffdf1231ee2c62320b49a11",
+        version: {
+          docId: "doc_od",
+          plainText: "test",
+          lastChangedId: "test",
+          chatLog: [
+            {
+              sender: "USER",
+              message: "test",
+            },
+          ],
+          activity: "test",
+          intent: "test",
+          title: "test",
+          lastModifyingUser: "test",
+        },
         intent: "test",
         changeSummary: "test",
         changeSummaryStatus: AiGenerationStatus.COMPLETED,
@@ -117,6 +145,7 @@ describe("store doc timeline", () => {
           docTimeline: newDocTimeline,
         },
       });
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.storeDocTimeline).to.eql(newDocTimeline);
   });
@@ -131,6 +160,7 @@ describe("store doc timeline", () => {
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
+    console.log(JSON.stringify(response0.body, null, 2));
     expect(response0.status).to.equal(200);
     expect(response0.body.data.fetchDocTimeline).to.eql(existingTimeline);
 
@@ -146,6 +176,7 @@ describe("store doc timeline", () => {
           },
         },
       });
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.storeDocTimeline).to.eql({
       user: "5ffdf1231ee2c62320b49e99",
@@ -162,6 +193,7 @@ describe("store doc timeline", () => {
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
+    console.log(JSON.stringify(response2.body, null, 2));
     expect(response2.status).to.equal(200);
     expect(response2.body.data.fetchDocTimeline).to.eql({
       ...existingTimeline,
@@ -179,11 +211,13 @@ describe("store doc timeline", () => {
           userId: "5ffdf1231ee2c62320b49e99",
         },
       });
+    console.log(JSON.stringify(response0.body, null, 2));
     expect(response0.status).to.equal(200);
     expect(
       response0.body.data.fetchDocTimeline.timelinePoints[0].changeSummary
     ).to.equal("test");
-
+    const timelinePointWithoutVersion = existingTimeline.timelinePoints[0];
+    delete (timelinePointWithoutVersion as any).version;
     const updateResponse = await request(app)
       .post("/graphql")
       .send({
@@ -194,13 +228,14 @@ describe("store doc timeline", () => {
             docId: "doc_id",
             timelinePoints: [
               {
-                ...existingTimeline.timelinePoints[0],
+                ...timelinePointWithoutVersion,
                 userInputSummary: "test-user-input-summary",
               },
             ],
           },
         },
       });
+    console.log(JSON.stringify(updateResponse.body, null, 2));
     expect(updateResponse.status).to.equal(200);
     expect(
       updateResponse.body.data.storeDocTimeline.timelinePoints[0].changeSummary

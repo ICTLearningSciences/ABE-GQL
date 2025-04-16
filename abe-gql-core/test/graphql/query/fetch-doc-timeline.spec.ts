@@ -38,7 +38,20 @@ describe("fetch doc timeline", () => {
                 timelinePoints{
                     type
                     versionTime
-                    version
+                    versionId
+                    version{
+                        docId
+                        plainText
+                        lastChangedId
+                        chatLog{
+                            sender
+                            message
+                        }
+                        activity
+                        intent
+                        title
+                        lastModifyingUser
+                    }
                     intent
                     changeSummary
                     reverseOutline
@@ -60,7 +73,22 @@ describe("fetch doc timeline", () => {
         {
           type: TimelinePointType.START,
           versionTime: "2021-01-12T00:00:00.000Z",
-          version: "version_id",
+          versionId: "5ffdf1231ee2c62320b49a11",
+          version: {
+            docId: "doc_od",
+            plainText: "test",
+            lastChangedId: "test",
+            chatLog: [
+              {
+                sender: "USER",
+                message: "test",
+              },
+            ],
+            activity: "test",
+            intent: "test",
+            title: "test",
+            lastModifyingUser: "test",
+          },
           intent: "test",
           changeSummary: "test",
           reverseOutline: "test",
