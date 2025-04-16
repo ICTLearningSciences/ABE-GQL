@@ -60,7 +60,8 @@ describe("fetch google doc versions", () => {
       .send({
         query: `query FetchGoogleDocVersions($googleDocId: String!) {
                     fetchGoogleDocVersions(googleDocId: $googleDocId) {
-                      docId
+                      _id
+                    docId
                       plainText
                       lastChangedId
                       chatLog {
@@ -78,9 +79,11 @@ describe("fetch google doc versions", () => {
           googleDocId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         },
       });
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchGoogleDocVersions).to.deep.include.members([
       {
+        _id: "5ffdf1231ee2c62320b49ea1",
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world!",
         lastChangedId: "123",
@@ -97,6 +100,7 @@ describe("fetch google doc versions", () => {
         modifiedTime: "2000-10-12T20:49:41.599Z",
       },
       {
+        _id: "5ffdf1231ee2c62320b49ea2",
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 2",
         lastChangedId: "123",
@@ -113,6 +117,7 @@ describe("fetch google doc versions", () => {
         modifiedTime: "2000-10-12T20:49:41.599Z",
       },
       {
+        _id: "5ffdf1231ee2c62320b49ea3",
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 3",
         lastChangedId: "123",

@@ -65,7 +65,7 @@ describe("fetch doc timeline", () => {
           changeSummary: "test",
           reverseOutline: "test",
           relatedFeedback: "test",
-        }
+        },
       ],
     });
   });
