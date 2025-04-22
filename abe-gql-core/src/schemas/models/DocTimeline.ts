@@ -53,7 +53,11 @@ export const TimelinePointObjectType = new GraphQLObjectType({
     type: { type: GraphQLString },
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionObjectType },
-    versionId: { type: GraphQLString },
+    versionId: {
+      type: GraphQLString,
+      resolve: (source: TimelinePoint) =>
+        source.versionId || source.version._id,
+    },
     intent: { type: GraphQLString },
     changeSummaryStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },

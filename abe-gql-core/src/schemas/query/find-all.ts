@@ -11,6 +11,58 @@ import {
   PaginatedResolveResult,
 } from "../types/connection";
 import { HasPaginate } from "../types/mongoose-type-helpers";
+import mongoose from "mongoose";
+
+// Recursively attempts to convert strings to object ids
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+function convertStringsToObjectIds(filter: any) {
+  if (!filter) {
+    return filter;
+  }
+  if (typeof filter === "string") {
+    try {
+      return new mongoose.Types.ObjectId(filter);
+    } catch (err) {
+      return filter;
+    }
+  } else if (Array.isArray(filter)) {
+    for (let i = 0; i < filter.length; i++) {
+      const value2 = filter[i];
+      filter[i] = convertStringsToObjectIds(value2);
+    }
+  } else if (typeof filter === "object") {
+    const keys = Object.keys(filter);
+    for (let i = 0; i < keys.length; i++) {
+      filter[keys[i]] = convertStringsToObjectIds(filter[keys[i]]);
+    }
+  }
+  return filter;
+}
+
+export function setupFilter(inputFilter: object | string) {
+  if (!inputFilter) {
+    return {};
+  }
+  let filter: object;
+  if (typeof inputFilter === "string") {
+    filter = JSON.parse(decodeURI(inputFilter));
+  } else {
+    filter = inputFilter;
+  }
+
+  filter = Object.assign({}, filter || {});
+  filter = convertStringsToObjectIds(filter);
+  if (Object.keys(filter).length > 0) {
+    filter = {
+      $and: [filter, { $or: [{ deleted: false }, { deleted: null }] }],
+    };
+  } else {
+    filter = {
+      $or: [{ deleted: false }, { deleted: null }],
+    };
+  }
+  return filter;
+}
 
 export function findAll<T extends PaginatedResolveResult>(config: {
   nodeType: GraphQLObjectType;
@@ -18,11 +70,12 @@ export function findAll<T extends PaginatedResolveResult>(config: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any {
   const { nodeType, model } = config;
+
   return makeConnection({
     nodeType,
     resolve: async (resolveArgs: PaginatedResolveArgs) => {
       const { args } = resolveArgs;
-
+      const filter = setupFilter(args.filter || args.filterObject);
       const cursor = args.cursor;
       let next = null;
       let prev = null;
@@ -35,12 +88,8 @@ export function findAll<T extends PaginatedResolveResult>(config: {
           next = cursor;
         }
       }
-
       return await model.paginate({
-        query: {
-          deleted: { $ne: true },
-          ...(args.filter ? JSON.parse(decodeURI(args.filter)) : {}),
-        },
+        query: filter,
         limit: Number(args.limit) || 100,
         paginatedField: args.sortBy || "_id",
         sortAscending: args.sortAscending,
