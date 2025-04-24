@@ -33,6 +33,19 @@ module.exports = {
             },
           ],
         },
+        {
+          key: "emailAiServiceModels",
+          value: [
+            {
+              serviceName: "CAMO_GPT",
+              models: ["Minstrel7B"],
+            },
+          ],
+        },
+        {
+          key: "approvedEmailsForAiModels",
+          value: ["test@test.com"],
+        },
       ],
     },
   ],
@@ -566,7 +579,9 @@ module.exports = {
         {
           versionTime: "2021-01-12T00:00:00.000Z",
           type: TimelinePointType.START,
+          versionId: "5ffdf1231ee2c62320b49a11",
           version: {
+            _id: new ObjectId("5ffdf1231ee2c62320b49a11"),
             docId: "doc_od",
             plainText: "test",
             lastChangedId: "test",
@@ -600,7 +615,9 @@ module.exports = {
         {
           versionTime: "2021-01-12T00:00:00.000Z",
           type: TimelinePointType.NEW_ACTIVITY,
+          versionId: "5ffdf1231ee2c62320b49e88",
           version: {
+            _id: new ObjectId("5ffdf1231ee2c62320b49e88"),
             docId: "doc_od",
             plainText: "test_2",
             lastChangedId: "test_2",

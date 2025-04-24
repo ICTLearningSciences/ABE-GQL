@@ -14,7 +14,7 @@ import {
 import { Document } from "mongoose";
 import base64url from "base64url";
 import objectPath from "object-path";
-
+import { ObjectType } from "./object";
 export const PageInfoType = new GraphQLObjectType({
   name: "PageInfo",
   fields: {
@@ -94,6 +94,7 @@ export interface PaginatedResolveResult {
 
 export interface HasPaginationArgs {
   filter?: string;
+  filterObject?: object;
   cursor?: string;
   limit?: number;
   sortBy?: string;
@@ -127,6 +128,10 @@ export function makeConnection(args: MakeConnectionArgs): any {
         description: `filter query string`,
         type: GraphQLString,
       },
+      filterObject: {
+        description: `filter query object`,
+        type: ObjectType,
+      },
       cursor: {
         description: `value to start querying the page`,
         type: GraphQLString,
@@ -150,6 +155,7 @@ export function makeConnection(args: MakeConnectionArgs): any {
       parent: any,
       args: {
         filter?: string;
+        filterObject?: object;
         cursor?: string;
         limit?: number;
         sortBy?: string;

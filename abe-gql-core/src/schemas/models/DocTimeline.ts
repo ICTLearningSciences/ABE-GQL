@@ -13,7 +13,6 @@ import {
 } from "graphql";
 import { DateType } from "../types/date";
 import {
-  GDocVersionInputType,
   GDocVersionObjectType,
   GDocVersionSchema,
   IGDocVersion,
@@ -38,6 +37,7 @@ export interface TimelinePoint {
   type: TimelinePointType;
   versionTime: string;
   version: IGDocVersion;
+  versionId: string;
   intent: string;
   changeSummaryStatus: AiGenerationStatus;
   changeSummary: string;
@@ -53,6 +53,11 @@ export const TimelinePointObjectType = new GraphQLObjectType({
     type: { type: GraphQLString },
     versionTime: { type: GraphQLString },
     version: { type: GDocVersionObjectType },
+    versionId: {
+      type: GraphQLString,
+      resolve: (source: TimelinePoint) =>
+        source.versionId || source.version._id,
+    },
     intent: { type: GraphQLString },
     changeSummaryStatus: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
@@ -68,7 +73,7 @@ export const TimelinePointInputType = new GraphQLInputObjectType({
   fields: () => ({
     type: { type: GraphQLString },
     versionTime: { type: GraphQLString },
-    version: { type: GDocVersionInputType },
+    versionId: { type: GraphQLString },
     intent: { type: GraphQLString },
     changeSummary: { type: GraphQLString },
     changeSummaryStatus: { type: GraphQLString },
@@ -84,6 +89,7 @@ export const TimelinePointSchema = new Schema<TimelinePoint>(
     type: { type: String },
     versionTime: { type: String },
     version: { type: GDocVersionSchema },
+    versionId: { type: String },
     intent: { type: String },
     changeSummaryStatus: {
       type: String,

@@ -38,6 +38,7 @@ describe("fetch doc timeline", () => {
                 timelinePoints{
                     type
                     versionTime
+                    versionId
                     version{
                         docId
                         plainText
@@ -72,6 +73,7 @@ describe("fetch doc timeline", () => {
         {
           type: TimelinePointType.START,
           versionTime: "2021-01-12T00:00:00.000Z",
+          versionId: "5ffdf1231ee2c62320b49a11",
           version: {
             docId: "doc_od",
             plainText: "test",
