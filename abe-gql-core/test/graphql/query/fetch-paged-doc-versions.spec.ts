@@ -27,13 +27,20 @@ describe("fetch google doc versions", () => {
   });
 
   it(`can fetch doc version by docId filter`, async () => {
+    const variables = {
+      limit: 10,
+      sortBy: "createdAt",
+      sortAscending: true,
+      filterObject: { _id: { $in: ["5ffdf1231ee2c62320b49ea8"] } },
+    };
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `query DocVersions($limit: Int, $filter: String, $sortAscending: Boolean, $sortBy: String) {
-                docVersions(limit: $limit, filter: $filter, sortAscending: $sortAscending, sortBy: $sortBy) {
+        query: `query DocVersions($limit: Int, $filterObject: Object, $sortAscending: Boolean, $sortBy: String) {
+                docVersions(limit: $limit, filterObject: $filterObject, sortAscending: $sortAscending, sortBy: $sortBy) {
                       edges {
                         node{
+                            _id
                             docId
                             plainText
                             lastChangedId
@@ -52,24 +59,18 @@ describe("fetch google doc versions", () => {
                     }
                     }
                 }`,
-        variables: {
-          limit: 10,
-          sortBy: "createdAt",
-          sortAscending: true,
-          filter: JSON.stringify({
-            docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
-          }),
-        },
+        variables: variables,
       });
     expect(response.status).to.equal(200);
     expect(
       response.body.data.docVersions.edges.map((e: any) => e.node)
     ).to.deep.include.members([
       {
-        docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
-        plainText: "hello, world!",
+        _id: "5ffdf1231ee2c62320b49ea8",
+        docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
+        plainText: "hello, world! 5",
         lastChangedId: "123",
-        sessionId: "session-id-1",
+        sessionId: "session-id-5",
         chatLog: [
           {
             sender: "John Doe",
@@ -81,43 +82,7 @@ describe("fetch google doc versions", () => {
         title: "Test Document",
         lastModifyingUser: "John Doe",
         modifiedTime: "2000-10-12T20:49:41.599Z",
-        createdAt: "2001-10-12T20:49:41.599Z",
-      },
-      {
-        docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
-        plainText: "hello, world! 2",
-        lastChangedId: "123",
-        sessionId: "session-id-2",
-        chatLog: [
-          {
-            sender: "John Doe",
-            message: "Hello, world!",
-          },
-        ],
-        activity: "5ffdf1231ee2c62320b49e9f",
-        intent: "intention",
-        title: "Test Document",
-        lastModifyingUser: "John Doe",
-        modifiedTime: "2000-10-12T20:49:41.599Z",
-        createdAt: "2002-10-12T20:49:41.599Z",
-      },
-      {
-        docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
-        plainText: "hello, world! 3",
-        lastChangedId: "123",
-        sessionId: "session-id-3",
-        chatLog: [
-          {
-            sender: "John Doe",
-            message: "Hello, world!",
-          },
-        ],
-        activity: "5ffdf1231ee2c62320b49e9f",
-        intent: "intention",
-        title: "Test Document",
-        lastModifyingUser: "John Doe",
-        modifiedTime: "2000-10-12T20:49:41.599Z",
-        createdAt: "2003-10-12T20:49:41.599Z",
+        createdAt: "2000-10-12T20:49:41.599Z",
       },
     ]);
   });

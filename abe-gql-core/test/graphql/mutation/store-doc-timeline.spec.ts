@@ -39,19 +39,7 @@ describe("store doc timeline", () => {
         timelinePoints{
             type
             versionTime
-            version{
-                docId
-                plainText
-                lastChangedId
-                chatLog{
-                    sender
-                    message
-                }
-                activity
-                intent
-                title
-                lastModifyingUser
-            }
+            versionId
             intent
             changeSummary
             userInputSummary
@@ -70,6 +58,7 @@ describe("store doc timeline", () => {
           timelinePoints{
               type
               versionTime
+              versionId
               version{
                   docId
                   plainText
@@ -101,21 +90,7 @@ describe("store doc timeline", () => {
       {
         type: TimelinePointType.START,
         versionTime: "2021-01-12T00:00:00.000Z",
-        version: {
-          docId: "test_store_doc_timeline",
-          plainText: "test",
-          lastChangedId: "test",
-          chatLog: [
-            {
-              sender: Sender.USER,
-              message: "test",
-            },
-          ],
-          activity: "test",
-          intent: "test",
-          title: "test",
-          lastModifyingUser: "test",
-        },
+        versionId: "5ffdf1231ee2c62320b49e88",
         intent: "test",
         changeSummary: "test",
         changeSummaryStatus: AiGenerationStatus.COMPLETED,
@@ -134,6 +109,7 @@ describe("store doc timeline", () => {
       {
         versionTime: "2021-01-12T00:00:00.000Z",
         type: TimelinePointType.START,
+        versionId: "5ffdf1231ee2c62320b49a11",
         version: {
           docId: "doc_od",
           plainText: "test",
@@ -235,7 +211,8 @@ describe("store doc timeline", () => {
     expect(
       response0.body.data.fetchDocTimeline.timelinePoints[0].changeSummary
     ).to.equal("test");
-
+    const timelinePointWithoutVersion = existingTimeline.timelinePoints[0];
+    delete (timelinePointWithoutVersion as any).version;
     const updateResponse = await request(app)
       .post("/graphql")
       .send({
@@ -246,7 +223,7 @@ describe("store doc timeline", () => {
             docId: "doc_id",
             timelinePoints: [
               {
-                ...existingTimeline.timelinePoints[0],
+                ...timelinePointWithoutVersion,
                 userInputSummary: "test-user-input-summary",
               },
             ],
