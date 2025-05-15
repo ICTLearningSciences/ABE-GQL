@@ -34,6 +34,7 @@ describe("fetch google doc versions", () => {
                     fetchGoogleDocs(userId: $userId) {
                       googleDocId
                       user
+                      archived
                       title
                       documentIntention {
                         description
@@ -61,6 +62,7 @@ describe("fetch google doc versions", () => {
           description: "test-intention",
           createdAt: "2000-10-12T20:49:41.599Z",
         },
+        archived: false,
         currentDayIntention: {
           description: "test-day-intention",
           createdAt: "2000-10-12T20:49:41.599Z",
@@ -79,6 +81,32 @@ describe("fetch google doc versions", () => {
         service: "GOOGLE_DOCS",
         title: "Test Admin Document",
         user: "5ffdf1231ee2c62320b49e99",
+        archived: true,
+      },
+    ]);
+  });
+
+  it(`updatedAt is the most recent version's createdAt`, async () => {
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `query FetchGoogleDocs($userId: ID!) {
+                  fetchGoogleDocs(userId: $userId) {
+                    updatedAt
+                  }
+              }`,
+        variables: {
+          userId: "5ffdf1231ee2c62320b49e99",
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.fetchGoogleDocs).to.deep.include.members([
+      {
+        updatedAt: "2000-10-12T20:49:41.599Z",
+      },
+      {
+        // defaults to createdAt if no versions
+        updatedAt: "2021-01-13T00:00:00.000Z",
       },
     ]);
   });
