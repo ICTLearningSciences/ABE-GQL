@@ -32,12 +32,15 @@ export interface GoogleDoc {
   deleted: boolean;
   title: string;
   documentIntention: IIntention;
+  archived: boolean;
   currentDayIntention: IIntention;
   assignmentDescription: string;
   service: DocService;
   admin: boolean;
   user: User["_id"];
   userClassroomCode: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const GoogleDocType = new GraphQLObjectType({
@@ -47,6 +50,7 @@ export const GoogleDocType = new GraphQLObjectType({
     wordDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     deleted: { type: GraphQLBoolean },
+    archived: { type: GraphQLBoolean },
     admin: { type: GraphQLBoolean },
     documentIntention: { type: IntentionObjectType },
     currentDayIntention: { type: IntentionObjectType },
@@ -64,6 +68,17 @@ export const GoogleDocType = new GraphQLObjectType({
       },
     },
     createdAt: { type: DateType },
+    updatedAt: {
+      type: DateType,
+      resolve: async (doc: GoogleDoc) => {
+        const mostRecentVersion = await GoogleDocVersionsModel.findOne(
+          { docId: doc.googleDocId },
+          {},
+          { sort: { createdAt: -1 } }
+        );
+        return mostRecentVersion?.createdAt || doc.createdAt || "";
+      },
+    },
     userClassroomCode: { type: GraphQLString },
   }),
 });
@@ -76,6 +91,7 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
     wordDocId: { type: GraphQLString },
     user: { type: GraphQLID },
     admin: { type: GraphQLBoolean },
+    archived: { type: GraphQLBoolean },
     documentIntention: { type: IntentionInputType },
     currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
@@ -88,6 +104,7 @@ export const GoogleDocSchema = new Schema(
     googleDocId: { type: String, required: true },
     wordDocId: { type: String },
     deleted: { type: Boolean, default: false },
+    archived: { type: Boolean, default: false },
     documentIntention: IntentionSchema,
     currentDayIntention: IntentionSchema,
     assignmentDescription: { type: String },
