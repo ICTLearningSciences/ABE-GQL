@@ -24,10 +24,13 @@ import GoogleDocVersionsModel, {
 export enum DocService {
   GOOGLE_DOCS = "GOOGLE_DOCS",
   MICROSOFT_WORD = "MICROSOFT_WORD",
+  RAW_TEXT = "RAW_TEXT",
 }
 
 export interface GoogleDoc {
+  // TODO: genericize this googleDocId to just be docId (all doc types have a unique identifier)
   googleDocId: string;
+  // Microsoft Word field ONLY: custom property that gets added specifically to Microsoft Word docs metadata, could be a better name.
   wordDocId: string;
   deleted: boolean;
   title: string;
