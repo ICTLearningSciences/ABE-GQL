@@ -55,6 +55,7 @@ describe("login with microsoft", () => {
           user {
             name
             email
+            loginService
           }
           accessToken
           expirationDate
@@ -72,6 +73,10 @@ describe("login with microsoft", () => {
     expect(response.body).to.have.deep.nested.property(
       "data.loginMicrosoft.user.email",
       "x@y.com"
+    );
+    expect(response.body).to.have.deep.nested.property(
+      "data.loginMicrosoft.user.loginService",
+      "MICROSOFT"
     );
   });
 });

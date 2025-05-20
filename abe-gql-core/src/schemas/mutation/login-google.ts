@@ -6,7 +6,7 @@ The full terms of this copyright and license should always be found in the root 
 */
 import axios from "axios";
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql";
-import UserSchema from "../models/User";
+import UserSchema, { LoginService } from "../models/User";
 import {
   UserAccessTokenType,
   UserAccessToken,
@@ -75,6 +75,7 @@ export const loginGoogle = {
             name: googleResponse.name,
             email: googleResponse.email,
             lastLoginAt: new Date(),
+            loginService: LoginService.GOOGLE,
           },
         },
         {
