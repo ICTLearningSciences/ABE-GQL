@@ -58,7 +58,6 @@ custom:
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenDev"
       WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
-
     qa:
       MONGO_URI: ${ssm:/ABE/qa/mongo_uri, ''}
       CORS_ORIGIN: "https://qa.abewriting.org,https://qa.abewriting.org/,.qa.abewriting.org,.qa.abewriting.org/,https://api-qa.abewriting.org,https://api-qa.abewriting.org/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net"
@@ -103,7 +102,8 @@ provider:
     JWT_SECRET: ${self:custom.stages.${self:provider.stage}.JWT_SECRET}
     DOMAIN: ${self:custom.stages.${self:provider.stage}.DOMAIN}
     REFRESH_TOKEN_NAME: ${self:custom.stages.${self:provider.stage}.REFRESH_TOKEN_NAME}
-
+    COGNITO_USER_POOL_ID: ${ssm:/shared/cognito-user-pool-id, ''}
+    COGNITO_CLIENT_ID: ${ssm:/shared/cognito-client-id, ''}
 functions:
   graphql:
     timeout: 20

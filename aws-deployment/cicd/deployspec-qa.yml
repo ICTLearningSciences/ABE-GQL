@@ -3,8 +3,6 @@ version: 0.2
 env:
   parameter-store:
     SERVERLESS_ACCESS_KEY: "/shared/serverless-cicd-token"
-    COGNITO_USER_POOL_ID: "/shared/cognito-user-pool-id"
-    COGNITO_CLIENT_ID: "/shared/cognito-client-id"
 
 phases:
   install:
