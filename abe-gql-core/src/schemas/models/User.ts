@@ -84,7 +84,7 @@ export const UserInputType = new GraphQLInputObjectType({
 
 export enum LoginService {
   GOOGLE = "GOOGLE",
-  EMAIL = "EMAIL",
+  AMAZON_COGNITO = "AMAZON_COGNITO",
   MICROSOFT = "MICROSOFT",
 }
 
@@ -114,7 +114,11 @@ export const UserSchema = new Schema<User, UserModel>(
     previousClassroomCodes: { type: [ClassroomCodeSchema], default: [] },
     loginService: {
       type: String,
-      enum: [LoginService.GOOGLE, LoginService.EMAIL],
+      enum: [
+        LoginService.GOOGLE,
+        LoginService.AMAZON_COGNITO,
+        LoginService.MICROSOFT,
+      ],
       default: LoginService.GOOGLE,
     },
   },

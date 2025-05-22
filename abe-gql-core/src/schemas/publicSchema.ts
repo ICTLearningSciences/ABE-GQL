@@ -40,6 +40,7 @@ import { UserRole } from "./models/User";
 import copyBuiltActivity from "./mutation/copy-built-activity";
 import deleteBuiltActivity from "./mutation/delete-built-activity";
 import loginMicrosoft from "./mutation/login-microsoft";
+import loginAmazonCognito from "./mutation/login-amazon-cognito";
 import updateUserInfo from "./mutation/update-user-info";
 import addOrUpdateDoc from "./mutation/add-or-update-google-doc";
 const publicQueries = {
@@ -75,6 +76,7 @@ const publicMutations = {
   storeDocTimeline,
   deleteGoogleDoc,
   loginMicrosoft,
+  loginAmazonCognito,
   updateUserInfo,
   addOrUpdateDoc,
 };
