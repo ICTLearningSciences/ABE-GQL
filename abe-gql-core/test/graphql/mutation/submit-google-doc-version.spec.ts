@@ -62,6 +62,7 @@ describe("submit google doc version", () => {
     const newGoogleDocData = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
+      markdownText: "# hello, world!",
       lastChangedId: "123",
       chatLog: [
         {
@@ -94,6 +95,7 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainText
+                      markdownText
                     }
                 }`,
         variables: {
@@ -109,6 +111,7 @@ describe("submit google doc version", () => {
                     fetchGoogleDocVersions(googleDocId: $googleDocId) {
                       docId
                       plainText
+                      markdownText
                       lastChangedId
                       sessionId
                       sessionIntention {

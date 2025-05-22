@@ -34,6 +34,7 @@ describe("fetch google doc versions", () => {
                     fetchGoogleDocVersions(googleDocId: $googleDocId) {
                       docId
                       plainText
+                      markdownText
                       lastChangedId
                       chatLog {
                         sender
@@ -63,6 +64,7 @@ describe("fetch google doc versions", () => {
                       _id
                     docId
                       plainText
+                      markdownText
                       lastChangedId
                       chatLog {
                         sender
@@ -85,6 +87,7 @@ describe("fetch google doc versions", () => {
         _id: "5ffdf1231ee2c62320b49ea1",
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world!",
+        markdownText: "# hello, world!",
         lastChangedId: "123",
         chatLog: [
           {
@@ -102,6 +105,7 @@ describe("fetch google doc versions", () => {
         _id: "5ffdf1231ee2c62320b49ea2",
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 2",
+        markdownText: "# hello, world! 2",
         lastChangedId: "123",
         chatLog: [
           {
@@ -119,6 +123,7 @@ describe("fetch google doc versions", () => {
         _id: "5ffdf1231ee2c62320b49ea3",
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 3",
+        markdownText: "# hello, world! 3",
         lastChangedId: "123",
         chatLog: [
           {
