@@ -53,7 +53,7 @@ describe("login with amazon cognito", () => {
       .post("/graphql")
       .send({
         query: `mutation {
-        loginAmazonCognito(idToken: "eyJraWQiOiJSdXVqc2pycmxLazNjSHBaOVJ2MUtNNkpyUU9cL0EzRktvdGdSVWRpKzdLTT0iLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoienF4ZFh2b041MUNqY29lc0JLUDZtdyIsInN1YiI6IjA0MDg1NDg4LTgwMTEtNzAyNC00NDdmLWRiZjkxNzAzZjM3ZCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV8zVEh4ZVphU0oiLCJjb2duaXRvOnVzZXJuYW1lIjoiMDQwODU0ODgtODAxMS03MDI0LTQ0N2YtZGJmOTE3MDNmMzdkIiwib3JpZ2luX2p0aSI6IjhmOWQyYjdjLTNmY2YtNDM1Mi1hODE1LTA3NDAwNjVjZWFkMiIsImF1ZCI6IjNnaTJkdmVqcWxhM3MzZGRrMXZoOGZpNTlvIiwiZXZlbnRfaWQiOiI0ZmE3NDUyMS1lNGE0LTRmODctYTIzNi1mMDE5NDMxMzdhZWIiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc0Nzg4MjkwNCwiZXhwIjoxNzQ3ODg2NTA0LCJpYXQiOjE3NDc4ODI5MDQsImp0aSI6IjU5YTZmNjU1LThkMDQtNDQ3YS1hYWZlLTE2ZWEwYjQ2M2I5MiIsImVtYWlsIjoiYXNoaWVsNDA4QGdtYWlsLmNvbSJ9.s1d3qDU1InFm0AGlnL2sxHSjpX8aozSPhPDl9HXMBeMA5cEdPmZBM6wfGk5FTWsQUr28wpdqwvhMOxo7SBrP_YUMC-wOAnyYNLpyXKlbAxQoDIkBmNne1hyOoNPVHRaoPF92kbYi0la9nHX_-u6LI2ukLBOVTrheXpaq11B3m6VlyuQ76zvLcLaA8VQ1o8u1DXr_JlnMiMLjnNqfLJ8nqAow2PeAOykueLtm6O2Kz1jcXSJHbq4t_47logItHPsbyhw-VspMNBJ8N-_mqbT23pvC3b2bREnrFGIdo0W_Ci7oFMa-iboc4bNnaToOg2MrATxiTSAjfPgGBicZaA6RQQ") {
+        loginAmazonCognito(idToken: "test-id-token") {
           user {
             name
             email

@@ -28,9 +28,7 @@ export enum DocService {
 }
 
 export interface GoogleDoc {
-  // TODO: genericize this googleDocId to just be docId (all doc types have a unique identifier)
   googleDocId: string;
-  // Microsoft Word field ONLY: custom property that gets added specifically to Microsoft Word docs metadata, could be a better name.
   wordDocId: string;
   deleted: boolean;
   title: string;

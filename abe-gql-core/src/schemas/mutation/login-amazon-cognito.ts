@@ -97,7 +97,7 @@ export const loginAmazonCognito = {
 
       const user = await UserSchema.findOneAndUpdate(
         {
-          googleId: userId, // Currently using googleId field as it's used for other providers too
+          googleId: userId, // Currently using googleId field as it's used for other providers too, need to genericize this
         },
         {
           $set: {
