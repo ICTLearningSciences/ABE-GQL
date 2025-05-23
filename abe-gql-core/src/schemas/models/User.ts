@@ -39,6 +39,7 @@ export interface User extends Document {
   lastLoginAt: Date;
   classroomCode: ClassroomCode;
   previousClassroomCodes: ClassroomCode[];
+  loginService: LoginService;
 }
 
 export const ClassroomCodeType = new GraphQLObjectType({
@@ -56,6 +57,7 @@ export const UserType = new GraphQLObjectType({
     googleId: { type: GraphQLString },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
+    loginService: { type: GraphQLString },
     userRole: { type: GraphQLString },
     lastLoginAt: { type: DateType },
     classroomCode: { type: ClassroomCodeType },
@@ -79,6 +81,12 @@ export const UserInputType = new GraphQLInputObjectType({
     classroomCode: { type: GraphQLString },
   }),
 });
+
+export enum LoginService {
+  GOOGLE = "GOOGLE",
+  AMAZON_COGNITO = "AMAZON_COGNITO",
+  MICROSOFT = "MICROSOFT",
+}
 
 export interface IUserInputType {
   name?: string;
@@ -104,6 +112,15 @@ export const UserSchema = new Schema<User, UserModel>(
     lastLoginAt: { type: Date },
     classroomCode: { type: ClassroomCodeSchema },
     previousClassroomCodes: { type: [ClassroomCodeSchema], default: [] },
+    loginService: {
+      type: String,
+      enum: [
+        LoginService.GOOGLE,
+        LoginService.AMAZON_COGNITO,
+        LoginService.MICROSOFT,
+      ],
+      default: LoginService.GOOGLE,
+    },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

@@ -402,6 +402,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ec1"),
       docId: "test_google_doc_id",
       plainText: "hello, world!",
+      markdownText: "# hello, world!",
       lastChangedId: "123",
       sessionId: "session-id",
       chatLog: [
@@ -422,6 +423,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea1"),
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
+      markdownText: "# hello, world!",
       lastChangedId: "123",
       sessionId: "session-id-1",
       chatLog: [
@@ -441,6 +443,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea2"),
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 2",
+      markdownText: "# hello, world! 2",
       lastChangedId: "123",
       sessionId: "session-id-2",
       chatLog: [
@@ -460,6 +463,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea3"),
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
+      markdownText: "# hello, world! 3",
       lastChangedId: "123",
       sessionId: "session-id-3",
       sessionIntention: {
@@ -491,6 +495,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea9"),
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 4",
+      markdownText: "# hello, world! 4",
       lastChangedId: "123",
       sessionId: "session-id-4",
       chatLog: [
@@ -510,6 +515,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea8"),
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 5",
+      markdownText: "# hello, world! 5",
       lastChangedId: "123",
       sessionId: "session-id-5",
       chatLog: [
@@ -529,6 +535,7 @@ module.exports = {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea7"),
       docId: "1K-JFihjdDHmKqATZpsGuIjcCwp-OJHWcfAAzVZP0vFc",
       plainText: "hello, world! 6",
+      markdownText: "# hello, world! 6",
       lastChangedId: "123",
       sessionId: "session-id-6",
       chatLog: [
@@ -585,6 +592,7 @@ module.exports = {
             _id: new ObjectId("5ffdf1231ee2c62320b49a11"),
             docId: "doc_od",
             plainText: "test",
+            markdownText: "# test",
             lastChangedId: "test",
             chatLog: [
               {
@@ -621,6 +629,7 @@ module.exports = {
             _id: new ObjectId("5ffdf1231ee2c62320b49e88"),
             docId: "doc_od",
             plainText: "test_2",
+            markdownText: "# test_2",
             lastChangedId: "test_2",
             chatLog: [
               {

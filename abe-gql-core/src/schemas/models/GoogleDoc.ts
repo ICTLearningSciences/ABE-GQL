@@ -24,6 +24,7 @@ import GoogleDocVersionsModel, {
 export enum DocService {
   GOOGLE_DOCS = "GOOGLE_DOCS",
   MICROSOFT_WORD = "MICROSOFT_WORD",
+  RAW_TEXT = "RAW_TEXT",
 }
 
 export interface GoogleDoc {

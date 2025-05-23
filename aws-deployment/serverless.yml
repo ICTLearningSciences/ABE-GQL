@@ -53,12 +53,11 @@ custom:
   stages:
     dev:
       MONGO_URI: ${ssm:/ABE/dev/mongo_uri, ''}
-      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,.dev.abewriting.org,.dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/,https://ictusc.sharepoint.com/,https://ictusc.sharepoint.com,ictusc.sharepoint.com,https://localhost:3000,https://localhost:3000/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net"
+      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,.dev.abewriting.org,.dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/,https://ictusc.sharepoint.com/,https://ictusc.sharepoint.com,ictusc.sharepoint.com,https://localhost:3000,https://localhost:3000/,http://localhost:8000,http://localhost:8000/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net"
       JWT_SECRET: ${ssm:/ABE/dev/jwt_secret, ''}
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenDev"
       WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
-
     qa:
       MONGO_URI: ${ssm:/ABE/qa/mongo_uri, ''}
       CORS_ORIGIN: "https://qa.abewriting.org,https://qa.abewriting.org/,.qa.abewriting.org,.qa.abewriting.org/,https://api-qa.abewriting.org,https://api-qa.abewriting.org/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net"
@@ -103,7 +102,8 @@ provider:
     JWT_SECRET: ${self:custom.stages.${self:provider.stage}.JWT_SECRET}
     DOMAIN: ${self:custom.stages.${self:provider.stage}.DOMAIN}
     REFRESH_TOKEN_NAME: ${self:custom.stages.${self:provider.stage}.REFRESH_TOKEN_NAME}
-
+    COGNITO_USER_POOL_ID: ${ssm:/shared/cognito-user-pool-id, ''}
+    COGNITO_CLIENT_ID: ${ssm:/shared/cognito-client-id, ''}
 functions:
   graphql:
     timeout: 20
@@ -118,6 +118,10 @@ functions:
           method: ANY
           cors:
             origins:
+              - "http://localhost:8000"
+              - "http://localhost:8000"
+              - "https://localhost:3000/"
+              - "https://localhost:3000/"
               - "https://abestorage6245.z13.web.core.windows.net/"
               - "https://abestorage6245.z13.web.core.windows.net"
               - "https://*.web.core.windows.net/"
@@ -130,8 +134,6 @@ functions:
               - "http://local.abewriting.org/"
               - "https://ictusc.sharepoint.com/"
               - "https://ictusc.sharepoint.com"
-              - "https://localhost:3000"
-              - "https://localhost:3000/"
             allowCredentials: true
             headers:
               - Content-Type
