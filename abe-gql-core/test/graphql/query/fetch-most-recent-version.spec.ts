@@ -34,6 +34,7 @@ describe("fetch most recent version", () => {
           fetchMostRecentVersion(googleDocId: $googleDocId) {
             docId
             plainText
+            markdownText
             lastChangedId
             chatLog {
               sender
@@ -62,6 +63,7 @@ describe("fetch most recent version", () => {
           fetchMostRecentVersion(googleDocId: $googleDocId) {
             docId
             plainText
+            markdownText
             lastChangedId
             chatLog {
               sender
@@ -83,6 +85,7 @@ describe("fetch most recent version", () => {
     expect(response.body.data.fetchMostRecentVersion).to.deep.equal({
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
+      markdownText: "# hello, world! 3",
       lastChangedId: "123",
       chatLog: [
         {
