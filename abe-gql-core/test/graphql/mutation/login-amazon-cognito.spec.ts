@@ -11,47 +11,49 @@ import { Express } from "express";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import {
-  MicrosoftGraphUser,
-  MicrosoftGraphUserFunc,
-  overrideMicrosoftGraphUser,
-  restoreMicrosoftGraphUser,
-} from "../../../src/schemas/mutation/login-microsoft";
+  CognitoAuthFunc,
+  CognitoUser,
+  overrideCognitoAuthFunc,
+  restoreCognitoAuthFunc,
+} from "../../../src/schemas/mutation/login-amazon-cognito";
 
-describe("login with microsoft", () => {
+describe("login with amazon cognito", () => {
   let app: Express;
-  let microsoftGraphUserFunc: MicrosoftGraphUserFunc;
+  let amazonAuthFunc: CognitoAuthFunc = (idToken: string) => {
+    return Promise.reject("override me");
+  };
 
-  function microsoftGraphUserFuncOverride(
-    accessToken: string
-  ): Promise<MicrosoftGraphUser> {
-    return microsoftGraphUserFunc(accessToken);
+  function amazonAuthFuncOverride(idToken: string): Promise<CognitoUser> {
+    return amazonAuthFunc(idToken);
   }
 
   beforeEach(async () => {
-    overrideMicrosoftGraphUser(microsoftGraphUserFuncOverride);
+    overrideCognitoAuthFunc(amazonAuthFuncOverride);
     await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
     app = await createApp();
     await appStart();
   });
 
   afterEach(async () => {
-    restoreMicrosoftGraphUser();
+    restoreCognitoAuthFunc();
     await appStop();
     await mongoUnit.drop();
   });
 
-  it(`Logs in with microsoft`, async () => {
-    microsoftGraphUserFunc = (accessToken: string) =>
-      Promise.resolve<MicrosoftGraphUser>({
-        id: "someid",
-        displayName: "somename",
-        mail: "x@y.com",
+  it(`creates a new user for new amazon cognito login`, async () => {
+    amazonAuthFunc = (idToken: string) =>
+      Promise.resolve<CognitoUser>({
+        sub: "someid",
+        name: "somename",
+        email: "x@y.com",
+        given_name: "somegivenname",
       });
+
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation LoginMicrosoft($accessToken: String) {
-        loginMicrosoft(accessToken: $accessToken) {
+        query: `mutation {
+        loginAmazonCognito(idToken: "test-id-token") {
           user {
             name
             email
@@ -61,22 +63,20 @@ describe("login with microsoft", () => {
           expirationDate
         }
       }`,
-        variables: {
-          accessToken: "123",
-        },
       });
+
     expect(response.status).to.equal(200);
     expect(response.body).to.have.deep.nested.property(
-      "data.loginMicrosoft.user.name",
+      "data.loginAmazonCognito.user.name",
       "somename"
     );
     expect(response.body).to.have.deep.nested.property(
-      "data.loginMicrosoft.user.email",
+      "data.loginAmazonCognito.user.email",
       "x@y.com"
     );
     expect(response.body).to.have.deep.nested.property(
-      "data.loginMicrosoft.user.loginService",
-      "MICROSOFT"
+      "data.loginAmazonCognito.user.loginService",
+      "AMAZON_COGNITO"
     );
   });
 });

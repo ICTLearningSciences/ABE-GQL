@@ -83,6 +83,7 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
   fields: () => ({
     docId: { type: GraphQLNonNull(GraphQLString) },
     plainText: { type: GraphQLNonNull(GraphQLString) },
+    markdownText: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
     sessionId: { type: GraphQLString },
     sessionIntention: { type: IntentionInputType },
@@ -103,6 +104,7 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     _id: { type: GraphQLString },
     docId: { type: GraphQLString },
     plainText: { type: GraphQLString },
+    markdownText: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
     sessionId: { type: GraphQLString },
     sessionIntention: { type: IntentionObjectType },
@@ -123,6 +125,7 @@ export interface IGDocVersion {
   _id: string;
   docId: string;
   plainText: string;
+  markdownText?: string;
   lastChangedId: string;
   sessionId: string;
   sessionIntention: IIntention;
@@ -149,6 +152,10 @@ export const GDocVersionSchema = new Schema(
   {
     docId: String,
     plainText: String,
+    markdownText: {
+      type: String,
+      default: "",
+    },
     lastChangedId: String,
     sessionId: String,
     sessionIntention: IntentionSchema,

@@ -76,6 +76,7 @@ describe("login with google", () => {
           user {
             name
             email
+            loginService
           }
           accessToken
           expirationDate
@@ -90,6 +91,10 @@ describe("login with google", () => {
     expect(response.body).to.have.deep.nested.property(
       "data.loginGoogle.user.email",
       "x@y.com"
+    );
+    expect(response.body).to.have.deep.nested.property(
+      "data.loginGoogle.user.loginService",
+      "GOOGLE"
     );
   });
 
