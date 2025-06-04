@@ -43,7 +43,7 @@ describe("config", () => {
             }
             bannerConfig {
               bannerText
-              bannerColor
+              bannerTextColor
               bannerBgColor
             }
           }
@@ -59,7 +59,7 @@ describe("config", () => {
       },
       bannerConfig: {
         bannerText: "",
-        bannerColor: "",
+        bannerTextColor: "",
         bannerBgColor: "",
       },
     });
@@ -75,7 +75,7 @@ describe("config", () => {
       },
       bannerConfig: {
         bannerText: "Hello, world!",
-        bannerColor: "#000000",
+        bannerTextColor: "#000000",
         bannerBgColor: "#FFFFFF",
       },
     };
@@ -93,7 +93,7 @@ describe("config", () => {
             }
             bannerConfig {
               bannerText
-              bannerColor
+              bannerTextColor
               bannerBgColor
             }
           }

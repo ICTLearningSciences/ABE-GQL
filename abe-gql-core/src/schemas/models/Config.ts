@@ -111,7 +111,7 @@ export const ColorThemeConfigInputType = new GraphQLInputObjectType({
 
 export interface BannerConfig {
   bannerText: string;
-  bannerColor: string;
+  bannerTextColor: string;
   bannerBgColor: string;
 }
 
@@ -119,7 +119,7 @@ export const BannerConfigType = new GraphQLObjectType({
   name: "BannerConfigType",
   fields: {
     bannerText: { type: GraphQLString },
-    bannerColor: { type: GraphQLString },
+    bannerTextColor: { type: GraphQLString },
     bannerBgColor: { type: GraphQLString },
   },
 });
@@ -128,7 +128,7 @@ export const BannerConfigInputType = new GraphQLInputObjectType({
   name: "BannerConfigInputType",
   fields: {
     bannerText: { type: GraphQLString },
-    bannerColor: { type: GraphQLString },
+    bannerTextColor: { type: GraphQLString },
     bannerBgColor: { type: GraphQLString },
   },
 });
@@ -189,7 +189,7 @@ export function getDefaultConfig(): Config {
     },
     bannerConfig: {
       bannerText: "",
-      bannerColor: "",
+      bannerTextColor: "",
       bannerBgColor: "",
     },
   };
