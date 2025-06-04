@@ -109,6 +109,30 @@ export const ColorThemeConfigInputType = new GraphQLInputObjectType({
   },
 });
 
+export interface BannerConfig {
+  bannerText: string;
+  bannerColor: string;
+  bannerBgColor: string;
+}
+
+export const BannerConfigType = new GraphQLObjectType({
+  name: "BannerConfigType",
+  fields: {
+    bannerText: { type: GraphQLString },
+    bannerColor: { type: GraphQLString },
+    bannerBgColor: { type: GraphQLString },
+  },
+});
+
+export const BannerConfigInputType = new GraphQLInputObjectType({
+  name: "BannerConfigInputType",
+  fields: {
+    bannerText: { type: GraphQLString },
+    bannerColor: { type: GraphQLString },
+    bannerBgColor: { type: GraphQLString },
+  },
+});
+
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoalActivities?: IGoalActivities[];
@@ -123,6 +147,7 @@ export interface Config {
   orgName?: string;
   loginScreenTitle?: string;
   surveyConfig?: SurveyConfig;
+  bannerConfig?: BannerConfig;
 }
 
 type ConfigKey = keyof Config;
@@ -140,6 +165,7 @@ export const ConfigKeys: ConfigKey[] = [
   "orgName",
   "loginScreenTitle",
   "surveyConfig",
+  "bannerConfig",
 ];
 
 export function getDefaultConfig(): Config {
@@ -160,6 +186,11 @@ export function getDefaultConfig(): Config {
       surveyLink: "",
       surveyQueryParam: "",
       surveyClassroomParam: "",
+    },
+    bannerConfig: {
+      bannerText: "",
+      bannerColor: "",
+      bannerBgColor: "",
     },
   };
 }
@@ -218,6 +249,7 @@ export const ConfigType = new GraphQLObjectType({
     orgName: { type: GraphQLString },
     loginScreenTitle: { type: GraphQLString },
     surveyConfig: { type: SurveyConfigType },
+    bannerConfig: { type: BannerConfigType },
   }),
 });
 

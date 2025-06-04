@@ -41,6 +41,11 @@ describe("config", () => {
               surveyQueryParam
               surveyClassroomParam
             }
+            bannerConfig {
+              bannerText
+              bannerColor
+              bannerBgColor
+            }
           }
         }`,
       });
@@ -52,6 +57,11 @@ describe("config", () => {
         surveyQueryParam: "",
         surveyClassroomParam: "",
       },
+      bannerConfig: {
+        bannerText: "",
+        bannerColor: "",
+        bannerBgColor: "",
+      },
     });
   });
 
@@ -62,6 +72,11 @@ describe("config", () => {
         surveyLink: "https://example.com",
         surveyQueryParam: "param",
         surveyClassroomParam: "classroomParam",
+      },
+      bannerConfig: {
+        bannerText: "Hello, world!",
+        bannerColor: "#000000",
+        bannerBgColor: "#FFFFFF",
       },
     };
     await ConfigModel.saveConfig(config);
@@ -75,7 +90,12 @@ describe("config", () => {
               surveyLink
               surveyQueryParam
               surveyClassroomParam
-            } 
+            }
+            bannerConfig {
+              bannerText
+              bannerColor
+              bannerBgColor
+            }
           }
         }`,
       });
