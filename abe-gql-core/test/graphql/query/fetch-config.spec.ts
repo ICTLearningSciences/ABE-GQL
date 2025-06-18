@@ -46,6 +46,14 @@ describe("config", () => {
               bannerTextColor
               bannerBgColor
             }
+            aiServiceModelConfigs {
+              serviceName
+              modelList {
+                name
+                maxTokens
+                supportsWebSearch
+              }
+            }
           }
         }`,
       });
@@ -62,6 +70,18 @@ describe("config", () => {
         bannerTextColor: "",
         bannerBgColor: "",
       },
+      aiServiceModelConfigs: [
+        {
+          serviceName: "OPEN_AI",
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -78,6 +98,14 @@ describe("config", () => {
         bannerTextColor: "#000000",
         bannerBgColor: "#FFFFFF",
       },
+      aiServiceModelConfigs: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          modelList: [
+            { name: "gpt-3.5-turbo", maxTokens: 1000, supportsWebSearch: true },
+          ],
+        },
+      ],
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -95,6 +123,14 @@ describe("config", () => {
               bannerText
               bannerTextColor
               bannerBgColor
+            }
+            aiServiceModelConfigs {
+              serviceName
+              modelList {
+                name
+                maxTokens
+                supportsWebSearch
+              }
             }
           }
         }`,
@@ -138,6 +174,14 @@ describe("config", () => {
       headerTitle: "header title",
       orgName: "org name",
       loginScreenTitle: "login screen title",
+      aiServiceModelConfigs: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          modelList: [
+            { name: "gpt-3.5-turbo", maxTokens: 1000, supportsWebSearch: true },
+          ],
+        },
+      ],
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -178,6 +222,14 @@ describe("config", () => {
             headerTitle
             orgName
             loginScreenTitle
+            aiServiceModelConfigs {
+              serviceName
+              modelList {
+                name
+                maxTokens
+                supportsWebSearch
+              }
+            }
           }
         }`,
       });
