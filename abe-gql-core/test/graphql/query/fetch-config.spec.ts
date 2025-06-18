@@ -178,7 +178,6 @@ describe("config", () => {
       emailAiServiceModels: [
         {
           serviceName: AiServiceNames.CAMO_GPT,
-          models: ["Minstrel7B"],
           modelList: [
             {
               name: "Minstrel7B",

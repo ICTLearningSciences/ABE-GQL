@@ -140,24 +140,20 @@ export interface ServiceModelInfo {
   supportsWebSearch: boolean;
 }
 
+export type AiModelServiceList = {
+  serviceName: AiServiceNames;
+  models?: string[];
+  modelList: ServiceModelInfo[];
+};
+
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoalActivities?: IGoalActivities[];
   exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
-  availableAiServiceModels?: {
-    serviceName: AiServiceNames;
-    // @Deprecated - use modelList instead
-    models: string[];
-    modelList: ServiceModelInfo[];
-  }[];
-  emailAiServiceModels?: {
-    serviceName: AiServiceNames;
-    // @Deprecated - use modelList instead
-    models: string[];
-    modelList: ServiceModelInfo[];
-  }[];
+  availableAiServiceModels?: AiModelServiceList[];
+  emailAiServiceModels?: AiModelServiceList[];
   approvedEmailsForAiModels?: string[];
   colorTheme?: Partial<ColorThemeConfig>;
   headerTitle?: string;
@@ -249,8 +245,12 @@ export const AvailabeAiServiceModelsType = new GraphQLObjectType({
   name: "AvailabeAiServiceModelsType",
   fields: {
     serviceName: { type: GraphQLString },
-    // @Deprecated - use modelList instead
-    models: { type: GraphQLList(GraphQLString) },
+    models: {
+      type: GraphQLList(GraphQLString),
+      resolve: async (model: AiModelServiceList) => {
+        return model.modelList.map((model) => model.name);
+      },
+    },
     modelList: { type: GraphQLList(ServiceModelInfoType) },
   },
 });

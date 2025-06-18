@@ -17,7 +17,6 @@ module.exports = {
       value: [
         {
           serviceName: "OPEN_AI",
-          models: ["gpt-3.5-turbo"],
           modelList: [
             {
               name: "gpt-3.5-turbo",
@@ -48,7 +47,6 @@ module.exports = {
           value: [
             {
               serviceName: "OPEN_AI",
-              models: ["gpt-3.5-turbo"],
               modelList: [
                 {
                   name: "gpt-3.5-turbo",
@@ -64,7 +62,6 @@ module.exports = {
           value: [
             {
               serviceName: "CAMO_GPT",
-              models: ["Minstrel7B"],
               modelList: [
                 {
                   name: "Minstrel7B",
