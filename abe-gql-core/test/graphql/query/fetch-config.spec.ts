@@ -46,6 +46,15 @@ describe("config", () => {
               bannerTextColor
               bannerBgColor
             }
+            availableAiServiceModels{
+              serviceName
+              models
+              modelList{
+                name
+                maxTokens
+                supportsWebSearch
+              }
+            }
           }
         }`,
       });
@@ -62,6 +71,19 @@ describe("config", () => {
         bannerTextColor: "",
         bannerBgColor: "",
       },
+      availableAiServiceModels: [
+        {
+          serviceName: "OPEN_AI",
+          models: ["gpt-3.5-turbo"],
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -78,6 +100,19 @@ describe("config", () => {
         bannerTextColor: "#000000",
         bannerBgColor: "#FFFFFF",
       },
+      availableAiServiceModels: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          models: ["gpt-3.5-turbo"],
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
+        },
+      ],
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -95,6 +130,15 @@ describe("config", () => {
               bannerText
               bannerTextColor
               bannerBgColor
+            }
+            availableAiServiceModels{
+              serviceName
+              models
+              modelList{
+                name
+                maxTokens
+                supportsWebSearch
+              }
             }
           }
         }`,
@@ -131,9 +175,19 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
-      emailAiServiceModels: {
-        [AiServiceNames.CAMO_GPT]: ["Minstrel7B"],
-      },
+      emailAiServiceModels: [
+        {
+          serviceName: AiServiceNames.CAMO_GPT,
+          models: ["Minstrel7B"],
+          modelList: [
+            {
+              name: "Minstrel7B",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
+        },
+      ],
       approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",
@@ -169,10 +223,20 @@ describe("config", () => {
             availableAiServiceModels{
               serviceName
               models
+              modelList{
+                name
+                maxTokens
+                supportsWebSearch
+              }
             }
             emailAiServiceModels{
               serviceName
               models
+              modelList{
+                name
+                maxTokens
+                supportsWebSearch
+              }
             }
             approvedEmailsForAiModels
             headerTitle
@@ -214,12 +278,26 @@ describe("config", () => {
         {
           serviceName: AiServiceNames.OPEN_AI,
           models: ["gpt-3.5-turbo"],
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
         },
       ],
       emailAiServiceModels: [
         {
           serviceName: AiServiceNames.CAMO_GPT,
           models: ["Minstrel7B"],
+          modelList: [
+            {
+              name: "Minstrel7B",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
         },
       ],
       approvedEmailsForAiModels: ["test@test.com"],

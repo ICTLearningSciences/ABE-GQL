@@ -11,6 +11,7 @@ import {
   GraphQLObjectType,
   GraphQLInputObjectType,
   GraphQLBoolean,
+  GraphQLInt,
 } from "graphql";
 import OrgModel from "./Organization";
 import { SurveyConfig, SurveyConfigType } from "./Config/survey-config";
@@ -133,14 +134,30 @@ export const BannerConfigInputType = new GraphQLInputObjectType({
   },
 });
 
+export interface ServiceModelInfo {
+  name: string;
+  maxTokens: number;
+  supportsWebSearch: boolean;
+}
+
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoalActivities?: IGoalActivities[];
   exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
-  availableAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
-  emailAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
+  availableAiServiceModels?: {
+    serviceName: AiServiceNames;
+    // @Deprecated - use modelList instead
+    models: string[];
+    modelList: ServiceModelInfo[];
+  }[];
+  emailAiServiceModels?: {
+    serviceName: AiServiceNames;
+    // @Deprecated - use modelList instead
+    models: string[];
+    modelList: ServiceModelInfo[];
+  }[];
   approvedEmailsForAiModels?: string[];
   colorTheme?: Partial<ColorThemeConfig>;
   headerTitle?: string;
@@ -203,6 +220,15 @@ export const AiModelServiceType = new GraphQLObjectType({
   },
 });
 
+export const ServiceModelInfoType = new GraphQLObjectType({
+  name: "ServiceModelInfoType",
+  fields: {
+    name: { type: GraphQLString },
+    maxTokens: { type: GraphQLInt },
+    supportsWebSearch: { type: GraphQLBoolean },
+  },
+});
+
 export const AiModelServiceInputType = new GraphQLInputObjectType({
   name: "AiModelServiceInputType",
   fields: {
@@ -223,7 +249,9 @@ export const AvailabeAiServiceModelsType = new GraphQLObjectType({
   name: "AvailabeAiServiceModelsType",
   fields: {
     serviceName: { type: GraphQLString },
+    // @Deprecated - use modelList instead
     models: { type: GraphQLList(GraphQLString) },
+    modelList: { type: GraphQLList(ServiceModelInfoType) },
   },
 });
 

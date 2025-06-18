@@ -11,6 +11,25 @@ import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivi
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
+  configs: [
+    {
+      key: "availableAiServiceModels",
+      value: [
+        {
+          serviceName: "OPEN_AI",
+          models: ["gpt-3.5-turbo"],
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+
   organizations: [
     {
       _id: new ObjectId("5ffdf1231ee2c62330b49e4c"),
@@ -30,6 +49,13 @@ module.exports = {
             {
               serviceName: "OPEN_AI",
               models: ["gpt-3.5-turbo"],
+              modelList: [
+                {
+                  name: "gpt-3.5-turbo",
+                  maxTokens: 1000,
+                  supportsWebSearch: true,
+                },
+              ],
             },
           ],
         },
@@ -39,6 +65,13 @@ module.exports = {
             {
               serviceName: "CAMO_GPT",
               models: ["Minstrel7B"],
+              modelList: [
+                {
+                  name: "Minstrel7B",
+                  maxTokens: 1000,
+                  supportsWebSearch: true,
+                },
+              ],
             },
           ],
         },
