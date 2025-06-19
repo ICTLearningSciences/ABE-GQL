@@ -52,6 +52,8 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                onlyAdminUse
+                disabled
               }
             }
           }
@@ -78,6 +80,8 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              onlyAdminUse: false,
+              disabled: false,
             },
           ],
         },
@@ -102,7 +106,13 @@ describe("config", () => {
         {
           serviceName: AiServiceNames.OPEN_AI,
           modelList: [
-            { name: "gpt-3.5-turbo", maxTokens: 1000, supportsWebSearch: true },
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+              onlyAdminUse: true,
+              disabled: true,
+            },
           ],
         },
       ],
@@ -130,6 +140,8 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                onlyAdminUse
+                disabled
               }
             }
           }
@@ -167,21 +179,10 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
-      emailAiServiceModels: {
-        [AiServiceNames.CAMO_GPT]: ["Minstrel7B"],
-      },
       approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",
       loginScreenTitle: "login screen title",
-      aiServiceModelConfigs: [
-        {
-          serviceName: AiServiceNames.OPEN_AI,
-          modelList: [
-            { name: "gpt-3.5-turbo", maxTokens: 1000, supportsWebSearch: true },
-          ],
-        },
-      ],
     };
     await ConfigModel.saveConfig(config);
     const response = await request(app)
@@ -210,14 +211,6 @@ describe("config", () => {
               serviceName
               model
             }
-            availableAiServiceModels{
-              serviceName
-              models
-            }
-            emailAiServiceModels{
-              serviceName
-              models
-            }
             approvedEmailsForAiModels
             headerTitle
             orgName
@@ -228,6 +221,8 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                onlyAdminUse
+                disabled
               }
             }
           }
@@ -262,22 +257,24 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
-      availableAiServiceModels: [
-        {
-          serviceName: AiServiceNames.OPEN_AI,
-          models: ["gpt-3.5-turbo"],
-        },
-      ],
-      emailAiServiceModels: [
-        {
-          serviceName: AiServiceNames.CAMO_GPT,
-          models: ["Minstrel7B"],
-        },
-      ],
       approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",
       loginScreenTitle: "login screen title",
+      aiServiceModelConfigs: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+              onlyAdminUse: false,
+              disabled: false,
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -339,14 +336,6 @@ describe("config", () => {
               serviceName
               model
             }
-            availableAiServiceModels{
-              serviceName
-              models
-            }
-            emailAiServiceModels{
-              serviceName
-              models
-            }
             approvedEmailsForAiModels
             headerTitle
             orgName
@@ -383,18 +372,6 @@ describe("config", () => {
         serviceName: AiServiceNames.AZURE,
         model: "model",
       },
-      availableAiServiceModels: [
-        {
-          serviceName: AiServiceNames.OPEN_AI,
-          models: ["gpt-3.5-turbo"],
-        },
-      ],
-      emailAiServiceModels: [
-        {
-          serviceName: AiServiceNames.CAMO_GPT,
-          models: ["Minstrel7B"],
-        },
-      ],
       approvedEmailsForAiModels: ["test@test.com"],
       headerTitle: "header title",
       orgName: "org name",

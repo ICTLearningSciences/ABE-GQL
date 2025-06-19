@@ -138,6 +138,8 @@ export interface ServiceModelInfo {
   name: string;
   maxTokens: number;
   supportsWebSearch: boolean;
+  onlyAdminUse?: boolean;
+  disabled?: boolean;
 }
 
 export type AiServiceModelConfigs = {
@@ -151,8 +153,6 @@ export interface Config {
   exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
-  availableAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
-  emailAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
   aiServiceModelConfigs?: AiServiceModelConfigs[];
   approvedEmailsForAiModels?: string[];
   colorTheme?: Partial<ColorThemeConfig>;
@@ -171,8 +171,6 @@ export const ConfigKeys: ConfigKey[] = [
   "exampleGoogleDocs",
   "overrideAiModel",
   "defaultAiModel",
-  "availableAiServiceModels",
-  "emailAiServiceModels",
   "aiServiceModelConfigs",
   "approvedEmailsForAiModels",
   "headerTitle",
@@ -189,8 +187,6 @@ export function getDefaultConfig(): Config {
     exampleGoogleDocs: [],
     overrideAiModel: undefined,
     defaultAiModel: undefined,
-    availableAiServiceModels: undefined,
-    emailAiServiceModels: undefined,
     aiServiceModelConfigs: [],
     approvedEmailsForAiModels: [],
     colorTheme: {},
@@ -248,6 +244,8 @@ export const ServiceModelInfoType = new GraphQLObjectType({
     name: { type: GraphQLString },
     maxTokens: { type: GraphQLInt },
     supportsWebSearch: { type: GraphQLBoolean },
+    onlyAdminUse: { type: GraphQLBoolean },
+    disabled: { type: GraphQLBoolean },
   },
 });
 
@@ -269,12 +267,6 @@ export const ConfigType = new GraphQLObjectType({
     exampleGoogleDocs: { type: GraphQLList(GraphQLString) },
     overrideAiModel: { type: AiModelServiceType },
     defaultAiModel: { type: AiModelServiceType },
-    availableAiServiceModels: {
-      type: GraphQLList(AvailabeAiServiceModelsType),
-    },
-    emailAiServiceModels: {
-      type: GraphQLList(AvailabeAiServiceModelsType),
-    },
     aiServiceModelConfigs: {
       type: GraphQLList(AiServiceModelConfigsType),
     },
