@@ -269,6 +269,17 @@ export const ConfigType = new GraphQLObjectType({
     defaultAiModel: { type: AiModelServiceType },
     aiServiceModelConfigs: {
       type: GraphQLList(AiServiceModelConfigsType),
+      resolve: (config: Config) => {
+        if (!config.aiServiceModelConfigs) {
+          return [];
+        }
+        return config.aiServiceModelConfigs.map((service) => {
+          return {
+            ...service,
+            modelList: service.modelList.filter((model) => !model.disabled),
+          };
+        });
+      },
     },
     approvedEmailsForAiModels: { type: GraphQLList(GraphQLString) },
     colorTheme: { type: ColorThemeConfigType },

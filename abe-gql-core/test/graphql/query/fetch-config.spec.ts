@@ -111,7 +111,7 @@ describe("config", () => {
               maxTokens: 1000,
               supportsWebSearch: true,
               onlyAdminUse: true,
-              disabled: true,
+              disabled: false,
             },
           ],
         },
@@ -377,5 +377,56 @@ describe("config", () => {
       orgName: "org name",
       loginScreenTitle: "login screen title",
     });
+  });
+
+  it(`Does not serve disabled models`, async () => {
+    const enabledModel = {
+      name: "gpt-4o",
+      maxTokens: 1000,
+      supportsWebSearch: true,
+      onlyAdminUse: true,
+      disabled: false,
+    };
+    const disabledModel = {
+      name: "gpt-3.5-turbo",
+      maxTokens: 1000,
+      supportsWebSearch: true,
+      onlyAdminUse: true,
+      disabled: true,
+    };
+    const config = {
+      aiServiceModelConfigs: [
+        {
+          serviceName: AiServiceNames.OPEN_AI,
+          modelList: [enabledModel, disabledModel],
+        },
+      ],
+    };
+    await ConfigModel.saveConfig(config);
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `query {
+          fetchConfig {
+            aiServiceModelConfigs {
+              serviceName
+              modelList {
+                name
+                maxTokens
+                supportsWebSearch
+                onlyAdminUse
+                disabled
+              }
+            }
+          }
+        }`,
+      });
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.data.fetchConfig.aiServiceModelConfigs[0].modelList
+    ).to.deep.include.members([enabledModel]);
+    expect(
+      response.body.data.fetchConfig.aiServiceModelConfigs[0].modelList
+    ).to.not.deep.include.members([disabledModel]);
   });
 });
