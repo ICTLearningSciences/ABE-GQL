@@ -11,6 +11,26 @@ import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivi
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
+  configs: [
+    {
+      key: "aiServiceModelConfigs",
+      value: [
+        {
+          serviceName: "OPEN_AI",
+          modelList: [
+            {
+              name: "gpt-3.5-turbo",
+              maxTokens: 1000,
+              supportsWebSearch: true,
+              onlyAdminUse: false,
+              disabled: false,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+
   organizations: [
     {
       _id: new ObjectId("5ffdf1231ee2c62330b49e4c"),
@@ -25,26 +45,25 @@ module.exports = {
           value: ["army goal 1"],
         },
         {
-          key: "availableAiServiceModels",
+          key: "approvedEmailsForAiModels",
+          value: ["test@test.com"],
+        },
+        {
+          key: "aiServiceModelConfigs",
           value: [
             {
               serviceName: "OPEN_AI",
-              models: ["gpt-3.5-turbo"],
+              modelList: [
+                {
+                  name: "gpt-3.5-turbo",
+                  maxTokens: 1000,
+                  supportsWebSearch: true,
+                  onlyAdminUse: false,
+                  disabled: false,
+                },
+              ],
             },
           ],
-        },
-        {
-          key: "emailAiServiceModels",
-          value: [
-            {
-              serviceName: "CAMO_GPT",
-              models: ["Minstrel7B"],
-            },
-          ],
-        },
-        {
-          key: "approvedEmailsForAiModels",
-          value: ["test@test.com"],
         },
       ],
     },
