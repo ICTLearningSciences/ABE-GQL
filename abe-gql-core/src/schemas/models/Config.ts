@@ -11,6 +11,7 @@ import {
   GraphQLObjectType,
   GraphQLInputObjectType,
   GraphQLBoolean,
+  GraphQLInt,
 } from "graphql";
 import OrgModel from "./Organization";
 import { SurveyConfig, SurveyConfigType } from "./Config/survey-config";
@@ -133,14 +134,26 @@ export const BannerConfigInputType = new GraphQLInputObjectType({
   },
 });
 
+export interface ServiceModelInfo {
+  name: string;
+  maxTokens: number;
+  supportsWebSearch: boolean;
+  onlyAdminUse?: boolean;
+  disabled?: boolean;
+}
+
+export type AiServiceModelConfigs = {
+  serviceName: AiServiceNames;
+  modelList: ServiceModelInfo[];
+};
+
 export interface Config {
   aiSystemPrompt: string[];
   displayedGoalActivities?: IGoalActivities[];
   exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
-  availableAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
-  emailAiServiceModels?: Partial<Record<AiServiceNames, string[]>>;
+  aiServiceModelConfigs?: AiServiceModelConfigs[];
   approvedEmailsForAiModels?: string[];
   colorTheme?: Partial<ColorThemeConfig>;
   headerTitle?: string;
@@ -158,8 +171,7 @@ export const ConfigKeys: ConfigKey[] = [
   "exampleGoogleDocs",
   "overrideAiModel",
   "defaultAiModel",
-  "availableAiServiceModels",
-  "emailAiServiceModels",
+  "aiServiceModelConfigs",
   "approvedEmailsForAiModels",
   "headerTitle",
   "orgName",
@@ -175,8 +187,7 @@ export function getDefaultConfig(): Config {
     exampleGoogleDocs: [],
     overrideAiModel: undefined,
     defaultAiModel: undefined,
-    availableAiServiceModels: undefined,
-    emailAiServiceModels: undefined,
+    aiServiceModelConfigs: [],
     approvedEmailsForAiModels: [],
     colorTheme: {},
     headerTitle: "",
@@ -227,6 +238,25 @@ export const AvailabeAiServiceModelsType = new GraphQLObjectType({
   },
 });
 
+export const ServiceModelInfoType = new GraphQLObjectType({
+  name: "ServiceModelInfoType",
+  fields: {
+    name: { type: GraphQLString },
+    maxTokens: { type: GraphQLInt },
+    supportsWebSearch: { type: GraphQLBoolean },
+    onlyAdminUse: { type: GraphQLBoolean },
+    disabled: { type: GraphQLBoolean },
+  },
+});
+
+export const AiServiceModelConfigsType = new GraphQLObjectType({
+  name: "AiServiceModelConfigsType",
+  fields: {
+    serviceName: { type: GraphQLString },
+    modelList: { type: GraphQLList(ServiceModelInfoType) },
+  },
+});
+
 export const ConfigType = new GraphQLObjectType({
   name: "Config",
   fields: () => ({
@@ -237,11 +267,19 @@ export const ConfigType = new GraphQLObjectType({
     exampleGoogleDocs: { type: GraphQLList(GraphQLString) },
     overrideAiModel: { type: AiModelServiceType },
     defaultAiModel: { type: AiModelServiceType },
-    availableAiServiceModels: {
-      type: GraphQLList(AvailabeAiServiceModelsType),
-    },
-    emailAiServiceModels: {
-      type: GraphQLList(AvailabeAiServiceModelsType),
+    aiServiceModelConfigs: {
+      type: GraphQLList(AiServiceModelConfigsType),
+      resolve: (config: Config) => {
+        if (!config.aiServiceModelConfigs) {
+          return [];
+        }
+        return config.aiServiceModelConfigs.map((service) => {
+          return {
+            ...service,
+            modelList: service.modelList.filter((model) => !model.disabled),
+          };
+        });
+      },
     },
     approvedEmailsForAiModels: { type: GraphQLList(GraphQLString) },
     colorTheme: { type: ColorThemeConfigType },
