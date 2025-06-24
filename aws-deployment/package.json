@@ -11,7 +11,7 @@
     "deploy:prod": "echo 'WARNING: ENSURE you are running make deploy and not just npm run deploy:prod' && NODE_OPTIONS=--max_old_space_size=4000 sls deploy -s prod --region us-east-1"
   },
   "dependencies": {
-    "@vendia/serverless-express": "^4.10.1",
+    "@codegenie/serverless-express": "^4.16.0",
     "abe-gql-core": "file:../abe-gql-core",
     "jsonschema": "^1.5.0",
     "jsonwebtoken": "^9.0.2",
