@@ -120,4 +120,5 @@ export interface PromptActivityStep extends ActivityBuilderStep {
   jsonResponseData?: string;
   customSystemRole: string;
   webSearch: boolean;
+  editDoc: boolean;
 }

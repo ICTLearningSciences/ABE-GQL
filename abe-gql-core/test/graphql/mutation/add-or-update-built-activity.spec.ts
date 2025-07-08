@@ -64,6 +64,7 @@ export const fullBuiltActivityQueryData = `
                               jumpToStepId
                               promptText
                               responseFormat
+                              editDoc
                               includeChatLogContext
                               includeEssay
                               outputDataType
@@ -458,6 +459,7 @@ describe("update built activity", () => {
             jumpToStepId: "123",
             jsonResponseData: "stringified_json_response_data",
             responseFormat: "response format 1",
+            editDoc: true,
             includeChatLogContext: true,
             includeEssay: true,
             outputDataType: "JSON",
