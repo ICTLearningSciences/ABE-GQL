@@ -45,6 +45,7 @@ describe("store prompt run", () => {
                     jsonValidation
                     includeChatLogContext
                     responseFormat
+                    editDoc
                     webSearch
                     targetAiServiceModel{
                       serviceName
@@ -74,6 +75,7 @@ describe("store prompt run", () => {
               jsonValidation: "store_test_json_validation",
               includeChatLogContext: true,
               responseFormat: "store_test_response_format",
+              editDoc: true,
               targetAiServiceModel: {
                 serviceName: "store_test_service_name",
                 model: "store_test_model",
@@ -107,6 +109,7 @@ describe("store prompt run", () => {
           jsonValidation: "store_test_json_validation",
           includeChatLogContext: true,
           responseFormat: "store_test_response_format",
+          editDoc: true,
           targetAiServiceModel: {
             serviceName: "store_test_service_name",
             model: "store_test_model",
