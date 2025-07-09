@@ -139,6 +139,7 @@ export const PromptActivityStepType = new GraphQLObjectType({
     jsonResponseData: { type: GraphQLString },
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
+    editDoc: { type: GraphQLBoolean },
   }),
 });
 
@@ -205,6 +206,7 @@ export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
     jsonResponseData: { type: GraphQLString },
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
+    editDoc: { type: GraphQLBoolean },
   }),
 });
 
@@ -264,6 +266,7 @@ export const PromptActivityStepSchema = new Schema({
   jsonResponseData: { type: String },
   customSystemRole: { type: String },
   webSearch: { type: Boolean },
+  editDoc: { type: Boolean },
 });
 
 // union the 3 step schemas

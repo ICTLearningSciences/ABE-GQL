@@ -144,6 +144,7 @@ module.exports = {
               stepType: ActivityBuilderStepType.PROMPT,
               promptText: "Please generate a nickname for {{name}}",
               responseFormat: "",
+              editDoc: true,
               jsonResponseData: "stringified_json_response_data",
               includeChatLogContext: true,
               includeEssay: false,
@@ -283,6 +284,7 @@ module.exports = {
             model: "testModel",
           },
           responseFormat: "testResponseFormat",
+          editDoc: true,
         },
         {
           prompts: [
@@ -297,6 +299,7 @@ module.exports = {
           jsonValidation: "json_validation_test",
           includeChatLogContext: true,
           responseFormat: "testResponseFormat",
+          editDoc: true,
         },
       ],
       title: "prompt_title_test",

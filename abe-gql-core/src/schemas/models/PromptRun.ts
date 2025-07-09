@@ -43,6 +43,7 @@ export interface AiPromptStep {
   jsonValidation?: string;
   responseFormat?: string;
   webSearch?: boolean;
+  editDoc?: boolean;
 }
 
 export interface PromptRun {
@@ -99,6 +100,7 @@ export const AiPromptStepType = new GraphQLObjectType({
     jsonValidation: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
+    editDoc: { type: GraphQLBoolean },
   }),
 });
 
@@ -113,6 +115,7 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
     jsonValidation: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
+    editDoc: { type: GraphQLBoolean },
   }),
 });
 
@@ -156,6 +159,7 @@ export const AiPromptStepSchema = new Schema({
   jsonValidation: { type: String, required: false, default: "" },
   responseFormat: { type: String, required: false, default: "" },
   webSearch: { type: Boolean, required: false, default: false },
+  editDoc: { type: Boolean, required: false, default: false },
 });
 
 export const PromptRunType = new GraphQLObjectType({
