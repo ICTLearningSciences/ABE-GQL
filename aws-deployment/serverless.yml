@@ -53,7 +53,7 @@ custom:
   stages:
     dev:
       MONGO_URI: ${ssm:/ABE/dev/mongo_uri, ''}
-      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,.dev.abewriting.org,.dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/,https://ictusc.sharepoint.com/,https://ictusc.sharepoint.com,ictusc.sharepoint.com,https://localhost:3000,https://localhost:3000/,http://localhost:8000,http://localhost:8000/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net,https://dev.meridiomath.org/,https://dev.meridiomath.org"
+      CORS_ORIGIN: "https://dev.abewriting.org,https://dev.abewriting.org/,.dev.abewriting.org,.dev.abewriting.org/,https://api-dev.abewriting.org,https://api-dev.abewriting.org/,http://local.abewriting.org,http://local.abewriting.org/,https://ictusc.sharepoint.com/,https://ictusc.sharepoint.com,ictusc.sharepoint.com,http://localhost:3000,http://localhost:3000/,http://localhost:8000,http://localhost:8000/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net,https://dev.meridiomath.org/,https://dev.meridiomath.org"
       JWT_SECRET: ${ssm:/ABE/dev/jwt_secret, ''}
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenDev"
@@ -119,9 +119,9 @@ functions:
           cors:
             origins:
               - "http://localhost:8000"
-              - "http://localhost:8000"
-              - "https://localhost:3000/"
-              - "https://localhost:3000/"
+              - "http://localhost:8000/"
+              - "http://localhost:3000"
+              - "http://localhost:3000/"
               - "https://dev.meridiomath.org/"
               - "https://dev.meridiomath.org"
               - "https://qa.meridiomath.org/"
