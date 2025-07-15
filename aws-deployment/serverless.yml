@@ -68,7 +68,7 @@ custom:
 
     prod:
       MONGO_URI: ${ssm:/ABE/prod/mongo_uri, ''}
-      CORS_ORIGIN: "https://abewriting.org,https://abewriting.org/,.abewriting.org,.abewriting.org/,https://api.abewriting.org,https://api.abewriting.org/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net,https://prod.meridiomath.org/,https://prod.meridiomath.org"
+      CORS_ORIGIN: "https://abewriting.org,https://abewriting.org/,.abewriting.org,.abewriting.org/,https://api.abewriting.org,https://api.abewriting.org/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net,https://meridiomath.org/,https://meridiomath.org"
       JWT_SECRET: ${ssm:/ABE/prod/jwt_secret, ''}
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenProd"
@@ -126,8 +126,8 @@ functions:
               - "https://dev.meridiomath.org"
               - "https://qa.meridiomath.org/"
               - "https://qa.meridiomath.org"
-              - "https://prod.meridiomath.org/"
-              - "https://prod.meridiomath.org"
+              - "https://meridiomath.org/"
+              - "https://meridiomath.org"
               - "https://abestorage6245.z13.web.core.windows.net/"
               - "https://abestorage6245.z13.web.core.windows.net"
               - "https://*.web.core.windows.net/"
