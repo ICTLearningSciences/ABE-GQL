@@ -4,12 +4,27 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import GdocVersionModel, {
+import {
   GDocVersionObjectType,
-} from "../../schemas/models/GoogleDocVersion";
-import findAll from "./find-all";
+} from "../models/GoogleDocVersion";
+import { GraphQLString, GraphQLNonNull, GraphQLList } from "graphql";
+import * as dotenv from "dotenv";
+import { hydrateDocVersions } from "helpers";
+dotenv.config();
 
-export const docVersions = findAll({
-  nodeType: GDocVersionObjectType,
-  model: GdocVersionModel,
-});
+export const fetchVersionsById = {
+  type: GraphQLList(GDocVersionObjectType),
+  args: {
+    ids: { type: GraphQLNonNull(GraphQLList(GraphQLString)) },
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async resolve(_: any, args: { ids: string[] }) {
+    try {
+      return hydrateDocVersions(args.ids);
+    } catch (e) {
+      console.log(e);
+      throw new Error(String(e));
+    }
+  },
+};
+export default fetchVersionsById;

@@ -8,6 +8,10 @@ import Ajv from "ajv";
 const ajv = new Ajv();
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
+import GDocVersionModel, {
+  VersionType,
+} from "./schemas/models/GoogleDocVersion";
+import { IGDocVersion } from "./schemas/models/GoogleDocVersion";
 dotenv.config();
 
 const queryPayloadSchema = {
@@ -55,4 +59,80 @@ export function idOrNew(id: string): string {
 
 export function isId(id: string): boolean {
   return Boolean(id.match(/^[0-9a-fA-F]{24}$/));
+}
+
+function mergeDocVersions(
+  base: IGDocVersion,
+  delta: Partial<IGDocVersion>
+): IGDocVersion {
+  return { ...base, ...delta };
+}
+
+function validateSessionGroup(sessionGroup: IGDocVersion[]): void {
+  if (sessionGroup[0].versionType !== VersionType.SNAPSHOT) {
+    throw new Error("Session missing a beginning snapshot");
+  }
+}
+
+export async function hydrateDocVersions(
+  versionIds: string[]
+): Promise<IGDocVersion[]> {
+  // Fetch requested versions
+  const requestedVersions: IGDocVersion[] = await GDocVersionModel.find({
+    _id: { $in: versionIds },
+  }).lean();
+  if (!requestedVersions.length) return [];
+
+  // Group by sessionId
+  const sessionGroups: Record<string, IGDocVersion[]> = {};
+  for (const v of requestedVersions) {
+    if (!sessionGroups[v.sessionId]) sessionGroups[v.sessionId] = [];
+    sessionGroups[v.sessionId].push(v);
+  }
+
+  const existingIds = requestedVersions.map((v: IGDocVersion) => String(v._id));
+
+  // fetch and merge missing versions for each session
+  const missingVersions: IGDocVersion[] = await GDocVersionModel.find({
+    sessionId: { $in: Object.keys(sessionGroups) },
+    _id: { $nin: existingIds },
+  }).lean();
+  for (const v of missingVersions) {
+    sessionGroups[v.sessionId].push(v);
+  }
+
+  // For each group, sort by createdAt and merge deltas onto snapshot
+  const hydratedVersions: IGDocVersion[] = [];
+  for (const sessionId of Object.keys(sessionGroups)) {
+    const versions = sessionGroups[sessionId].slice();
+    if (!versions.length) {
+      console.log(`Session ${sessionId} has no versions`);
+      continue;
+    }
+    versions.sort(
+      (a: IGDocVersion, b: IGDocVersion) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    validateSessionGroup(versions);
+    let temp: IGDocVersion | null = null;
+    for (const v of versions) {
+      if (v.versionType === VersionType.SNAPSHOT) {
+        temp = { ...v };
+      } else if (v.versionType === VersionType.DELTA && temp) {
+        temp = mergeDocVersions(temp, v);
+      }
+      // If this version was requested, add the hydrated version
+      if (versionIds.includes(String(v._id)) && temp) {
+        hydratedVersions.push({ ...temp });
+      }
+    }
+  }
+  return hydratedVersions;
+}
+
+// Returns a Date object N minutes in the future from now
+export function dateNMinutesInFuture(n: number): Date {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + n);
+  return now;
 }

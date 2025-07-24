@@ -12,6 +12,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLInt,
 } from "graphql";
 import DateType from "../types/date";
 import {
@@ -82,10 +83,10 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
   name: "GDocVersionInputType",
   fields: () => ({
     docId: { type: GraphQLNonNull(GraphQLString) },
-    plainText: { type: GraphQLNonNull(GraphQLString) },
+    plainText: { type: GraphQLString },
     markdownText: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
-    sessionId: { type: GraphQLString },
+    sessionId: { type: GraphQLNonNull(GraphQLString) },
     sessionIntention: { type: IntentionInputType },
     dayIntention: { type: IntentionInputType },
     documentIntention: { type: IntentionInputType },
@@ -95,6 +96,9 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
+
+    versionType: { type: GraphQLString },
+    sessionVersionNumber: { type: GraphQLInt },
   }),
 });
 
@@ -116,6 +120,8 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     intent: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
+    versionType: { type: GraphQLString },
+    sessionVersionNumber: { type: GraphQLInt },
     createdAt: { type: DateType },
     updatedAt: { type: DateType },
   }),
@@ -137,6 +143,8 @@ export interface IGDocVersion {
   title: string;
   lastModifyingUser: string;
   modifiedTime: Date;
+  versionType: string;
+  sessionVersionNumber: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -148,14 +156,16 @@ export interface GDocVersionModel extends mongoose.Model<IGDocVersion> {
   ): Promise<PaginatedResolveResult<IGDocVersion>>;
 }
 
+export enum VersionType {
+  SNAPSHOT = "SNAPSHOT",
+  DELTA = "DELTA",
+}
+
 export const GDocVersionSchema = new Schema(
   {
     docId: String,
     plainText: String,
-    markdownText: {
-      type: String,
-      default: "",
-    },
+    markdownText: String,
     lastChangedId: String,
     sessionId: String,
     sessionIntention: IntentionSchema,
@@ -174,6 +184,8 @@ export const GDocVersionSchema = new Schema(
     title: String,
     lastModifyingUser: String,
     modifiedTime: Date,
+    versionType: { type: String, default: VersionType.SNAPSHOT },
+    sessionVersionNumber: Number,
   },
   { timestamps: true }
 );
