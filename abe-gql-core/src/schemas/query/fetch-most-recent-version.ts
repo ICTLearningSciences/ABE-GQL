@@ -10,6 +10,7 @@ import GDocVersionModel, {
 } from "../models/GoogleDocVersion";
 import { GraphQLString, GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
+import { hydrateDocVersions } from "../../helpers";
 dotenv.config();
 
 export const fetchMostRecentVersion = {
@@ -24,8 +25,15 @@ export const fetchMostRecentVersion = {
         { docId: args.googleDocId },
         {},
         { sort: { createdAt: -1 } }
+      ).lean();
+      const hydratedVersions = await hydrateDocVersions([mostRecentVersion]);
+      const hydratedVersion = hydratedVersions.find(
+        (v) => `${v._id}` === `${mostRecentVersion._id}`
       );
-      return mostRecentVersion;
+      if (!hydratedVersion) {
+        throw new Error("No version found");
+      }
+      return hydratedVersion;
     } catch (e) {
       console.log(e);
       throw new Error(String(e));

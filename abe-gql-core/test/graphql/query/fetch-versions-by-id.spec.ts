@@ -131,7 +131,6 @@ describe("fetch google doc versions", () => {
           ids: ["5ffdf1231ee2c62320b49aac", "5ffdf1231ee2c62320b49aab"],
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     delete snapshotVersion.createdAt;
     delete snapshotVersion.updatedAt;
@@ -228,7 +227,6 @@ describe("fetch google doc versions", () => {
           ids: ["5ffdf1231ee2c62320b49aab", "5ffdf1231ee2c62320b49aad"],
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     delete snapshotVersion1.createdAt;
     delete snapshotVersion1.updatedAt;

@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import { TimelinePointType } from "../../../src/schemas/models/DocTimeline";
 import { DisplayIcons } from "../../../src/constants";
 import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
+import { VersionType } from "../../../src/schemas/models/GoogleDocVersion";
 const { ObjectId } = mongoose.Types;
 
 module.exports = {
@@ -437,6 +438,7 @@ module.exports = {
       activity: "5ffdf1231ee2c62320b49e9f",
       intent: "intention",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       updatedAt: "2021-01-13T00:00:00.000+00:00",
       createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
@@ -458,6 +460,7 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2001-10-12T20:49:41.599+00:00"),
     },
@@ -478,6 +481,7 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2002-10-12T20:49:41.599+00:00"),
     },
@@ -510,6 +514,7 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2003-10-12T20:49:41.599+00:00"),
     },
@@ -530,6 +535,7 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },
@@ -550,6 +556,7 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },
@@ -570,6 +577,7 @@ module.exports = {
       intent: "intention",
       title: "Test Document",
       lastModifyingUser: "John Doe",
+      versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
     },

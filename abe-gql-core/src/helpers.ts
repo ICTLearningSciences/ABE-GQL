@@ -74,13 +74,28 @@ function validateSessionGroup(sessionGroup: IGDocVersion[]): void {
   }
 }
 
+/**
+ * Hydrates an array of versions.
+ * If the array is an array of version ids, then fetch the versions from the database to hydrate.
+ * @param versionsToHydrate - An array of version ids or version objects.
+ * @returns An array of hydrated IGDocVersion objects.
+ */
 export async function hydrateDocVersions(
-  versionIds: string[]
+  versionsToHydrate: string[] | IGDocVersion[]
 ): Promise<IGDocVersion[]> {
-  // Fetch requested versions
-  const requestedVersions: IGDocVersion[] = await GDocVersionModel.find({
-    _id: { $in: versionIds },
-  }).lean();
+  if (!versionsToHydrate || versionsToHydrate.length === 0) return [];
+  const isStringArray = typeof versionsToHydrate[0] === "string";
+  let requestedVersions: IGDocVersion[];
+  let versionIds: string[];
+  if (isStringArray) {
+    versionIds = versionsToHydrate as string[];
+    requestedVersions = await GDocVersionModel.find({
+      _id: { $in: versionIds },
+    }).lean();
+  } else {
+    requestedVersions = versionsToHydrate as IGDocVersion[];
+    versionIds = requestedVersions.map((v) => `${v._id}`);
+  }
   if (!requestedVersions.length) return [];
 
   // Group by sessionId
@@ -122,7 +137,7 @@ export async function hydrateDocVersions(
         temp = mergeDocVersions(temp, v);
       }
       // If this version was requested, add the hydrated version
-      if (versionIds.includes(String(v._id)) && temp) {
+      if (Boolean(versionIds.find((id) => `${id}` === `${v._id}`)) && temp) {
         hydratedVersions.push({ ...temp });
       }
     }

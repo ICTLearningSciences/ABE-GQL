@@ -9,6 +9,7 @@ import GDocVersionModel, {
 } from "../models/GoogleDocVersion";
 import { GraphQLString, GraphQLNonNull, GraphQLList } from "graphql";
 import * as dotenv from "dotenv";
+import { hydrateDocVersions } from "../../helpers";
 dotenv.config();
 
 export const fetchGoogleDocVersions = {
@@ -19,7 +20,11 @@ export const fetchGoogleDocVersions = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async resolve(_: any, args: any) {
     try {
-      return await GDocVersionModel.find({ docId: args.googleDocId });
+      const versions = await GDocVersionModel.find({
+        docId: args.googleDocId,
+      }).lean();
+      const hydratedVersions = await hydrateDocVersions(versions);
+      return hydratedVersions;
     } catch (e) {
       console.log(e);
       throw new Error(String(e));
