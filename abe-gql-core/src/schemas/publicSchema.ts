@@ -27,7 +27,6 @@ import fetchUserActivityStates from "./query/fetch-user-activity-states";
 import updateUserActivityState from "./mutation/update-user-activity-state";
 import fetchDocTimeline from "./query/fetch-doc-timeline";
 import storeDocTimeline from "./mutation/store-doc-timeline";
-import { docVersions } from "./query/fetch-paged-doc-versions";
 import fetchMostRecentVersion from "./query/fetch-most-recent-version";
 import deleteGoogleDoc from "./mutation/delete-google-doc";
 import addOrUpdateActivity from "./mutation/add-or-update-activity";
@@ -43,6 +42,7 @@ import loginMicrosoft from "./mutation/login-microsoft";
 import loginAmazonCognito from "./mutation/login-amazon-cognito";
 import updateUserInfo from "./mutation/update-user-info";
 import addOrUpdateDoc from "./mutation/add-or-update-google-doc";
+import fetchVersionsById from "./query/fetch-versions-by-id";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -54,10 +54,10 @@ const publicQueries = {
   fetchActivities,
   fetchUserActivityStates,
   fetchDocTimeline,
-  docVersions,
   fetchBuiltActivities,
   fetchBuiltActivityVersions,
   fetchMostRecentVersion,
+  fetchVersionsById,
 };
 
 const getAuthenticatedQueries = () => {
