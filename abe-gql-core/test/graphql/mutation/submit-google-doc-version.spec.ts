@@ -13,6 +13,11 @@ import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
+import GDocVersionModel, {
+  DocVersionCurrentStateModel,
+  VersionType,
+} from "../../../src/schemas/models/GoogleDocVersion";
+import { dateNMinutesInFuture, dateNMinutesInPast } from "../../../src/helpers";
 
 describe("submit google doc version", () => {
   let app: Express;
@@ -58,7 +63,12 @@ describe("submit google doc version", () => {
     expect(response.body).to.have.deep.nested.property("errors[0].message");
   });
 
-  it(`can submit new google doc data`, async () => {
+  it(`creates snapshot version and currentState when no currentState exists`, async () => {
+    const sessionId = "session-no-current-state";
+
+    // Ensure no currentState exists for this session
+    await DocVersionCurrentStateModel.deleteMany({ sessionId });
+
     const newGoogleDocData = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
@@ -72,7 +82,7 @@ describe("submit google doc version", () => {
           bulletPoints: [] as string[],
         },
       ],
-      sessionId: "session-id-123",
+      sessionId,
       sessionIntention: {
         description: "intention",
       },
@@ -88,6 +98,7 @@ describe("submit google doc version", () => {
       lastModifyingUser: "aaron",
       modifiedTime: "2000-10-12T20:49:41.599Z",
     };
+
     const response = await request(app)
       .post("/graphql")
       .send({
@@ -96,55 +107,280 @@ describe("submit google doc version", () => {
                       docId
                       plainText
                       markdownText
+                      versionType
                     }
                 }`,
         variables: {
           googleDocData: newGoogleDocData,
         },
       });
-    expect(response.status).to.equal(200);
 
-    const response2 = await request(app)
+    expect(response.status).to.equal(200);
+    expect(response.body.data.submitGoogleDocVersion.versionType).to.equal(
+      VersionType.SNAPSHOT
+    );
+
+    // Verify currentState was created
+    const currentState = await DocVersionCurrentStateModel.findOne({
+      sessionId,
+    });
+    expect(currentState).to.not.be.null;
+    expect(currentState!.versionType).to.equal(VersionType.SNAPSHOT);
+    expect(currentState!.plainText).to.equal("hello, world!");
+
+    const docVersion = await GDocVersionModel.findOne({ sessionId });
+    expect(docVersion).to.not.be.null;
+    expect(docVersion!.versionType).to.equal(VersionType.SNAPSHOT);
+    expect(docVersion!.plainText).to.equal("hello, world!");
+  });
+
+  it(`creates delta version when currentState exists`, async () => {
+    const sessionId = "session-with-current-state";
+
+    // Clear any existing data for this session
+    await DocVersionCurrentStateModel.deleteMany({ sessionId });
+    await GDocVersionModel.deleteMany({ sessionId });
+
+    // Create initial currentState
+    const initialData = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      plainText: "initial text",
+      markdownText: "# initial text",
+      lastChangedId: "123",
+      chatLog: [
+        {
+          sender: "USER",
+          message: "initial message",
+          displayType: "TEXT",
+          bulletPoints: [] as string[],
+        },
+      ],
+      sessionId,
+      sessionIntention: {
+        description: "initial intention",
+      },
+      documentIntention: {
+        description: "initial document-intention",
+      },
+      dayIntention: {
+        description: "initial day-intention",
+      },
+      activity: "initial activity",
+      intent: "initial intent",
+      title: "initial title",
+      lastModifyingUser: "aaron",
+      modifiedTime: "2000-10-12T20:49:41.599Z",
+      versionType: VersionType.SNAPSHOT,
+    };
+
+    await DocVersionCurrentStateModel.create(initialData);
+    // Submit updated data
+    const updatedData = {
+      ...initialData,
+      plainText: "updated text",
+      markdownText: "# updated text",
+      lastChangedId: "456",
+    };
+
+    const response = await request(app)
       .post("/graphql")
       .send({
-        query: `query FetchGoogleDocVersions($googleDocId: String!) {
-                    fetchGoogleDocVersions(googleDocId: $googleDocId) {
+        query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
+                    submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainText
                       markdownText
+                      versionType
                       lastChangedId
-                      sessionId
-                      sessionIntention {
-                        description
-                      }
-                      documentIntention {
-                        description
-                      }
-                      dayIntention {
-                        description
-                      }
-                      chatLog {
-                        sender
-                        message
-                        displayType
-                        bulletPoints
-                      }
-                      activity
-                      intent
-                      title
-                      lastModifyingUser
-                      modifiedTime
                     }
                 }`,
         variables: {
-          googleDocId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+          googleDocData: updatedData,
         },
       });
-    expect(response2.status).to.equal(200);
-    expect(response2.body.data.fetchGoogleDocVersions).to.deep.include.members([
-      {
-        ...newGoogleDocData,
+    expect(response.status).to.equal(200);
+    expect(response.body.data.submitGoogleDocVersion.versionType).to.equal(
+      VersionType.DELTA
+    );
+    expect(response.body.data.submitGoogleDocVersion.plainText).to.equal(
+      "updated text"
+    );
+    expect(response.body.data.submitGoogleDocVersion.markdownText).to.equal(
+      "# updated text"
+    );
+    expect(response.body.data.submitGoogleDocVersion.lastChangedId).to.equal(
+      "456"
+    );
+
+    // Verify currentState was updated
+    const updatedCurrentState = await DocVersionCurrentStateModel.findOne({
+      sessionId,
+    });
+    expect(updatedCurrentState).to.not.be.null;
+    expect(updatedCurrentState!.plainText).to.equal("updated text");
+    expect(updatedCurrentState!.versionType).to.equal(VersionType.SNAPSHOT);
+
+    const docVersion = await GDocVersionModel.findOne({ sessionId });
+    expect(docVersion).to.not.be.null;
+    expect(docVersion!.versionType).to.equal(VersionType.DELTA);
+    expect(docVersion!.plainText).to.equal("updated text");
+  });
+
+  it(`creates proper delta when currentState exists with many previous deltas`, async () => {
+    const sessionId = "session-with-many-deltas";
+
+    // Clear any existing data for this session
+    await DocVersionCurrentStateModel.deleteMany({ sessionId });
+    await GDocVersionModel.deleteMany({ sessionId });
+
+    // Create initial currentState
+    const initialData = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      plainText: "base text",
+      markdownText: "# base text",
+      lastChangedId: "100",
+      chatLog: [
+        {
+          sender: "USER",
+          message: "base message",
+          displayType: "TEXT",
+          bulletPoints: [] as string[],
+        },
+      ],
+      sessionId,
+      sessionIntention: {
+        description: "base intention",
       },
-    ]);
+      documentIntention: {
+        description: "base document-intention",
+      },
+      dayIntention: {
+        description: "base day-intention",
+      },
+      activity: "base activity",
+      intent: "base intent",
+      title: "base title",
+      lastModifyingUser: "aaron",
+      modifiedTime: "2000-10-12T20:49:41.599Z",
+      versionType: VersionType.SNAPSHOT,
+      createdAt: dateNMinutesInPast(5),
+    };
+
+    await DocVersionCurrentStateModel.create(initialData);
+
+    // Create several delta versions to simulate existing deltas
+    const delta1 = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      sessionId,
+      plainText: "first delta text",
+      versionType: VersionType.SNAPSHOT,
+      createdAt: dateNMinutesInPast(4),
+    };
+
+    const delta2 = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      sessionId,
+      plainText: "second delta text",
+      lastChangedId: "200",
+      versionType: VersionType.DELTA,
+      createdAt: dateNMinutesInPast(3),
+    };
+
+    await GDocVersionModel.create(delta1);
+    await GDocVersionModel.create(delta2);
+
+    // Update currentState to reflect the accumulated changes
+    await DocVersionCurrentStateModel.updateOne(
+      { sessionId },
+      {
+        $set: {
+          plainText: "second delta text",
+          lastChangedId: "200",
+        },
+      }
+    );
+
+    // Now submit a new version that should create another delta
+    const newVersionData = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      plainText: "third delta text",
+      markdownText: "# third delta text",
+      lastChangedId: "300",
+      chatLog: [
+        {
+          sender: "USER",
+          message: "base message",
+          displayType: "TEXT",
+          bulletPoints: [] as string[],
+        },
+      ],
+      sessionId,
+      sessionIntention: {
+        description: "base intention",
+      },
+      documentIntention: {
+        description: "base document-intention",
+      },
+      dayIntention: {
+        description: "base day-intention",
+      },
+      activity: "base activity",
+      intent: "base intent",
+      title: "base title",
+      lastModifyingUser: "aaron",
+      modifiedTime: "2000-10-12T20:49:41.599Z",
+    };
+
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
+                    submitGoogleDocVersion(googleDocData: $googleDocData) {
+                      docId
+                      plainText
+                      markdownText
+                      versionType
+                      lastChangedId
+                    }
+                }`,
+        variables: {
+          googleDocData: newVersionData,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.data.submitGoogleDocVersion.versionType).to.equal(
+      VersionType.DELTA
+    );
+
+    // Verify delta contains only the changed fields compared to current state
+    expect(response.body.data.submitGoogleDocVersion.plainText).to.equal(
+      "third delta text"
+    );
+    expect(response.body.data.submitGoogleDocVersion.markdownText).to.equal(
+      "# third delta text"
+    );
+    expect(response.body.data.submitGoogleDocVersion.lastChangedId).to.equal(
+      "300"
+    );
+
+    // Verify currentState was updated to reflect new changes
+    const finalCurrentState = await DocVersionCurrentStateModel.findOne({
+      sessionId,
+    });
+    expect(finalCurrentState).to.not.be.null;
+    expect(finalCurrentState!.plainText).to.equal("third delta text");
+    expect(finalCurrentState!.lastChangedId).to.equal("300");
+    expect(finalCurrentState!.versionType).to.equal(VersionType.SNAPSHOT);
+
+    // Verify we have the correct number of versions in the database
+    const allVersions = await GDocVersionModel.find({ sessionId });
+    const sortedVersions = allVersions.sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+    );
+    expect(sortedVersions.length).to.equal(3);
+    expect(sortedVersions[0].versionType).to.equal(VersionType.SNAPSHOT);
+    expect(sortedVersions[1].versionType).to.equal(VersionType.DELTA);
+    expect(sortedVersions[2].versionType).to.equal(VersionType.DELTA);
   });
 });

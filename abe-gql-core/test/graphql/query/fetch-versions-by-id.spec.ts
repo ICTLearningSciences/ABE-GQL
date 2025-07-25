@@ -44,7 +44,6 @@ query FetchVersionsById($ids: [String!]!) {
     dayIntention {
       description
     }
-    sessionVersionNumber
     versionType
   }
 }
@@ -96,7 +95,6 @@ describe("fetch google doc versions", () => {
       sessionIntention: { description: "sessionIntention" },
       documentIntention: { description: "documentIntention" },
       dayIntention: { description: "dayIntention" },
-      sessionVersionNumber: 1,
       createdAt: date,
       updatedAt: date,
     };
@@ -170,7 +168,6 @@ describe("fetch google doc versions", () => {
       sessionIntention: { description: "sessionIntention" },
       documentIntention: { description: "documentIntention" },
       dayIntention: { description: "dayIntention" },
-      sessionVersionNumber: 1,
       createdAt: date,
       updatedAt: date,
     };
@@ -199,7 +196,6 @@ describe("fetch google doc versions", () => {
       sessionIntention: { description: "sessionIntention" },
       documentIntention: { description: "documentIntention" },
       dayIntention: { description: "dayIntention" },
-      sessionVersionNumber: 1,
       createdAt: dateNMinutesInFuture(2),
       updatedAt: dateNMinutesInFuture(2),
     };

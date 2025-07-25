@@ -145,9 +145,51 @@ export async function hydrateDocVersions(
   return hydratedVersions;
 }
 
-// Returns a Date object N minutes in the future from now
 export function dateNMinutesInFuture(n: number): Date {
   const now = new Date();
   now.setMinutes(now.getMinutes() + n);
   return now;
+}
+
+export function dateNMinutesInPast(n: number): Date {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - n);
+  return now;
+}
+
+export function getDeltaDoc(
+  base: IGDocVersion,
+  delta: Partial<IGDocVersion>
+): Partial<IGDocVersion> {
+  if (base.docId !== delta.docId) {
+    throw new Error("DocId mismatch");
+  }
+  if (base.sessionId !== delta.sessionId) {
+    throw new Error("SessionId mismatch");
+  }
+  const deltaDoc: Partial<IGDocVersion> = {
+    versionType: VersionType.DELTA,
+    docId: base.docId,
+    sessionId: base.sessionId,
+  };
+  const fieldsToCheck: (keyof IGDocVersion)[] = [
+    "plainText",
+    "markdownText",
+    "lastChangedId",
+    "sessionIntention",
+    "dayIntention",
+    "documentIntention",
+    "chatLog",
+    "activity",
+    "intent",
+    "title",
+  ];
+
+  for (const field of fieldsToCheck) {
+    if (JSON.stringify(delta[field]) !== JSON.stringify(base[field])) {
+      // @ts-expect-error TS2322: Safe to ignore due to keyof indexing limitations
+      deltaDoc[field] = delta[field];
+    }
+  }
+  return deltaDoc;
 }

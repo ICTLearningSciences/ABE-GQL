@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import { GDocVersionObjectType } from "../models/GoogleDocVersion";
 import { GraphQLString, GraphQLNonNull, GraphQLList } from "graphql";
 import * as dotenv from "dotenv";
-import { hydrateDocVersions } from "helpers";
+import { hydrateDocVersions } from "../../helpers";
 dotenv.config();
 
 export const fetchVersionsById = {

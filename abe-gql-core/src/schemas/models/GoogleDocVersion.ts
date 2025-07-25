@@ -12,7 +12,6 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLInt,
 } from "graphql";
 import DateType from "../types/date";
 import {
@@ -96,9 +95,7 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
-
     versionType: { type: GraphQLString },
-    sessionVersionNumber: { type: GraphQLInt },
   }),
 });
 
@@ -121,7 +118,6 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
     versionType: { type: GraphQLString },
-    sessionVersionNumber: { type: GraphQLInt },
     createdAt: { type: DateType },
     updatedAt: { type: DateType },
   }),
@@ -144,7 +140,6 @@ export interface IGDocVersion {
   lastModifyingUser: string;
   modifiedTime: Date;
   versionType: string;
-  sessionVersionNumber: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -185,7 +180,6 @@ export const GDocVersionSchema = new Schema(
     lastModifyingUser: String,
     modifiedTime: Date,
     versionType: { type: String, default: VersionType.SNAPSHOT },
-    sessionVersionNumber: Number,
   },
   { timestamps: true }
 );
@@ -198,3 +192,8 @@ export default mongoose.model<IGDocVersion, GDocVersionModel>(
   "GoogleDocVersion",
   GDocVersionSchema
 );
+
+export const DocVersionCurrentStateModel = mongoose.model<
+  IGDocVersion,
+  GDocVersionModel
+>("DocVersionCurrentState", GDocVersionSchema);
