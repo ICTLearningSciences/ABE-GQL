@@ -11,13 +11,13 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
 import GDocVersionModel, {
   DocVersionCurrentStateModel,
   VersionType,
 } from "../../../src/schemas/models/GoogleDocVersion";
-import { dateNMinutesInFuture, dateNMinutesInPast } from "../../../src/helpers";
+import { dateNMinutesInPast } from "../../../src/helpers";
+import TextDiffPatch from "textdiff-patch";
+import TextDiffCreate from "textdiff-create";
 
 describe("submit google doc version", () => {
   let app: Express;
@@ -188,8 +188,7 @@ describe("submit google doc version", () => {
         query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
-                      plainText
-                      markdownText
+                      plainTextDelta
                       versionType
                       lastChangedId
                     }
@@ -202,12 +201,8 @@ describe("submit google doc version", () => {
     expect(response.body.data.submitGoogleDocVersion.versionType).to.equal(
       VersionType.DELTA
     );
-    expect(response.body.data.submitGoogleDocVersion.plainText).to.equal(
-      "updated text"
-    );
-    expect(response.body.data.submitGoogleDocVersion.markdownText).to.equal(
-      "# updated text"
-    );
+    expect(response.body.data.submitGoogleDocVersion.plainTextDelta).to.not.be
+      .undefined;
     expect(response.body.data.submitGoogleDocVersion.lastChangedId).to.equal(
       "456"
     );
@@ -223,7 +218,96 @@ describe("submit google doc version", () => {
     const docVersion = await GDocVersionModel.findOne({ sessionId });
     expect(docVersion).to.not.be.null;
     expect(docVersion!.versionType).to.equal(VersionType.DELTA);
-    expect(docVersion!.plainText).to.equal("updated text");
+    // Delta versions should NOT have plainText stored, only plainTextDelta
+    expect(docVersion!.plainText).to.be.undefined;
+    expect(docVersion!.plainTextDelta).to.not.be.undefined;
+  });
+
+  it(`delta versions store plainTextDelta instead of plainText`, async () => {
+    const sessionId = "session-test-delta-storage";
+
+    // Clear any existing data for this session
+    await DocVersionCurrentStateModel.deleteMany({ sessionId });
+    await GDocVersionModel.deleteMany({ sessionId });
+
+    // Create initial currentState
+    const initialData = {
+      docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
+      plainText: "Hello world",
+      markdownText: "# Hello world",
+      lastChangedId: "123",
+      chatLog: [
+        {
+          sender: "USER",
+          message: "initial message",
+          displayType: "TEXT",
+          bulletPoints: [] as string[],
+        },
+      ],
+      sessionId,
+      sessionIntention: {
+        description: "initial intention",
+      },
+      documentIntention: {
+        description: "initial document-intention",
+      },
+      dayIntention: {
+        description: "initial day-intention",
+      },
+      activity: "initial activity",
+      intent: "initial intent",
+      title: "initial title",
+      lastModifyingUser: "aaron",
+      modifiedTime: "2000-10-12T20:49:41.599Z",
+      versionType: VersionType.SNAPSHOT,
+    };
+
+    await DocVersionCurrentStateModel.create(initialData);
+
+    // Submit updated data to create a delta
+    const updatedData = {
+      ...initialData,
+      plainText: "Hello world updated",
+      markdownText: "# Hello world updated",
+      lastChangedId: "456",
+    };
+
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
+                    submitGoogleDocVersion(googleDocData: $googleDocData) {
+                      versionType
+                      plainTextDelta
+                    }
+                }`,
+        variables: {
+          googleDocData: updatedData,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.data.submitGoogleDocVersion.versionType).to.equal(
+      VersionType.DELTA
+    );
+
+    // Verify the delta was stored in the database
+    const deltaVersion = await GDocVersionModel.findOne({
+      sessionId,
+      versionType: VersionType.DELTA,
+    });
+    expect(deltaVersion).to.not.be.null;
+
+    // Delta should have plainTextDelta but NO plainText
+    expect(deltaVersion!.plainTextDelta).to.not.be.undefined;
+    expect(deltaVersion!.plainText).to.be.undefined;
+
+    // Verify the plainTextDelta contains valid diff data
+    const deltaData = JSON.parse(deltaVersion!.plainTextDelta);
+    expect(Array.isArray(deltaData)).to.be.true;
+    expect(deltaData.length).to.be.greaterThan(0);
+    const diff = TextDiffCreate(initialData.plainText, updatedData.plainText);
+    expect(diff).to.deep.equal(deltaData);
   });
 
   it(`creates proper delta when currentState exists with many previous deltas`, async () => {
@@ -272,7 +356,9 @@ describe("submit google doc version", () => {
     const delta1 = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       sessionId,
-      plainText: "first delta text",
+      plainTextDelta: JSON.stringify(
+        TextDiffCreate(initialData.plainText, "first delta text")
+      ),
       versionType: VersionType.SNAPSHOT,
       createdAt: dateNMinutesInPast(4),
     };
@@ -280,7 +366,9 @@ describe("submit google doc version", () => {
     const delta2 = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       sessionId,
-      plainText: "second delta text",
+      plainTextDelta: JSON.stringify(
+        TextDiffCreate(initialData.plainText, "second delta text")
+      ),
       lastChangedId: "200",
       versionType: VersionType.DELTA,
       createdAt: dateNMinutesInPast(3),
@@ -337,8 +425,7 @@ describe("submit google doc version", () => {
         query: `mutation SubmitGoogleDocVersion($googleDocData: GDocVersionInputType!) {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
-                      plainText
-                      markdownText
+                      plainTextDelta
                       versionType
                       lastChangedId
                     }
@@ -354,12 +441,8 @@ describe("submit google doc version", () => {
     );
 
     // Verify delta contains only the changed fields compared to current state
-    expect(response.body.data.submitGoogleDocVersion.plainText).to.equal(
-      "third delta text"
-    );
-    expect(response.body.data.submitGoogleDocVersion.markdownText).to.equal(
-      "# third delta text"
-    );
+    expect(response.body.data.submitGoogleDocVersion.plainTextDelta).to.not.be
+      .undefined;
     expect(response.body.data.submitGoogleDocVersion.lastChangedId).to.equal(
       "300"
     );
@@ -382,5 +465,11 @@ describe("submit google doc version", () => {
     expect(sortedVersions[0].versionType).to.equal(VersionType.SNAPSHOT);
     expect(sortedVersions[1].versionType).to.equal(VersionType.DELTA);
     expect(sortedVersions[2].versionType).to.equal(VersionType.DELTA);
+
+    // Verify delta versions don't store plainText, only plainTextDelta
+    expect(sortedVersions[1].plainText).to.be.undefined;
+    expect(sortedVersions[1].plainTextDelta).to.not.be.undefined;
+    expect(sortedVersions[2].plainText).to.be.undefined;
+    expect(sortedVersions[2].plainTextDelta).to.not.be.undefined;
   });
 });
