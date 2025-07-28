@@ -7,6 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import GDocVersionModel, {
   IGDocVersion,
   GDocVersionObjectType,
+  DocVersionCurrentStateModel,
 } from "../models/GoogleDocVersion";
 import { GraphQLString, GraphQLNonNull } from "graphql";
 import * as dotenv from "dotenv";
@@ -21,6 +22,13 @@ export const fetchMostRecentVersion = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async resolve(_: any, args: any): Promise<IGDocVersion> {
     try {
+      const currentState = await DocVersionCurrentStateModel.findOne({
+        docId: args.googleDocId,
+      });
+      if (currentState) {
+        return currentState;
+      }
+      // Backwards Compatibility for older docs that don't have a current state.
       const mostRecentVersion = await GDocVersionModel.findOne(
         { docId: args.googleDocId },
         {},
