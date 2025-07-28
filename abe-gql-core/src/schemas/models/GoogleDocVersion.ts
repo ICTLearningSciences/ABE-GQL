@@ -82,10 +82,12 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
   name: "GDocVersionInputType",
   fields: () => ({
     docId: { type: GraphQLNonNull(GraphQLString) },
-    plainText: { type: GraphQLNonNull(GraphQLString) },
+    plainText: { type: GraphQLString },
+    plainTextDelta: { type: GraphQLString },
     markdownText: { type: GraphQLString },
+    markdownTextDelta: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
-    sessionId: { type: GraphQLString },
+    sessionId: { type: GraphQLNonNull(GraphQLString) },
     sessionIntention: { type: IntentionInputType },
     dayIntention: { type: IntentionInputType },
     documentIntention: { type: IntentionInputType },
@@ -95,6 +97,7 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
+    versionType: { type: GraphQLString },
   }),
 });
 
@@ -104,7 +107,9 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     _id: { type: GraphQLString },
     docId: { type: GraphQLString },
     plainText: { type: GraphQLString },
+    plainTextDelta: { type: GraphQLString },
     markdownText: { type: GraphQLString },
+    markdownTextDelta: { type: GraphQLString },
     lastChangedId: { type: GraphQLString },
     sessionId: { type: GraphQLString },
     sessionIntention: { type: IntentionObjectType },
@@ -116,6 +121,7 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     intent: { type: GraphQLString },
     lastModifyingUser: { type: GraphQLString },
     modifiedTime: { type: DateType },
+    versionType: { type: GraphQLString },
     createdAt: { type: DateType },
     updatedAt: { type: DateType },
   }),
@@ -125,7 +131,9 @@ export interface IGDocVersion {
   _id: string;
   docId: string;
   plainText: string;
+  plainTextDelta: string;
   markdownText?: string;
+  markdownTextDelta?: string;
   lastChangedId: string;
   sessionId: string;
   sessionIntention: IIntention;
@@ -137,6 +145,7 @@ export interface IGDocVersion {
   title: string;
   lastModifyingUser: string;
   modifiedTime: Date;
+  versionType: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -148,14 +157,18 @@ export interface GDocVersionModel extends mongoose.Model<IGDocVersion> {
   ): Promise<PaginatedResolveResult<IGDocVersion>>;
 }
 
+export enum VersionType {
+  SNAPSHOT = "SNAPSHOT",
+  DELTA = "DELTA",
+}
+
 export const GDocVersionSchema = new Schema(
   {
     docId: String,
     plainText: String,
-    markdownText: {
-      type: String,
-      default: "",
-    },
+    plainTextDelta: String,
+    markdownText: String,
+    markdownTextDelta: String,
     lastChangedId: String,
     sessionId: String,
     sessionIntention: IntentionSchema,
@@ -174,6 +187,7 @@ export const GDocVersionSchema = new Schema(
     title: String,
     lastModifyingUser: String,
     modifiedTime: Date,
+    versionType: { type: String, default: VersionType.SNAPSHOT },
   },
   { timestamps: true }
 );
@@ -186,3 +200,8 @@ export default mongoose.model<IGDocVersion, GDocVersionModel>(
   "GoogleDocVersion",
   GDocVersionSchema
 );
+
+export const DocVersionCurrentStateModel = mongoose.model<
+  IGDocVersion,
+  GDocVersionModel
+>("DocVersionCurrentState", GDocVersionSchema);
