@@ -34,6 +34,9 @@ export const fetchMostRecentVersion = {
         {},
         { sort: { createdAt: -1 } }
       ).lean();
+      if (!mostRecentVersion) {
+        return mostRecentVersion;
+      }
       const hydratedVersions = await hydrateDocVersions([mostRecentVersion]);
       const hydratedVersion = hydratedVersions.find(
         (v) => `${v._id}` === `${mostRecentVersion._id}`
