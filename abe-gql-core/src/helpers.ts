@@ -12,6 +12,8 @@ import GDocVersionModel, {
   VersionType,
 } from "./schemas/models/GoogleDocVersion";
 import { IGDocVersion } from "./schemas/models/GoogleDocVersion";
+import TextDiffCreate, { Change } from "textdiff-create";
+import TextDiffPatch from "textdiff-patch";
 dotenv.config();
 
 const queryPayloadSchema = {
@@ -65,7 +67,18 @@ function mergeDocVersions(
   base: IGDocVersion,
   delta: Partial<IGDocVersion>
 ): IGDocVersion {
-  return { ...base, ...delta };
+  const deltaChanges = delta.plainTextDelta
+    ? (JSON.parse(delta.plainTextDelta) as Change[])
+    : ([[0, base.plainText.length]] as Change[]);
+  const markdownDiff = delta.markdownTextDelta
+    ? (JSON.parse(delta.markdownTextDelta) as Change[])
+    : ([[0, base.markdownText?.length || 0]] as Change[]);
+  return {
+    ...base,
+    ...delta,
+    plainText: TextDiffPatch(base.plainText, deltaChanges),
+    markdownText: TextDiffPatch(base.markdownText, markdownDiff),
+  };
 }
 
 function validateSessionGroup(sessionGroup: IGDocVersion[]): void {
@@ -158,23 +171,21 @@ export function dateNMinutesInPast(n: number): Date {
 }
 
 export function getDeltaDoc(
-  base: IGDocVersion,
-  delta: Partial<IGDocVersion>
+  docCurrentState: IGDocVersion,
+  newVersion: IGDocVersion
 ): Partial<IGDocVersion> {
-  if (base.docId !== delta.docId) {
+  if (docCurrentState.docId !== newVersion.docId) {
     throw new Error("DocId mismatch");
   }
-  if (base.sessionId !== delta.sessionId) {
+  if (docCurrentState.sessionId !== newVersion.sessionId) {
     throw new Error("SessionId mismatch");
   }
   const deltaDoc: Partial<IGDocVersion> = {
     versionType: VersionType.DELTA,
-    docId: base.docId,
-    sessionId: base.sessionId,
+    docId: docCurrentState.docId,
+    sessionId: docCurrentState.sessionId,
   };
   const fieldsToCheck: (keyof IGDocVersion)[] = [
-    "plainText",
-    "markdownText",
     "lastChangedId",
     "sessionIntention",
     "dayIntention",
@@ -186,10 +197,23 @@ export function getDeltaDoc(
   ];
 
   for (const field of fieldsToCheck) {
-    if (JSON.stringify(delta[field]) !== JSON.stringify(base[field])) {
+    if (
+      JSON.stringify(newVersion[field]) !==
+      JSON.stringify(docCurrentState[field])
+    ) {
       // @ts-expect-error TS2322: Safe to ignore due to keyof indexing limitations
-      deltaDoc[field] = delta[field];
+      deltaDoc[field] = newVersion[field];
     }
   }
+  const plainDiff = TextDiffCreate(
+    docCurrentState.plainText,
+    newVersion.plainText
+  );
+  const markdownDiff = TextDiffCreate(
+    docCurrentState.markdownText ?? "",
+    newVersion.markdownText ?? ""
+  );
+  deltaDoc.plainTextDelta = JSON.stringify(plainDiff);
+  deltaDoc.markdownTextDelta = JSON.stringify(markdownDiff);
   return deltaDoc;
 }
