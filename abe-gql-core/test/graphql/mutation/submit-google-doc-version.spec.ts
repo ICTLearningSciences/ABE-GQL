@@ -189,6 +189,7 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainTextDelta
+                      markdownTextDelta
                       versionType
                       lastChangedId
                     }
@@ -203,6 +204,8 @@ describe("submit google doc version", () => {
     );
     expect(response.body.data.submitGoogleDocVersion.plainTextDelta).to.not.be
       .undefined;
+    expect(response.body.data.submitGoogleDocVersion.markdownTextDelta).to.not
+      .be.undefined;
     expect(response.body.data.submitGoogleDocVersion.lastChangedId).to.equal(
       "456"
     );
@@ -279,6 +282,7 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       versionType
                       plainTextDelta
+                      markdownTextDelta
                     }
                 }`,
         variables: {
@@ -298,9 +302,11 @@ describe("submit google doc version", () => {
     });
     expect(deltaVersion).to.not.be.null;
 
-    // Delta should have plainTextDelta but NO plainText
+    // Delta should have plainTextDelta and markdownTextDelta but NO plainText or markdownText
     expect(deltaVersion!.plainTextDelta).to.not.be.undefined;
+    expect(deltaVersion!.markdownTextDelta).to.not.be.undefined;
     expect(deltaVersion!.plainText).to.be.undefined;
+    expect(deltaVersion!.markdownText).to.be.undefined;
 
     // Verify the plainTextDelta contains valid diff data
     const deltaData = JSON.parse(deltaVersion!.plainTextDelta);
@@ -308,6 +314,16 @@ describe("submit google doc version", () => {
     expect(deltaData.length).to.be.greaterThan(0);
     const diff = TextDiffCreate(initialData.plainText, updatedData.plainText);
     expect(diff).to.deep.equal(deltaData);
+
+    // Verify the markdownTextDelta contains valid diff data
+    const markdownDeltaData = JSON.parse(deltaVersion!.markdownTextDelta!);
+    expect(Array.isArray(markdownDeltaData)).to.be.true;
+    expect(markdownDeltaData.length).to.be.greaterThan(0);
+    const markdownDiff = TextDiffCreate(
+      initialData.markdownText,
+      updatedData.markdownText
+    );
+    expect(markdownDiff).to.deep.equal(markdownDeltaData);
   });
 
   it(`creates proper delta when currentState exists with many previous deltas`, async () => {
@@ -359,6 +375,9 @@ describe("submit google doc version", () => {
       plainTextDelta: JSON.stringify(
         TextDiffCreate(initialData.plainText, "first delta text")
       ),
+      markdownTextDelta: JSON.stringify(
+        TextDiffCreate(initialData.markdownText, "# first delta text")
+      ),
       versionType: VersionType.SNAPSHOT,
       createdAt: dateNMinutesInPast(4),
     };
@@ -368,6 +387,9 @@ describe("submit google doc version", () => {
       sessionId,
       plainTextDelta: JSON.stringify(
         TextDiffCreate(initialData.plainText, "second delta text")
+      ),
+      markdownTextDelta: JSON.stringify(
+        TextDiffCreate(initialData.markdownText, "# second delta text")
       ),
       lastChangedId: "200",
       versionType: VersionType.DELTA,
@@ -383,6 +405,7 @@ describe("submit google doc version", () => {
       {
         $set: {
           plainText: "second delta text",
+          markdownText: "# second delta text",
           lastChangedId: "200",
         },
       }
@@ -426,6 +449,7 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainTextDelta
+                      markdownTextDelta
                       versionType
                       lastChangedId
                     }
@@ -443,6 +467,8 @@ describe("submit google doc version", () => {
     // Verify delta contains only the changed fields compared to current state
     expect(response.body.data.submitGoogleDocVersion.plainTextDelta).to.not.be
       .undefined;
+    expect(response.body.data.submitGoogleDocVersion.markdownTextDelta).to.not
+      .be.undefined;
     expect(response.body.data.submitGoogleDocVersion.lastChangedId).to.equal(
       "300"
     );
@@ -466,10 +492,14 @@ describe("submit google doc version", () => {
     expect(sortedVersions[1].versionType).to.equal(VersionType.DELTA);
     expect(sortedVersions[2].versionType).to.equal(VersionType.DELTA);
 
-    // Verify delta versions don't store plainText, only plainTextDelta
+    // Verify delta versions don't store plainText or markdownText, only deltas
     expect(sortedVersions[1].plainText).to.be.undefined;
+    expect(sortedVersions[1].markdownText).to.be.undefined;
     expect(sortedVersions[1].plainTextDelta).to.not.be.undefined;
+    expect(sortedVersions[1].markdownTextDelta).to.not.be.undefined;
     expect(sortedVersions[2].plainText).to.be.undefined;
+    expect(sortedVersions[2].markdownText).to.be.undefined;
     expect(sortedVersions[2].plainTextDelta).to.not.be.undefined;
+    expect(sortedVersions[2].markdownTextDelta).to.not.be.undefined;
   });
 });

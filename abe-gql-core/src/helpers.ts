@@ -70,10 +70,14 @@ function mergeDocVersions(
   const deltaChanges = delta.plainTextDelta
     ? (JSON.parse(delta.plainTextDelta) as Change[])
     : ([[0, base.plainText.length]] as Change[]);
+  const markdownDiff = delta.markdownTextDelta
+    ? (JSON.parse(delta.markdownTextDelta) as Change[])
+    : ([[0, base.markdownText?.length || 0]] as Change[]);
   return {
     ...base,
     ...delta,
     plainText: TextDiffPatch(base.plainText, deltaChanges),
+    markdownText: TextDiffPatch(base.markdownText, markdownDiff),
   };
 }
 
@@ -205,6 +209,11 @@ export function getDeltaDoc(
     docCurrentState.plainText,
     newVersion.plainText
   );
+  const markdownDiff = TextDiffCreate(
+    docCurrentState.markdownText ?? "",
+    newVersion.markdownText ?? ""
+  );
   deltaDoc.plainTextDelta = JSON.stringify(plainDiff);
+  deltaDoc.markdownTextDelta = JSON.stringify(markdownDiff);
   return deltaDoc;
 }
