@@ -98,4 +98,7 @@ SectionSchema.index({ instructorId: 1 });
 SectionSchema.index({ sectionCode: 1 });
 SectionSchema.index({ title: 1 });
 
-export default mongoose.model<Section, Model<Section>>("Section", SectionSchema);
+export default mongoose.model<Section, Model<Section>>(
+  "Section",
+  SectionSchema
+);

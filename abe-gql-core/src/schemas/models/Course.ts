@@ -54,7 +54,4 @@ export const CourseSchema = new Schema<Course>(
 CourseSchema.index({ instructorId: 1 });
 CourseSchema.index({ title: 1 });
 
-export default mongoose.model<Course, Model<Course>>(
-  "Course",
-  CourseSchema
-);
+export default mongoose.model<Course, Model<Course>>("Course", CourseSchema);
