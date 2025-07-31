@@ -17,6 +17,7 @@ export interface Assignment extends Document {
   title: string;
   description: string;
   activityIds: string[];
+  instructorId: string;
 }
 
 export const AssignmentType = new GraphQLObjectType({
@@ -26,6 +27,7 @@ export const AssignmentType = new GraphQLObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
+    instructorId: { type: GraphQLString },
   }),
 });
 
@@ -35,6 +37,7 @@ export const AssignmentInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
+    instructorId: { type: GraphQLString },
   }),
 });
 
@@ -43,6 +46,7 @@ export const AssignmentSchema = new Schema<Assignment>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     activityIds: [{ type: String, required: true }],
+    instructorId: { type: String, required: true },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
