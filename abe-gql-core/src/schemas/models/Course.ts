@@ -11,50 +11,23 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
-  GraphQLBoolean,
-  GraphQLInt,
 } from "graphql";
-
-export interface CourseAssignment {
-  assignmentId: string;
-  mandatory: boolean;
-}
 
 export interface Course extends Document {
   title: string;
-  courseCode: string;
   description: string;
   instructorId: string;
-  assignments: CourseAssignment[];
-  numOptionalAssignmentsRequired: number;
+  sectionIds: string[];
 }
-
-export const CourseAssignmentType = new GraphQLObjectType({
-  name: "CourseAssignment",
-  fields: () => ({
-    assignmentId: { type: GraphQLID },
-    mandatory: { type: GraphQLBoolean },
-  }),
-});
-
-export const CourseAssignmentInputType = new GraphQLInputObjectType({
-  name: "CourseAssignmentInputType",
-  fields: () => ({
-    assignmentId: { type: GraphQLID },
-    mandatory: { type: GraphQLBoolean },
-  }),
-});
 
 export const CourseType = new GraphQLObjectType({
   name: "Course",
   fields: () => ({
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
-    courseCode: { type: GraphQLString },
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
-    assignments: { type: new GraphQLList(CourseAssignmentType) },
-    numOptionalAssignmentsRequired: { type: GraphQLInt },
+    sectionIds: { type: new GraphQLList(GraphQLID) },
   }),
 });
 
@@ -62,40 +35,26 @@ export const CourseInputType = new GraphQLInputObjectType({
   name: "CourseInputType",
   fields: () => ({
     title: { type: GraphQLString },
-    courseCode: { type: GraphQLString },
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
-    assignments: { type: new GraphQLList(CourseAssignmentInputType) },
-    numOptionalAssignmentsRequired: { type: GraphQLInt },
+    sectionIds: { type: new GraphQLList(GraphQLID) },
   }),
 });
-
-export const CourseAssignmentSchema = new Schema<CourseAssignment>(
-  {
-    assignmentId: { type: String, required: true },
-    mandatory: { type: Boolean, required: true },
-  },
-  { timestamps: true, collation: { locale: "en", strength: 2 } }
-);
 
 export const CourseSchema = new Schema<Course>(
   {
     title: { type: String, required: true },
-    courseCode: { type: String, required: true },
     description: { type: String, required: true },
     instructorId: { type: String, required: true },
-    assignments: [CourseAssignmentSchema],
-    numOptionalAssignmentsRequired: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
+    sectionIds: [{ type: String, required: true }],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
 CourseSchema.index({ instructorId: 1 });
-CourseSchema.index({ courseCode: 1 });
 CourseSchema.index({ title: 1 });
 
-export default mongoose.model<Course, Model<Course>>("Course", CourseSchema);
+export default mongoose.model<Course, Model<Course>>(
+  "Course",
+  CourseSchema
+);

@@ -14,7 +14,7 @@ import {
 
 export interface InstructorData extends Document {
   userId: string;
-  subjectIds: string[];
+  courseIds: string[];
 }
 
 export const InstructorDataType = new GraphQLObjectType({
@@ -22,7 +22,7 @@ export const InstructorDataType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
-    subjectIds: { type: new GraphQLList(GraphQLID) },
+    courseIds: { type: new GraphQLList(GraphQLID) },
   }),
 });
 
@@ -30,14 +30,14 @@ export const InstructorDataInputType = new GraphQLInputObjectType({
   name: "InstructorDataInputType",
   fields: () => ({
     userId: { type: GraphQLID },
-    subjectIds: { type: new GraphQLList(GraphQLID) },
+    courseIds: { type: new GraphQLList(GraphQLID) },
   }),
 });
 
 export const InstructorDataSchema = new Schema<InstructorData>(
   {
     userId: { type: String, required: true, unique: true },
-    subjectIds: [{ type: String, required: true }],
+    courseIds: [{ type: String, required: true }],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

@@ -13,26 +13,42 @@ import {
   GraphQLList,
 } from "graphql";
 
-export interface EnrolledCourse {
-  courseId: string;
+export interface EnrolledSection {
+  sectionId: string;
   completedAssignmentIds: string[];
 }
 
-export interface EnrolledSubject {
-  subjectId: string;
-  enrolledCourses: EnrolledCourse[];
+export interface EnrolledCourse {
+  courseId: string;
+  enrolledSections: EnrolledSection[];
 }
 
 export interface StudentData extends Document {
   userId: string;
-  enrolledSubjects: EnrolledSubject[];
+  enrolledCourses: EnrolledCourse[];
 }
+
+export const EnrolledSectionType = new GraphQLObjectType({
+  name: "EnrolledSection",
+  fields: () => ({
+    sectionId: { type: GraphQLID },
+    completedAssignmentIds: { type: new GraphQLList(GraphQLID) },
+  }),
+});
+
+export const EnrolledSectionInputType = new GraphQLInputObjectType({
+  name: "EnrolledSectionInputType",
+  fields: () => ({
+    sectionId: { type: GraphQLID },
+    completedAssignmentIds: { type: new GraphQLList(GraphQLID) },
+  }),
+});
 
 export const EnrolledCourseType = new GraphQLObjectType({
   name: "EnrolledCourse",
   fields: () => ({
     courseId: { type: GraphQLID },
-    completedAssignmentIds: { type: new GraphQLList(GraphQLID) },
+    enrolledSections: { type: new GraphQLList(EnrolledSectionType) },
   }),
 });
 
@@ -40,23 +56,7 @@ export const EnrolledCourseInputType = new GraphQLInputObjectType({
   name: "EnrolledCourseInputType",
   fields: () => ({
     courseId: { type: GraphQLID },
-    completedAssignmentIds: { type: new GraphQLList(GraphQLID) },
-  }),
-});
-
-export const EnrolledSubjectType = new GraphQLObjectType({
-  name: "EnrolledSubject",
-  fields: () => ({
-    subjectId: { type: GraphQLID },
-    enrolledCourses: { type: new GraphQLList(EnrolledCourseType) },
-  }),
-});
-
-export const EnrolledSubjectInputType = new GraphQLInputObjectType({
-  name: "EnrolledSubjectInputType",
-  fields: () => ({
-    subjectId: { type: GraphQLID },
-    enrolledCourses: { type: new GraphQLList(EnrolledCourseInputType) },
+    enrolledSections: { type: new GraphQLList(EnrolledSectionInputType) },
   }),
 });
 
@@ -65,7 +65,7 @@ export const StudentDataType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
-    enrolledSubjects: { type: new GraphQLList(EnrolledSubjectType) },
+    enrolledCourses: { type: new GraphQLList(EnrolledCourseType) },
   }),
 });
 
@@ -73,22 +73,22 @@ export const StudentDataInputType = new GraphQLInputObjectType({
   name: "StudentDataInputType",
   fields: () => ({
     userId: { type: GraphQLID },
-    enrolledSubjects: { type: new GraphQLList(EnrolledSubjectInputType) },
+    enrolledCourses: { type: new GraphQLList(EnrolledCourseInputType) },
   }),
 });
 
-export const EnrolledCourseSchema = new Schema<EnrolledCourse>(
+export const EnrolledSectionSchema = new Schema<EnrolledSection>(
   {
-    courseId: { type: String, required: true },
+    sectionId: { type: String, required: true },
     completedAssignmentIds: [{ type: String, default: [] }],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-export const EnrolledSubjectSchema = new Schema<EnrolledSubject>(
+export const EnrolledCourseSchema = new Schema<EnrolledCourse>(
   {
-    subjectId: { type: String, required: true },
-    enrolledCourses: [{ type: EnrolledCourseSchema, default: [] }],
+    courseId: { type: String, required: true },
+    enrolledSections: [{ type: EnrolledSectionSchema, default: [] }],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
@@ -96,7 +96,7 @@ export const EnrolledSubjectSchema = new Schema<EnrolledSubject>(
 export const StudentDataSchema = new Schema<StudentData>(
   {
     userId: { type: String, required: true, unique: true },
-    enrolledSubjects: [{ type: EnrolledSubjectSchema, default: [] }],
+    enrolledCourses: [{ type: EnrolledCourseSchema, default: [] }],
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
