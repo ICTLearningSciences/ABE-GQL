@@ -4,10 +4,18 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLEnumType } from "graphql";
-import UserModel, { User, UserRole, UserType } from "../models/User";
-import StudentDataModel, { StudentData, StudentDataType } from "../models/StudentData";
-import CourseModel, { Course } from "../models/Course";
+import {
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLEnumType,
+} from "graphql";
+import { UserRole } from "../models/User";
+import StudentDataModel, {
+  StudentData,
+  StudentDataType,
+} from "../models/StudentData";
+import CourseModel from "../models/Course";
 
 const EnrollmentActionType = new GraphQLEnumType({
   name: "EnrollmentAction",
@@ -25,7 +33,7 @@ export const modifyCourseEnrollment = {
     action: { type: GraphQLNonNull(EnrollmentActionType) },
   },
   resolve: async (
-    _root: GraphQLObjectType, 
+    _root: GraphQLObjectType,
     args: {
       targetUserId: string;
       courseId: string;
@@ -40,7 +48,9 @@ export const modifyCourseEnrollment = {
       throw new Error("authenticated user required");
     }
 
-    const studentData = await StudentDataModel.findOne({ userId: args.targetUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: args.targetUserId,
+    });
     if (!studentData) {
       throw new Error("student data not found for target user");
     }
@@ -50,10 +60,15 @@ export const modifyCourseEnrollment = {
       throw new Error("course not found");
     }
 
-    if (context.userId !== args.targetUserId && course.instructorId !== context.userId && context.userRole !== UserRole.ADMIN) {
-      throw new Error("unauthorized: requesting user must be target user, course instructor or admin");
+    if (
+      context.userId !== args.targetUserId &&
+      course.instructorId !== context.userId &&
+      context.userRole !== UserRole.ADMIN
+    ) {
+      throw new Error(
+        "unauthorized: requesting user must be target user, course instructor or admin"
+      );
     }
-
 
     const courseIndex = studentData.enrolledCourses.indexOf(args.courseId);
 

@@ -103,7 +103,7 @@ SectionSchema.index({ sectionCode: 1 });
 SectionSchema.index({ title: 1 });
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
-SectionSchema.pre(/^find/, function(this: any) {
+SectionSchema.pre(/^find/, function (this: any) {
   this.where({ deleted: { $ne: true } });
 });
 

@@ -59,7 +59,7 @@ export const AssignmentSchema = new Schema<Assignment>(
 AssignmentSchema.index({ title: 1 });
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
-AssignmentSchema.pre(/^find/, function(this: any) {
+AssignmentSchema.pre(/^find/, function (this: any) {
   this.where({ deleted: { $ne: true } });
 });
 

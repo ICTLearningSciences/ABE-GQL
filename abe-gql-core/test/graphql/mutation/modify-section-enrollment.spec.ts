@@ -100,7 +100,9 @@ describe("modify section enrollment", () => {
     expect(enrollmentData.userId).to.equal(studentUserId);
     expect(enrollmentData.enrolledSections).to.include(sectionId);
 
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     expect(studentData?.enrolledSections).to.include(sectionId);
   });
 
@@ -133,12 +135,16 @@ describe("modify section enrollment", () => {
     expect(enrollmentData.userId).to.equal(studentUserId);
     expect(enrollmentData.enrolledSections).to.include(sectionId);
 
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     expect(studentData?.enrolledSections).to.include(sectionId);
   });
 
   it("allows instructor to remove a student from a section", async () => {
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     studentData?.enrolledSections.push(sectionId);
     await studentData?.save();
 
@@ -170,7 +176,9 @@ describe("modify section enrollment", () => {
     expect(enrollmentData.userId).to.equal(studentUserId);
     expect(enrollmentData.enrolledSections).to.not.include(sectionId);
 
-    const updatedStudentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const updatedStudentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     expect(updatedStudentData?.enrolledSections).to.not.include(sectionId);
   });
 
@@ -203,7 +211,9 @@ describe("modify section enrollment", () => {
     expect(enrollmentData.userId).to.equal(studentUserId);
     expect(enrollmentData.enrolledSections).to.include(sectionId);
 
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     expect(studentData?.enrolledSections).to.include(sectionId);
   });
 
@@ -256,7 +266,9 @@ describe("modify section enrollment", () => {
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
-        e.message.includes("unauthorized: requesting user must be target user, course instructor or admin")
+        e.message.includes(
+          "unauthorized: requesting user must be target user, course instructor or admin"
+        )
       )
     ).to.exist;
   });
@@ -387,7 +399,9 @@ describe("modify section enrollment", () => {
   });
 
   it("throws error when trying to enroll user already enrolled", async () => {
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     studentData?.enrolledSections.push(sectionId);
     await studentData?.save();
 

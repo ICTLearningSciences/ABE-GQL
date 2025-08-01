@@ -55,10 +55,12 @@ describe("modify student assignment progress", () => {
       sectionCode: "TEST001",
       description: "Test Section Description",
       instructorId: instructorUserId,
-      assignments: [{
-        assignmentId: assignmentId,
-        mandatory: true,
-      }],
+      assignments: [
+        {
+          assignmentId: assignmentId,
+          mandatory: true,
+        },
+      ],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
@@ -112,20 +114,22 @@ describe("modify student assignment progress", () => {
         },
       });
 
-    console.log(JSON.stringify(response.body, null, 2));  
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
     const progressData = response.body.data.modifyStudentAssignmentProgress;
     expect(progressData.userId).to.equal(studentUserId);
-    
+
     const assignmentProgress = progressData.assignmentProgress.find(
       (ap: any) => ap.assignmentId === assignmentId
     );
     expect(assignmentProgress).to.exist;
     expect(assignmentProgress.complete).to.be.true;
 
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     const dbProgress = studentData?.assignmentProgress.find(
       (ap) => ap.assignmentId === assignmentId
     );
@@ -169,7 +173,9 @@ describe("modify student assignment progress", () => {
   });
 
   it("allows updating existing assignment progress", async () => {
-    const studentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     studentData?.assignmentProgress.push({
       assignmentId: assignmentId,
       complete: true,
@@ -210,7 +216,9 @@ describe("modify student assignment progress", () => {
     );
     expect(assignmentProgress.complete).to.be.false;
 
-    const updatedStudentData = await StudentDataModel.findOne({ userId: studentUserId });
+    const updatedStudentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
     const dbProgress = updatedStudentData?.assignmentProgress.find(
       (ap) => ap.assignmentId === assignmentId
     );
@@ -304,7 +312,9 @@ describe("modify student assignment progress", () => {
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
-        e.message.includes("unauthorized: requesting user must be target user, course instructor or admin")
+        e.message.includes(
+          "unauthorized: requesting user must be target user, course instructor or admin"
+        )
       )
     ).to.exist;
   });
@@ -434,10 +444,12 @@ describe("modify student assignment progress", () => {
       sectionCode: "TEST002",
       description: "Another Section Description",
       instructorId: instructorUserId,
-      assignments: [{
-        assignmentId: assignmentId,
-        mandatory: true,
-      }],
+      assignments: [
+        {
+          assignmentId: assignmentId,
+          mandatory: true,
+        },
+      ],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
@@ -504,7 +516,9 @@ describe("modify student assignment progress", () => {
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
-        e.message.includes("assignment does not belong to the specified section")
+        e.message.includes(
+          "assignment does not belong to the specified section"
+        )
       )
     ).to.exist;
   });

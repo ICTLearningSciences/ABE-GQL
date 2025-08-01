@@ -48,6 +48,7 @@ import createNewInstructor from "./mutation/create-new-instructor";
 import modifyCourseEnrollment from "./mutation/modify-course-enrollment";
 import modifySectionEnrollment from "./mutation/modify-section-enrollment";
 import modifyStudentAssignmentProgress from "./mutation/modify-student-assignment-progress";
+import addOrUpdateCourse from "./mutation/add-or-update-course";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -89,6 +90,7 @@ const publicMutations = {
   modifyCourseEnrollment,
   modifySectionEnrollment,
   modifyStudentAssignmentProgress,
+  addOrUpdateCourse,
 };
 
 const contentManagerMutations = {

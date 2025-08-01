@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -14,7 +14,8 @@ import {
   GraphQLBoolean,
 } from "graphql";
 
-export interface Course extends Document {
+export interface Course {
+  _id: string;
   title: string;
   description: string;
   instructorId: string;
@@ -37,6 +38,7 @@ export const CourseType = new GraphQLObjectType({
 export const CourseInputType = new GraphQLInputObjectType({
   name: "CourseInputType",
   fields: () => ({
+    _id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
@@ -60,7 +62,7 @@ CourseSchema.index({ instructorId: 1 });
 CourseSchema.index({ title: 1 });
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
-CourseSchema.pre(/^find/, function(this: any) {
+CourseSchema.pre(/^find/, function (this: any) {
   this.where({ deleted: { $ne: true } });
 });
 

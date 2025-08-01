@@ -5,8 +5,11 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import { GraphQLObjectType, GraphQLNonNull, GraphQLID } from "graphql";
-import UserModel, { User, EducationalRole } from "../models/User";
-import StudentDataModel, { StudentData, StudentDataType } from "../models/StudentData";
+import UserModel, { EducationalRole } from "../models/User";
+import StudentDataModel, {
+  StudentData,
+  StudentDataType,
+} from "../models/StudentData";
 
 export const createNewStudent = {
   type: StudentDataType,
@@ -24,7 +27,9 @@ export const createNewStudent = {
       throw new Error("user not found");
     }
 
-    const existingStudentData = await StudentDataModel.findOne({ userId: args.userId });
+    const existingStudentData = await StudentDataModel.findOne({
+      userId: args.userId,
+    });
     if (existingStudentData) {
       throw new Error("student data already exists for this user");
     }
