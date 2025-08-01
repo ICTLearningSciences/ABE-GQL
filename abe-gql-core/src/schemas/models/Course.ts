@@ -11,6 +11,7 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql";
 
 export interface Course extends Document {
@@ -18,6 +19,7 @@ export interface Course extends Document {
   description: string;
   instructorId: string;
   sectionIds: string[];
+  deleted: boolean;
 }
 
 export const CourseType = new GraphQLObjectType({
@@ -28,6 +30,7 @@ export const CourseType = new GraphQLObjectType({
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
     sectionIds: { type: new GraphQLList(GraphQLID) },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -38,6 +41,7 @@ export const CourseInputType = new GraphQLInputObjectType({
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
     sectionIds: { type: new GraphQLList(GraphQLID) },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -47,11 +51,17 @@ export const CourseSchema = new Schema<Course>(
     description: { type: String, required: true },
     instructorId: { type: String, required: true },
     sectionIds: [{ type: String, required: true }],
+    deleted: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
 CourseSchema.index({ instructorId: 1 });
 CourseSchema.index({ title: 1 });
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+CourseSchema.pre(/^find/, function(this: any) {
+  this.where({ deleted: { $ne: true } });
+});
 
 export default mongoose.model<Course, Model<Course>>("Course", CourseSchema);

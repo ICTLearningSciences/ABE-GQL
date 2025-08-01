@@ -11,6 +11,7 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql";
 
 export interface Assignment extends Document {
@@ -18,6 +19,7 @@ export interface Assignment extends Document {
   description: string;
   activityIds: string[];
   instructorId: string;
+  deleted: boolean;
 }
 
 export const AssignmentType = new GraphQLObjectType({
@@ -28,6 +30,7 @@ export const AssignmentType = new GraphQLObjectType({
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
     instructorId: { type: GraphQLString },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -38,6 +41,7 @@ export const AssignmentInputType = new GraphQLInputObjectType({
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
     instructorId: { type: GraphQLString },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -47,11 +51,17 @@ export const AssignmentSchema = new Schema<Assignment>(
     description: { type: String, required: true },
     activityIds: [{ type: String, required: true }],
     instructorId: { type: String, required: true },
+    deleted: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
 AssignmentSchema.index({ title: 1 });
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+AssignmentSchema.pre(/^find/, function(this: any) {
+  this.where({ deleted: { $ne: true } });
+});
 
 export default mongoose.model<Assignment, Model<Assignment>>(
   "Assignment",

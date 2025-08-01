@@ -27,6 +27,7 @@ export interface Section extends Document {
   instructorId: string;
   assignments: SectionAssignment[];
   numOptionalAssignmentsRequired: number;
+  deleted: boolean;
 }
 
 export const SectionAssignmentType = new GraphQLObjectType({
@@ -55,6 +56,7 @@ export const SectionType = new GraphQLObjectType({
     instructorId: { type: GraphQLID },
     assignments: { type: new GraphQLList(SectionAssignmentType) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -67,6 +69,7 @@ export const SectionInputType = new GraphQLInputObjectType({
     instructorId: { type: GraphQLID },
     assignments: { type: new GraphQLList(SectionAssignmentInputType) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -90,6 +93,7 @@ export const SectionSchema = new Schema<Section>(
       required: true,
       default: 0,
     },
+    deleted: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
@@ -97,6 +101,11 @@ export const SectionSchema = new Schema<Section>(
 SectionSchema.index({ instructorId: 1 });
 SectionSchema.index({ sectionCode: 1 });
 SectionSchema.index({ title: 1 });
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+SectionSchema.pre(/^find/, function(this: any) {
+  this.where({ deleted: { $ne: true } });
+});
 
 export default mongoose.model<Section, Model<Section>>(
   "Section",
