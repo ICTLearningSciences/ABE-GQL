@@ -13,17 +13,19 @@ import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
-import SectionModel from "../../../src/schemas/models/Section";
+import AssignmentModel from "../../../src/schemas/models/Assignment";
 import CourseModel from "../../../src/schemas/models/Course";
+import SectionModel from "../../../src/schemas/models/Section";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 import mongoose from "mongoose";
 
 const { ObjectId } = mongoose.Types;
 
-describe("add or update section", () => {
+describe("add or update assignment", () => {
   let app: Express;
   let instructorUserId: string;
   let courseId: string;
+  let assignmentId: string;
   let sectionId: string;
 
   beforeEach(async () => {
@@ -33,6 +35,7 @@ describe("add or update section", () => {
 
     instructorUserId = "5ffdf1231ee2c62320b49a99";
     courseId = new ObjectId().toString();
+    assignmentId = new ObjectId().toString();
     sectionId = new ObjectId().toString();
 
     await InstructorDataModel.create({
@@ -45,7 +48,7 @@ describe("add or update section", () => {
       title: "Test Course",
       description: "Test Description",
       instructorId: instructorUserId,
-      sectionIds: [],
+      sectionIds: [sectionId],
       deleted: false,
     });
   });
@@ -55,25 +58,20 @@ describe("add or update section", () => {
     await mongoUnit.drop();
   });
 
-  it("allows instructor to create a new section", async () => {
+  it("allows instructor to create a new assignment", async () => {
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
             title
-            sectionCode
             description
+            activityIds
             instructorId
-            assignments {
-              assignmentId
-              mandatory
-            }
-            numOptionalAssignmentsRequired
             deleted
           }
         }`,
@@ -82,23 +80,19 @@ describe("add or update section", () => {
           action: "CREATE",
         },
       });
+
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const sectionData = response.body.data.addOrUpdateSection;
-    expect(sectionData.title).to.equal("New Section");
-    expect(sectionData.sectionCode).to.equal("");
-    expect(sectionData.description).to.equal("");
-    expect(sectionData.instructorId).to.equal(instructorUserId);
-    expect(sectionData.assignments).to.be.an("array").that.is.empty;
-    expect(sectionData.numOptionalAssignmentsRequired).to.equal(0);
-    expect(sectionData.deleted).to.be.false;
-
-    const updatedCourse = await CourseModel.findById(courseId);
-    expect(updatedCourse?.sectionIds).to.include(sectionData._id);
+    const assignmentData = response.body.data.addOrUpdateAssignment;
+    expect(assignmentData.title).to.equal("");
+    expect(assignmentData.description).to.equal("");
+    expect(assignmentData.instructorId).to.equal(instructorUserId);
+    expect(assignmentData.activityIds).to.be.an("array").that.is.empty;
+    expect(assignmentData.deleted).to.be.false;
   });
 
-  it("allows admin to create a new section even without instructor data", async () => {
+  it("allows admin to create a new assignment even without instructor data", async () => {
     const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);
 
@@ -106,8 +100,8 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
             title
             instructorId
@@ -122,19 +116,17 @@ describe("add or update section", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const sectionData = response.body.data.addOrUpdateSection;
-    expect(sectionData.instructorId).to.equal(adminUserId);
+    const assignmentData = response.body.data.addOrUpdateAssignment;
+    expect(assignmentData.instructorId).to.equal(adminUserId);
   });
 
-  it("allows instructor to modify their own section", async () => {
-    await SectionModel.create({
-      _id: sectionId,
-      title: "Original Section",
-      sectionCode: "ORIG001",
+  it("allows instructor to modify their own assignment", async () => {
+    await AssignmentModel.create({
+      _id: assignmentId,
+      title: "Original Assignment",
       description: "Original Description",
+      activityIds: [],
       instructorId: instructorUserId,
-      assignments: [],
-      numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
 
@@ -144,51 +136,59 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $assignmentData: AssignmentInputType, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, assignmentData: $assignmentData, action: $action) {
             _id
             title
-            sectionCode
             description
             instructorId
           }
         }`,
         variables: {
           courseId: courseId,
-          sectionData: {
-            _id: sectionId,
-            title: "Updated Section",
-            sectionCode: "UPD001",
+          assignmentData: {
+            _id: assignmentId,
+            title: "Updated Assignment",
             description: "Updated Description",
           },
           action: "MODIFY",
         },
       });
+
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const sectionData = response.body.data.addOrUpdateSection;
-    expect(sectionData.title).to.equal("Updated Section");
-    expect(sectionData.sectionCode).to.equal("UPD001");
-    expect(sectionData.description).to.equal("Updated Description");
+    const assignmentData = response.body.data.addOrUpdateAssignment;
+    expect(assignmentData.title).to.equal("Updated Assignment");
+    expect(assignmentData.description).to.equal("Updated Description");
 
-    const updatedSection = await SectionModel.findById(sectionId);
-    expect(updatedSection?.title).to.equal("Updated Section");
-    expect(updatedSection?.sectionCode).to.equal("UPD001");
+    const updatedAssignment = await AssignmentModel.findById(assignmentId);
+    expect(updatedAssignment?.title).to.equal("Updated Assignment");
+    expect(updatedAssignment?.description).to.equal("Updated Description");
   });
 
-  it("allows instructor to delete their own section", async () => {
-    const course = await CourseModel.findById(courseId);
-    course?.sectionIds.push(sectionId);
-    await course?.save();
+  it("allows instructor to delete their own assignment and removes it from sections", async () => {
+    await AssignmentModel.create({
+      _id: assignmentId,
+      title: "Assignment to Delete",
+      description: "Assignment Description",
+      activityIds: [],
+      instructorId: instructorUserId,
+      deleted: false,
+    });
 
     await SectionModel.create({
       _id: sectionId,
-      title: "Section to Delete",
-      sectionCode: "DEL001",
-      description: "Section Description",
+      title: "Test Section",
+      sectionCode: "TEST001",
+      description: "Test Description",
       instructorId: instructorUserId,
-      assignments: [],
+      assignments: [
+        {
+          assignmentId: assignmentId,
+          mandatory: true,
+        },
+      ],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
@@ -199,8 +199,8 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $assignmentData: AssignmentInputType, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, assignmentData: $assignmentData, action: $action) {
             _id
             title
             deleted
@@ -208,8 +208,8 @@ describe("add or update section", () => {
         }`,
         variables: {
           courseId: courseId,
-          sectionData: {
-            _id: sectionId,
+          assignmentData: {
+            _id: assignmentId,
           },
           action: "DELETE",
         },
@@ -218,25 +218,25 @@ describe("add or update section", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const sectionData = response.body.data.addOrUpdateSection;
-    expect(sectionData.deleted).to.be.true;
+    const assignmentData = response.body.data.addOrUpdateAssignment;
+    expect(assignmentData.deleted).to.be.true;
 
-    const deletedSection = await SectionModel.findOne({ _id: sectionId });
-    expect(deletedSection).to.not.exist;
+    const deletedAssignment = await AssignmentModel.findOne({
+      _id: assignmentId,
+    });
+    expect(deletedAssignment).to.not.exist;
 
-    const updatedCourse = await CourseModel.findById(courseId);
-    expect(updatedCourse?.sectionIds).to.not.include(sectionId);
+    const updatedSection = await SectionModel.findById(sectionId);
+    expect(updatedSection?.assignments).to.be.an("array").that.is.empty;
   });
 
-  it("allows admin to modify any section", async () => {
-    await SectionModel.create({
-      _id: sectionId,
-      title: "Original Section",
-      sectionCode: "ORIG001",
+  it("allows admin to modify any assignment", async () => {
+    await AssignmentModel.create({
+      _id: assignmentId,
+      title: "Original Assignment",
       description: "Original Description",
+      activityIds: [],
       instructorId: instructorUserId,
-      assignments: [],
-      numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
 
@@ -247,19 +247,19 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $assignmentData: AssignmentInputType, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, assignmentData: $assignmentData, action: $action) {
             _id
             title
-            sectionCode
+            description
           }
         }`,
         variables: {
           courseId: courseId,
-          sectionData: {
-            _id: sectionId,
-            title: "Admin Updated Section",
-            sectionCode: "ADM001",
+          assignmentData: {
+            _id: assignmentId,
+            title: "Admin Updated Assignment",
+            description: "Admin Updated Description",
           },
           action: "MODIFY",
         },
@@ -268,11 +268,11 @@ describe("add or update section", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const sectionData = response.body.data.addOrUpdateSection;
-    expect(sectionData.title).to.equal("Admin Updated Section");
+    const assignmentData = response.body.data.addOrUpdateAssignment;
+    expect(assignmentData.title).to.equal("Admin Updated Assignment");
   });
 
-  it("throws error when non-instructor tries to create section", async () => {
+  it("throws error when non-instructor tries to create assignment", async () => {
     const regularUserId = "5ffdf1231ee2c62320b49b99";
     const token = await getToken(regularUserId, UserRole.USER);
 
@@ -280,8 +280,8 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
           }
         }`,
@@ -299,12 +299,12 @@ describe("add or update section", () => {
     ).to.exist;
   });
 
-  it("throws error when non-authenticated user tries to create section", async () => {
+  it("throws error when non-authenticated user tries to create assignment", async () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
           }
         }`,
@@ -329,8 +329,8 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
           }
         }`,
@@ -348,7 +348,7 @@ describe("add or update section", () => {
     ).to.exist;
   });
 
-  it("throws error when instructor tries to modify another instructor's course sections", async () => {
+  it("throws error when instructor tries to modify another instructor's course assignments", async () => {
     const anotherInstructorId = "5ffdf1231ee2c62320b49c99";
     const anotherCourseId = new ObjectId().toString();
 
@@ -367,8 +367,8 @@ describe("add or update section", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
           }
         }`,
@@ -382,27 +382,70 @@ describe("add or update section", () => {
     expect(
       response.body.errors.find((e: any) =>
         e.message.includes(
-          "unauthorized: only course instructor or admin can modify sections"
+          "unauthorized: only course instructor or admin can modify assignments"
         )
       )
     ).to.exist;
   });
 
-  it("throws error when section not found for modify/delete", async () => {
+  it("throws error when instructor tries to modify another instructor's assignment", async () => {
+    const anotherInstructorId = "5ffdf1231ee2c62320b49c99";
+
+    await AssignmentModel.create({
+      _id: assignmentId,
+      title: "Another Instructor's Assignment",
+      description: "Assignment Description",
+      activityIds: [],
+      instructorId: anotherInstructorId,
+      deleted: false,
+    });
+
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $assignmentData: AssignmentInputType, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, assignmentData: $assignmentData, action: $action) {
             _id
           }
         }`,
         variables: {
           courseId: courseId,
-          sectionData: {
+          assignmentData: {
+            _id: assignmentId,
+            title: "Hacked Title",
+          },
+          action: "MODIFY",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes(
+          "Only owning instructor or admins can modify this assignment"
+        )
+      )
+    ).to.exist;
+  });
+
+  it("throws error when assignment not found for modify/delete", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $assignmentData: AssignmentInputType, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, assignmentData: $assignmentData, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          assignmentData: {
             _id: "000000000000000000000000",
           },
           action: "MODIFY",
@@ -412,20 +455,20 @@ describe("add or update section", () => {
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
-        e.message.includes("section not found")
+        e.message.includes("assignment not found")
       )
     ).to.exist;
   });
 
-  it("throws error when sectionData is missing for modify action", async () => {
+  it("throws error when assignmentData is missing for modify action", async () => {
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
           }
         }`,
@@ -439,21 +482,21 @@ describe("add or update section", () => {
     expect(
       response.body.errors.find((e: any) =>
         e.message.includes(
-          "section data with _id is required for MODIFY and DELETE actions"
+          "assignment data with _id is required for MODIFY and DELETE actions"
         )
       )
     ).to.exist;
   });
 
-  it("throws error when sectionData is missing for delete action", async () => {
+  it("throws error when assignmentData is missing for delete action", async () => {
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation AddOrUpdateSection($courseId: ID!, $action: SectionAction!) {
-          addOrUpdateSection(courseId: $courseId, action: $action) {
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, action: $action) {
             _id
           }
         }`,
@@ -467,7 +510,7 @@ describe("add or update section", () => {
     expect(
       response.body.errors.find((e: any) =>
         e.message.includes(
-          "section data with _id is required for MODIFY and DELETE actions"
+          "assignment data with _id is required for MODIFY and DELETE actions"
         )
       )
     ).to.exist;

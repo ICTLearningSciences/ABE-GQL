@@ -11,16 +11,17 @@ import {
   GraphQLID,
 } from "graphql";
 import { UserRole } from "../models/User";
-import SectionModel, {
-  Section,
-  SectionType,
-  SectionInputType,
-} from "../models/Section";
+import AssignmentModel, {
+  Assignment,
+  AssignmentType,
+  AssignmentInputType,
+} from "../models/Assignment";
 import CourseModel from "../models/Course";
+import SectionModel from "../models/Section";
 import InstructorDataModel from "../models/InstructorData";
 
-const SectionActionType = new GraphQLEnumType({
-  name: "SectionAction",
+const AssignmentActionType = new GraphQLEnumType({
+  name: "AssignmentAction",
   values: {
     CREATE: { value: "CREATE" },
     MODIFY: { value: "MODIFY" },
@@ -28,25 +29,25 @@ const SectionActionType = new GraphQLEnumType({
   },
 });
 
-export const addOrUpdateSection = {
-  type: SectionType,
+export const addOrUpdateAssignment = {
+  type: AssignmentType,
   args: {
     courseId: { type: GraphQLNonNull(GraphQLID) },
-    sectionData: { type: SectionInputType },
-    action: { type: GraphQLNonNull(SectionActionType) },
+    assignmentData: { type: AssignmentInputType },
+    action: { type: GraphQLNonNull(AssignmentActionType) },
   },
   resolve: async (
     _root: GraphQLObjectType,
     args: {
       courseId: string;
-      sectionData?: Section;
+      assignmentData?: Assignment;
       action: "CREATE" | "MODIFY" | "DELETE";
     },
     context: {
       userId: string;
       userRole: UserRole;
     }
-  ): Promise<Section> => {
+  ): Promise<Assignment> => {
     if (!context.userId) {
       throw new Error("authenticated user required");
     }
@@ -68,73 +69,76 @@ export const addOrUpdateSection = {
       context.userRole !== UserRole.ADMIN
     ) {
       throw new Error(
-        "unauthorized: only course instructor or admin can modify sections"
+        "unauthorized: only course instructor or admin can modify assignments"
       );
     }
 
     if (args.action === "CREATE") {
-      const newSection = new SectionModel({
-        title: "New Section",
-        sectionCode: "",
+      const newAssignment = new AssignmentModel({
+        title: "",
         description: "",
+        activityIds: [],
         instructorId: context.userId,
-        assignments: [],
-        numOptionalAssignmentsRequired: 0,
         deleted: false,
       });
 
-      await newSection.save();
-
-      course.sectionIds.push(newSection._id.toString());
-      await course.save();
-
-      return newSection;
+      await newAssignment.save();
+      return newAssignment;
     }
 
-    if (!args.sectionData || !args.sectionData._id) {
+    if (!args.assignmentData || !args.assignmentData._id) {
       throw new Error(
-        "section data with _id is required for MODIFY and DELETE actions"
+        "assignment data with _id is required for MODIFY and DELETE actions"
       );
     }
 
-    const section = await SectionModel.findById(args.sectionData._id);
-    if (!section) {
-      throw new Error("section not found");
+    const assignment = await AssignmentModel.findById(args.assignmentData._id);
+    if (!assignment) {
+      throw new Error("assignment not found");
+    }
+
+    if (
+      assignment.instructorId !== context.userId &&
+      context.userRole !== UserRole.ADMIN
+    ) {
+      throw new Error(
+        "Only owning instructor or admins can modify this assignment"
+      );
     }
 
     if (args.action === "DELETE") {
-      section.deleted = true;
-      await section.save();
+      assignment.deleted = true;
+      await assignment.save();
 
-      const sectionIndex = course.sectionIds.indexOf(args.sectionData._id);
-      if (sectionIndex !== -1) {
-        course.sectionIds.splice(sectionIndex, 1);
-        await course.save();
-      }
+      // Remove assignment from all sections owned by the course instructor
+      await SectionModel.updateMany(
+        { instructorId: course.instructorId },
+        { $pull: { assignments: { assignmentId: args.assignmentData._id } } }
+      );
 
-      return section;
+      return assignment;
     }
 
     if (args.action === "MODIFY") {
-      if (!args.sectionData) {
-        throw new Error("sectionData is required for MODIFY action");
+      if (!args.assignmentData) {
+        throw new Error("assignmentData is required for MODIFY action");
       }
 
-      const updatedSection = await SectionModel.findByIdAndUpdate(
-        args.sectionData._id,
-        { $set: args.sectionData },
+      const updatedAssignment = await AssignmentModel.findByIdAndUpdate(
+        args.assignmentData._id,
+        { $set: args.assignmentData },
         { new: true }
       );
 
-      if (!updatedSection) {
-        throw new Error("failed to update section");
+      if (!updatedAssignment) {
+        throw new Error("failed to update assignment");
       }
 
-      return updatedSection;
+      return updatedAssignment;
     }
 
     throw new Error("invalid action");
   },
 };
 
-export default addOrUpdateSection;
+export default addOrUpdateAssignment;

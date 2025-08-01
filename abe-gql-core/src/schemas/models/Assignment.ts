@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -14,7 +14,8 @@ import {
   GraphQLBoolean,
 } from "graphql";
 
-export interface Assignment extends Document {
+export interface Assignment {
+  _id: string;
   title: string;
   description: string;
   activityIds: string[];
@@ -37,6 +38,7 @@ export const AssignmentType = new GraphQLObjectType({
 export const AssignmentInputType = new GraphQLInputObjectType({
   name: "AssignmentInputType",
   fields: () => ({
+    _id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
@@ -47,11 +49,11 @@ export const AssignmentInputType = new GraphQLInputObjectType({
 
 export const AssignmentSchema = new Schema<Assignment>(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    title: { type: String, default: "" },
+    description: { type: String, default: "" },
     activityIds: [{ type: String, required: true }],
     instructorId: { type: String, required: true },
-    deleted: { type: Boolean, required: true, default: false },
+    deleted: { type: Boolean, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
