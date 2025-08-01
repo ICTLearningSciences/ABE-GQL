@@ -43,6 +43,11 @@ import loginAmazonCognito from "./mutation/login-amazon-cognito";
 import updateUserInfo from "./mutation/update-user-info";
 import addOrUpdateDoc from "./mutation/add-or-update-google-doc";
 import fetchVersionsById from "./query/fetch-versions-by-id";
+import createNewStudent from "./mutation/create-new-student";
+import createNewInstructor from "./mutation/create-new-instructor";
+import modifyCourseEnrollment from "./mutation/modify-course-enrollment";
+import modifySectionEnrollment from "./mutation/modify-section-enrollment";
+import modifyStudentAssignmentProgress from "./mutation/modify-student-assignment-progress";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -79,6 +84,11 @@ const publicMutations = {
   loginAmazonCognito,
   updateUserInfo,
   addOrUpdateDoc,
+  createNewStudent,
+  createNewInstructor,
+  modifyCourseEnrollment,
+  modifySectionEnrollment,
+  modifyStudentAssignmentProgress,
 };
 
 const contentManagerMutations = {
