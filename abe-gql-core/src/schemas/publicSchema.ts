@@ -51,6 +51,7 @@ import modifyStudentAssignmentProgress from "./mutation/modify-student-assignmen
 import addOrUpdateCourse from "./mutation/add-or-update-course";
 import addOrUpdateSection from "./mutation/add-or-update-section";
 import addOrUpdateAssignment from "./mutation/add-or-update-assignment";
+import fetchCourses from "./query/fetch-courses";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -66,6 +67,7 @@ const publicQueries = {
   fetchBuiltActivityVersions,
   fetchMostRecentVersion,
   fetchVersionsById,
+  fetchCourses,
 };
 
 const getAuthenticatedQueries = () => {
