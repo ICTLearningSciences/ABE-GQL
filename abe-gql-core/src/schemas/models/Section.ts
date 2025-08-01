@@ -20,7 +20,8 @@ export interface SectionAssignment {
   mandatory: boolean;
 }
 
-export interface Section extends Document {
+export interface Section {
+  _id: string;
   title: string;
   sectionCode: string;
   description: string;
@@ -63,6 +64,7 @@ export const SectionType = new GraphQLObjectType({
 export const SectionInputType = new GraphQLInputObjectType({
   name: "SectionInputType",
   fields: () => ({
+    _id: { type: GraphQLID },
     title: { type: GraphQLString },
     sectionCode: { type: GraphQLString },
     description: { type: GraphQLString },
@@ -83,17 +85,16 @@ export const SectionAssignmentSchema = new Schema<SectionAssignment>(
 
 export const SectionSchema = new Schema<Section>(
   {
-    title: { type: String, required: true },
-    sectionCode: { type: String, required: true },
-    description: { type: String, required: true },
+    title: { type: String, default: "" },
+    sectionCode: { type: String, default: "" },
+    description: { type: String, default: "" },
     instructorId: { type: String, required: true },
     assignments: [SectionAssignmentSchema],
     numOptionalAssignmentsRequired: {
       type: Number,
-      required: true,
       default: 0,
     },
-    deleted: { type: Boolean, required: true, default: false },
+    deleted: { type: Boolean, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
