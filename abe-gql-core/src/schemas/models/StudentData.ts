@@ -10,52 +10,35 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql";
 
-export interface EnrolledSection {
-  sectionId: string;
-  completedAssignmentIds: string[];
-}
-
-export interface EnrolledCourse {
-  courseId: string;
-  enrolledSections: EnrolledSection[];
+export interface AssignmentProgress {
+  assignmentId: string;
+  complete: boolean;
 }
 
 export interface StudentData extends Document {
   userId: string;
-  enrolledCourses: EnrolledCourse[];
+  enrolledCourses: string[];
+  enrolledSections: string[];
+  assignmentProgress: AssignmentProgress[];
+  deleted: boolean;
 }
 
-export const EnrolledSectionType = new GraphQLObjectType({
-  name: "EnrolledSection",
+export const AssignmentProgressType = new GraphQLObjectType({
+  name: "AssignmentProgress",
   fields: () => ({
-    sectionId: { type: GraphQLID },
-    completedAssignmentIds: { type: new GraphQLList(GraphQLID) },
+    assignmentId: { type: GraphQLID },
+    complete: { type: GraphQLBoolean },
   }),
 });
 
-export const EnrolledSectionInputType = new GraphQLInputObjectType({
-  name: "EnrolledSectionInputType",
+export const AssignmentProgressInputType = new GraphQLInputObjectType({
+  name: "AssignmentProgressInputType",
   fields: () => ({
-    sectionId: { type: GraphQLID },
-    completedAssignmentIds: { type: new GraphQLList(GraphQLID) },
-  }),
-});
-
-export const EnrolledCourseType = new GraphQLObjectType({
-  name: "EnrolledCourse",
-  fields: () => ({
-    courseId: { type: GraphQLID },
-    enrolledSections: { type: new GraphQLList(EnrolledSectionType) },
-  }),
-});
-
-export const EnrolledCourseInputType = new GraphQLInputObjectType({
-  name: "EnrolledCourseInputType",
-  fields: () => ({
-    courseId: { type: GraphQLID },
-    enrolledSections: { type: new GraphQLList(EnrolledSectionInputType) },
+    assignmentId: { type: GraphQLID },
+    complete: { type: GraphQLBoolean },
   }),
 });
 
@@ -64,7 +47,10 @@ export const StudentDataType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
-    enrolledCourses: { type: new GraphQLList(EnrolledCourseType) },
+    enrolledCourses: { type: new GraphQLList(GraphQLID) },
+    enrolledSections: { type: new GraphQLList(GraphQLID) },
+    assignmentProgress: { type: new GraphQLList(AssignmentProgressType) },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
@@ -72,22 +58,17 @@ export const StudentDataInputType = new GraphQLInputObjectType({
   name: "StudentDataInputType",
   fields: () => ({
     userId: { type: GraphQLID },
-    enrolledCourses: { type: new GraphQLList(EnrolledCourseInputType) },
+    enrolledCourses: { type: new GraphQLList(GraphQLID) },
+    enrolledSections: { type: new GraphQLList(GraphQLID) },
+    assignmentProgress: { type: new GraphQLList(AssignmentProgressInputType) },
+    deleted: { type: GraphQLBoolean },
   }),
 });
 
-export const EnrolledSectionSchema = new Schema<EnrolledSection>(
+export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
   {
-    sectionId: { type: String, required: true },
-    completedAssignmentIds: [{ type: String, default: [] }],
-  },
-  { timestamps: true, collation: { locale: "en", strength: 2 } }
-);
-
-export const EnrolledCourseSchema = new Schema<EnrolledCourse>(
-  {
-    courseId: { type: String, required: true },
-    enrolledSections: [{ type: EnrolledSectionSchema, default: [] }],
+    assignmentId: { type: String, required: true },
+    complete: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
@@ -95,12 +76,20 @@ export const EnrolledCourseSchema = new Schema<EnrolledCourse>(
 export const StudentDataSchema = new Schema<StudentData>(
   {
     userId: { type: String, required: true, unique: true },
-    enrolledCourses: [{ type: EnrolledCourseSchema, default: [] }],
+    enrolledCourses: [{ type: String, default: [] }],
+    enrolledSections: [{ type: String, default: [] }],
+    assignmentProgress: [{ type: AssignmentProgressSchema, default: [] }],
+    deleted: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
 StudentDataSchema.index({ userId: 1 });
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+StudentDataSchema.pre(/^find/, function(this: any) {
+  this.where({ deleted: { $ne: true } });
+});
 
 export default mongoose.model<StudentData, Model<StudentData>>(
   "StudentData",
