@@ -43,6 +43,18 @@ import loginAmazonCognito from "./mutation/login-amazon-cognito";
 import updateUserInfo from "./mutation/update-user-info";
 import addOrUpdateDoc from "./mutation/add-or-update-google-doc";
 import fetchVersionsById from "./query/fetch-versions-by-id";
+import createNewStudent from "./mutation/create-new-student";
+import createNewInstructor from "./mutation/create-new-instructor";
+import modifyCourseEnrollment from "./mutation/modify-course-enrollment";
+import modifySectionEnrollment from "./mutation/modify-section-enrollment";
+import modifyStudentAssignmentProgress from "./mutation/modify-student-assignment-progress";
+import addOrUpdateCourse from "./mutation/add-or-update-course";
+import addOrUpdateSection from "./mutation/add-or-update-section";
+import addOrUpdateAssignment from "./mutation/add-or-update-assignment";
+import fetchCourses from "./query/fetch-courses";
+import fetchSections from "./query/fetch-sections";
+import fetchAssignments from "./query/fetch-assignments";
+import fetchStudentsInMyCourses from "./query/fetch-students-in-my-courses";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -58,6 +70,10 @@ const publicQueries = {
   fetchBuiltActivityVersions,
   fetchMostRecentVersion,
   fetchVersionsById,
+  fetchCourses,
+  fetchSections,
+  fetchAssignments,
+  fetchStudentsInMyCourses,
 };
 
 const getAuthenticatedQueries = () => {
@@ -79,6 +95,14 @@ const publicMutations = {
   loginAmazonCognito,
   updateUserInfo,
   addOrUpdateDoc,
+  createNewStudent,
+  createNewInstructor,
+  modifyCourseEnrollment,
+  modifySectionEnrollment,
+  modifyStudentAssignmentProgress,
+  addOrUpdateCourse,
+  addOrUpdateSection,
+  addOrUpdateAssignment,
 };
 
 const contentManagerMutations = {
