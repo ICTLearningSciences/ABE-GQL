@@ -54,6 +54,7 @@ import addOrUpdateAssignment from "./mutation/add-or-update-assignment";
 import fetchCourses from "./query/fetch-courses";
 import fetchSections from "./query/fetch-sections";
 import fetchAssignments from "./query/fetch-assignments";
+import fetchStudentsInMyCourses from "./query/fetch-students-in-my-courses";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -72,6 +73,7 @@ const publicQueries = {
   fetchCourses,
   fetchSections,
   fetchAssignments,
+  fetchStudentsInMyCourses,
 };
 
 const getAuthenticatedQueries = () => {

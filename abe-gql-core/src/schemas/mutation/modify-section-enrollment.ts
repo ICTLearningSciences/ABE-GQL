@@ -9,6 +9,7 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLEnumType,
+  GraphQLString,
 } from "graphql";
 import { UserRole } from "../models/User";
 import StudentDataModel, {
@@ -33,6 +34,7 @@ export const modifySectionEnrollment = {
     courseId: { type: GraphQLNonNull(GraphQLID) },
     sectionId: { type: GraphQLNonNull(GraphQLID) },
     action: { type: GraphQLNonNull(SectionEnrollmentActionType) },
+    sectionCode: { type: GraphQLString },
   },
   resolve: async (
     _root: GraphQLObjectType,
@@ -41,6 +43,7 @@ export const modifySectionEnrollment = {
       courseId: string;
       sectionId: string;
       action: "ENROLL" | "REMOVE";
+      sectionCode?: string;
     },
     context: {
       userId: string;
@@ -80,6 +83,15 @@ export const modifySectionEnrollment = {
 
     if (!course.sectionIds.includes(args.sectionId)) {
       throw new Error("section does not belong to the specified course");
+    }
+
+    if (args.action === "ENROLL") {
+      if (!args.sectionCode) {
+        throw new Error("section code is required for enrollment");
+      }
+      if (section.sectionCode !== args.sectionCode) {
+        throw new Error("section code does not match");
+      }
     }
 
     const sectionIndex = studentData.enrolledSections.indexOf(args.sectionId);
