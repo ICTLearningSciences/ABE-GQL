@@ -598,4 +598,50 @@ describe("modify section enrollment", () => {
     expect(enrollmentData.userId).to.equal(studentUserId);
     expect(enrollmentData.enrolledSections).to.not.include(sectionId);
   });
+
+  it("automatically enrolls user in course when enrolling in section", async () => {
+    // Ensure student is not enrolled in the course initially
+    const initialStudentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    expect(initialStudentData?.enrolledCourses).to.not.include(courseId);
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+            _id
+            userId
+            enrolledCourses
+            enrolledSections
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          action: "ENROLL",
+          sectionCode: "TEST001",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const enrollmentData = response.body.data.modifySectionEnrollment;
+    expect(enrollmentData.userId).to.equal(studentUserId);
+    expect(enrollmentData.enrolledSections).to.include(sectionId);
+    expect(enrollmentData.enrolledCourses).to.include(courseId);
+
+    // Verify in database
+    const updatedStudentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    expect(updatedStudentData?.enrolledCourses).to.include(courseId);
+    expect(updatedStudentData?.enrolledSections).to.include(sectionId);
+  });
 });

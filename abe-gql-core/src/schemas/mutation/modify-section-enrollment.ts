@@ -100,6 +100,12 @@ export const modifySectionEnrollment = {
       if (sectionIndex !== -1) {
         throw new Error("user is already enrolled in this section");
       }
+
+      // Add course to enrolledCourses if not already enrolled
+      if (!studentData.enrolledCourses.includes(args.courseId)) {
+        studentData.enrolledCourses.push(args.courseId);
+      }
+
       studentData.enrolledSections.push(args.sectionId);
     } else if (args.action === "REMOVE") {
       if (sectionIndex === -1) {
