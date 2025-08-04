@@ -11,12 +11,11 @@ import {
   GraphQLList,
 } from "graphql";
 import { UserRole } from "../models/User";
-import UserModel, { UserType } from "../models/User";
 import InstructorDataModel from "../models/InstructorData";
-import StudentDataModel from "../models/StudentData";
+import StudentDataModel, { StudentDataType } from "../models/StudentData";
 
 export const fetchStudentsInMyCourses = {
-  type: new GraphQLList(UserType),
+  type: new GraphQLList(StudentDataType),
   args: {
     instructorId: { type: GraphQLNonNull(GraphQLID) },
   },
@@ -57,17 +56,7 @@ export const fetchStudentsInMyCourses = {
       enrolledCourses: { $in: instructorData.courseIds },
     });
 
-    if (!studentDataDocuments.length) {
-      return [];
-    }
-
-    const studentUserIds = studentDataDocuments.map((sd) => sd.userId);
-
-    const students = await UserModel.find({
-      _id: { $in: studentUserIds },
-    });
-
-    return students;
+    return studentDataDocuments;
   },
 };
 

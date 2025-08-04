@@ -135,9 +135,10 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
-            name
-            email
-            educationalRole
+            userId
+            enrolledCourses
+            enrolledSections
+            deleted
           }
         }`,
         variables: {
@@ -148,21 +149,18 @@ describe("fetch students in my courses", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").with.length(2);
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").with.length(2);
 
-    const studentIds = students.map((s: any) => s._id);
-    expect(studentIds).to.include(student1UserId);
-    expect(studentIds).to.include(student2UserId);
-    expect(studentIds).to.not.include(student3UserId);
+    const studentUserIds = studentData.map((s: any) => s.userId);
+    expect(studentUserIds).to.include(student1UserId);
+    expect(studentUserIds).to.include(student2UserId);
+    expect(studentUserIds).to.not.include(student3UserId);
 
-    const studentNames = students.map((s: any) => s.name);
-    expect(studentNames).to.include("Student One");
-    expect(studentNames).to.include("Student Two");
-    expect(studentNames).to.not.include("Student Three");
-
-    students.forEach((student: any) => {
-      expect(student.educationalRole).to.equal("STUDENT");
+    studentData.forEach((student: any) => {
+      expect(student.deleted).to.equal(false);
+      expect(student.enrolledCourses).to.be.an("array");
+      expect(student.enrolledSections).to.be.an("array");
     });
   });
 
@@ -187,8 +185,8 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
-            name
-            email
+            userId
+            enrolledCourses
           }
         }`,
         variables: {
@@ -199,12 +197,12 @@ describe("fetch students in my courses", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").with.length(2);
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").with.length(2);
 
-    const studentIds = students.map((s: any) => s._id);
-    expect(studentIds).to.include(student1UserId);
-    expect(studentIds).to.include(student2UserId);
+    const studentUserIds = studentData.map((s: any) => s.userId);
+    expect(studentUserIds).to.include(student1UserId);
+    expect(studentUserIds).to.include(student2UserId);
   });
 
   it("returns empty array for admin when instructor has no instructor data", async () => {
@@ -240,7 +238,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
-            name
+            userId
           }
         }`,
         variables: {
@@ -251,8 +249,8 @@ describe("fetch students in my courses", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").that.is.empty;
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").that.is.empty;
   });
 
   it("returns empty array when instructor has no courses", async () => {
@@ -282,7 +280,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
-            name
+            userId
           }
         }`,
         variables: {
@@ -293,8 +291,8 @@ describe("fetch students in my courses", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").that.is.empty;
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").that.is.empty;
   });
 
   it("returns empty array when no students are enrolled in instructor's courses", async () => {
@@ -325,7 +323,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
-            name
+            userId
           }
         }`,
         variables: {
@@ -336,8 +334,8 @@ describe("fetch students in my courses", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").that.is.empty;
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").that.is.empty;
   });
 
   it("throws error when non-admin user tries to fetch another instructor's students", async () => {
@@ -361,6 +359,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
+            userId
           }
         }`,
         variables: {
@@ -386,6 +385,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
+            userId
           }
         }`,
         variables: {
@@ -408,6 +408,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
+            userId
           }
         }`,
         variables: {
@@ -439,7 +440,7 @@ describe("fetch students in my courses", () => {
         query: `query FetchStudentsInMyCourses($instructorId: ID!) {
           fetchStudentsInMyCourses(instructorId: $instructorId) {
             _id
-            name
+            userId
           }
         }`,
         variables: {
@@ -450,43 +451,11 @@ describe("fetch students in my courses", () => {
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").with.length(1);
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").with.length(1);
 
-    const studentIds = students.map((s: any) => s._id);
-    expect(studentIds).to.include(student2UserId);
-    expect(studentIds).to.not.include(student1UserId);
-  });
-
-  it("handles case where student user has been removed but student data exists", async () => {
-    // Delete student1 user but keep student data
-    await UserModel.deleteOne({ _id: student1UserId });
-
-    const token = await getToken(instructorUserId, UserRole.USER);
-
-    const response = await request(app)
-      .post("/graphql")
-      .set("Authorization", `bearer ${token}`)
-      .send({
-        query: `query FetchStudentsInMyCourses($instructorId: ID!) {
-          fetchStudentsInMyCourses(instructorId: $instructorId) {
-            _id
-            name
-          }
-        }`,
-        variables: {
-          instructorId: instructorUserId,
-        },
-      });
-
-    expect(response.status).to.equal(200);
-    expect(response.body.errors).to.be.undefined;
-
-    const students = response.body.data.fetchStudentsInMyCourses;
-    expect(students).to.be.an("array").with.length(1);
-
-    const studentIds = students.map((s: any) => s._id);
-    expect(studentIds).to.include(student2UserId);
-    expect(studentIds).to.not.include(student1UserId);
+    const studentUserIds = studentData.map((s: any) => s.userId);
+    expect(studentUserIds).to.include(student2UserId);
+    expect(studentUserIds).to.not.include(student1UserId);
   });
 });
