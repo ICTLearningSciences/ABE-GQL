@@ -76,9 +76,9 @@ export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
 export const StudentDataSchema = new Schema<StudentData>(
   {
     userId: { type: String, required: true, unique: true },
-    enrolledCourses: [{ type: String, default: [] }],
-    enrolledSections: [{ type: String, default: [] }],
-    assignmentProgress: [{ type: AssignmentProgressSchema, default: [] }],
+    enrolledCourses: { type: [String], default: [] },
+    enrolledSections: { type: [String], default: [] },
+    assignmentProgress: { type: [AssignmentProgressSchema], default: [] },
     deleted: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
