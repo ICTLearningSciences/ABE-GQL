@@ -75,13 +75,10 @@ export const SectionInputType = new GraphQLInputObjectType({
   }),
 });
 
-export const SectionAssignmentSchema = new Schema<SectionAssignment>(
-  {
-    assignmentId: { type: String, required: true },
-    mandatory: { type: Boolean, required: true },
-  },
-  { timestamps: true, collation: { locale: "en", strength: 2 } }
-);
+export const SectionAssignmentSchema = new Schema<SectionAssignment>({
+  assignmentId: { type: String, required: true },
+  mandatory: { type: Boolean, required: true },
+});
 
 export const SectionSchema = new Schema<Section>(
   {
@@ -89,7 +86,7 @@ export const SectionSchema = new Schema<Section>(
     sectionCode: { type: String, default: "" },
     description: { type: String, default: "" },
     instructorId: { type: String, required: true },
-    assignments: [SectionAssignmentSchema],
+    assignments: { type: [SectionAssignmentSchema], default: [] },
     numOptionalAssignmentsRequired: {
       type: Number,
       default: 0,

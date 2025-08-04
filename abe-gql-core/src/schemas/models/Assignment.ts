@@ -51,7 +51,7 @@ export const AssignmentSchema = new Schema<Assignment>(
   {
     title: { type: String, default: "" },
     description: { type: String, default: "" },
-    activityIds: [{ type: String, required: true }],
+    activityIds: { type: [String], required: true },
     instructorId: { type: String, required: true },
     deleted: { type: Boolean, default: false },
   },
