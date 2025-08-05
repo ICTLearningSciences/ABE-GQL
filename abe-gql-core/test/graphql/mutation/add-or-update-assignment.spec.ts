@@ -92,6 +92,51 @@ describe("add or update assignment", () => {
     expect(assignmentData.deleted).to.be.false;
   });
 
+  it("allows instructor to create a new assignment with input data as defaults", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateAssignment($courseId: ID!, $assignmentData: AssignmentInputType, $action: AssignmentAction!) {
+          addOrUpdateAssignment(courseId: $courseId, assignmentData: $assignmentData, action: $action) {
+            _id
+            title
+            description
+            activityIds
+            instructorId
+            deleted
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          assignmentData: {
+            title: "Custom Assignment Title",
+            description: "Custom Assignment Description",
+            activityIds: ["activity1", "activity2", "activity3"],
+          },
+          action: "CREATE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const assignmentData = response.body.data.addOrUpdateAssignment;
+    expect(assignmentData.title).to.equal("Custom Assignment Title");
+    expect(assignmentData.description).to.equal(
+      "Custom Assignment Description"
+    );
+    expect(assignmentData.instructorId).to.equal(instructorUserId);
+    expect(assignmentData.activityIds).to.deep.equal([
+      "activity1",
+      "activity2",
+      "activity3",
+    ]);
+    expect(assignmentData.deleted).to.be.false;
+  });
+
   it("allows admin to create a new assignment even without instructor data", async () => {
     const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);

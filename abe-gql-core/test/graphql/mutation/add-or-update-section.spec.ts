@@ -98,6 +98,74 @@ describe("add or update section", () => {
     expect(updatedCourse?.sectionIds).to.include(sectionData._id);
   });
 
+  it("allows instructor to create a new section with input data as defaults", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
+          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+            _id
+            title
+            sectionCode
+            description
+            instructorId
+            assignments {
+              assignmentId
+              mandatory
+            }
+            numOptionalAssignmentsRequired
+            deleted
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          sectionData: {
+            title: "Custom Section Title",
+            sectionCode: "CUSTOM001",
+            description: "Custom Section Description",
+            assignments: [
+              {
+                assignmentId: "assignment1",
+                mandatory: true,
+              },
+              {
+                assignmentId: "assignment2",
+                mandatory: false,
+              },
+            ],
+            numOptionalAssignmentsRequired: 2,
+          },
+          action: "CREATE",
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const sectionData = response.body.data.addOrUpdateSection;
+    expect(sectionData.title).to.equal("Custom Section Title");
+    expect(sectionData.sectionCode).to.equal("CUSTOM001");
+    expect(sectionData.description).to.equal("Custom Section Description");
+    expect(sectionData.instructorId).to.equal(instructorUserId);
+    expect(sectionData.assignments).to.deep.equal([
+      {
+        assignmentId: "assignment1",
+        mandatory: true,
+      },
+      {
+        assignmentId: "assignment2",
+        mandatory: false,
+      },
+    ]);
+    expect(sectionData.numOptionalAssignmentsRequired).to.equal(2);
+    expect(sectionData.deleted).to.be.false;
+
+    const updatedCourse = await CourseModel.findById(courseId);
+    expect(updatedCourse?.sectionIds).to.include(sectionData._id);
+  });
+
   it("allows admin to create a new section even without instructor data", async () => {
     const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);

@@ -31,7 +31,7 @@ export const addOrUpdateCourse = {
   resolve: async (
     _root: GraphQLObjectType,
     args: {
-      courseData?: Course;
+      courseData?: Partial<Course>;
       action: "CREATE" | "MODIFY" | "DELETE";
     },
     context: {
@@ -52,10 +52,10 @@ export const addOrUpdateCourse = {
 
     if (args.action === "CREATE") {
       const newCourse = new CourseModel({
-        title: "New Course",
-        description: "Course description",
+        title: args.courseData?.title || "New Course",
+        description: args.courseData?.description || "Course description",
+        sectionIds: args.courseData?.sectionIds || [],
         instructorId: context.userId,
-        sectionIds: [],
         deleted: false,
       });
 

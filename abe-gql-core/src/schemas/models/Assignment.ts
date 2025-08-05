@@ -42,8 +42,6 @@ export const AssignmentInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
-    instructorId: { type: GraphQLString },
-    deleted: { type: GraphQLBoolean },
   }),
 });
 

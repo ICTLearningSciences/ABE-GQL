@@ -74,12 +74,13 @@ export const addOrUpdateSection = {
 
     if (args.action === "CREATE") {
       const newSection = new SectionModel({
-        title: "New Section",
-        sectionCode: "",
-        description: "",
+        title: args.sectionData?.title || "New Section",
+        sectionCode: args.sectionData?.sectionCode || "",
+        description: args.sectionData?.description || "",
+        assignments: args.sectionData?.assignments || [],
+        numOptionalAssignmentsRequired:
+          args.sectionData?.numOptionalAssignmentsRequired || 0,
         instructorId: context.userId,
-        assignments: [],
-        numOptionalAssignmentsRequired: 0,
         deleted: false,
       });
 

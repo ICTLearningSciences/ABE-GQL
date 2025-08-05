@@ -81,6 +81,49 @@ describe("add or update course", () => {
     expect(instructorData?.courseIds).to.include(courseData._id);
   });
 
+  it("allows instructor to create a new course with input data as defaults", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateCourse($courseData: CourseInputType, $action: CourseAction!) {
+          addOrUpdateCourse(courseData: $courseData, action: $action) {
+            _id
+            title
+            description
+            instructorId
+            sectionIds
+            deleted
+          }
+        }`,
+        variables: {
+          courseData: {
+            title: "Custom Course Title",
+            description: "Custom Course Description",
+            sectionIds: ["section1", "section2"],
+          },
+          action: "CREATE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const courseData = response.body.data.addOrUpdateCourse;
+    expect(courseData.title).to.equal("Custom Course Title");
+    expect(courseData.description).to.equal("Custom Course Description");
+    expect(courseData.instructorId).to.equal(instructorUserId);
+    expect(courseData.sectionIds).to.deep.equal(["section1", "section2"]);
+    expect(courseData.deleted).to.be.false;
+
+    const instructorData = await InstructorDataModel.findOne({
+      userId: instructorUserId,
+    });
+    expect(instructorData?.courseIds).to.include(courseData._id);
+  });
+
   it("allows admin to create a new course even without instructor data", async () => {
     const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);

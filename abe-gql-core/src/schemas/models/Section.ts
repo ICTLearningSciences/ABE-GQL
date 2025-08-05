@@ -68,10 +68,8 @@ export const SectionInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     sectionCode: { type: GraphQLString },
     description: { type: GraphQLString },
-    instructorId: { type: GraphQLID },
     assignments: { type: new GraphQLList(SectionAssignmentInputType) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
-    deleted: { type: GraphQLBoolean },
   }),
 });
 

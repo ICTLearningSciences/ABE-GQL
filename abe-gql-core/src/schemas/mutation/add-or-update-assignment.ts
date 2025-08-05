@@ -75,9 +75,9 @@ export const addOrUpdateAssignment = {
 
     if (args.action === "CREATE") {
       const newAssignment = new AssignmentModel({
-        title: "",
-        description: "",
-        activityIds: [],
+        title: args.assignmentData?.title || "",
+        description: args.assignmentData?.description || "",
+        activityIds: args.assignmentData?.activityIds || [],
         instructorId: context.userId,
         deleted: false,
       });
