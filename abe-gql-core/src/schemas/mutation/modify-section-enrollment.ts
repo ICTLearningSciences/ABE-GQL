@@ -31,8 +31,8 @@ export const modifySectionEnrollment = {
   type: StudentDataType,
   args: {
     targetUserId: { type: GraphQLNonNull(GraphQLID) },
-    courseId: { type: GraphQLNonNull(GraphQLID) },
-    sectionId: { type: GraphQLNonNull(GraphQLID) },
+    courseId: { type: GraphQLID },
+    sectionId: { type: GraphQLID },
     action: { type: GraphQLNonNull(SectionEnrollmentActionType) },
     sectionCode: { type: GraphQLString },
   },
@@ -40,8 +40,8 @@ export const modifySectionEnrollment = {
     _root: GraphQLObjectType,
     args: {
       targetUserId: string;
-      courseId: string;
-      sectionId: string;
+      courseId?: string;
+      sectionId?: string;
       action: "ENROLL" | "REMOVE";
       sectionCode?: string;
     },
@@ -61,57 +61,85 @@ export const modifySectionEnrollment = {
       throw new Error("student data not found for target user");
     }
 
-    const course = await CourseModel.findById(args.courseId);
-    if (!course) {
-      throw new Error("course not found");
-    }
+    if (args.action === "REMOVE") {
+      // REMOVE action requires courseId and sectionId
+      if (!args.courseId || !args.sectionId) {
+        throw new Error(
+          "courseId and sectionId are required for removing from section"
+        );
+      }
 
-    const section = await SectionModel.findById(args.sectionId);
-    if (!section) {
-      throw new Error("section not found");
-    }
+      const course = await CourseModel.findById(args.courseId);
+      if (!course) {
+        throw new Error("course not found");
+      }
 
-    if (
-      context.userId !== args.targetUserId &&
-      course.instructorId !== context.userId &&
-      context.userRole !== UserRole.ADMIN
-    ) {
-      throw new Error(
-        "unauthorized: requesting user must be target user, course instructor or admin"
-      );
-    }
+      const section = await SectionModel.findById(args.sectionId);
+      if (!section) {
+        throw new Error("section not found");
+      }
 
-    if (!course.sectionIds.includes(args.sectionId)) {
-      throw new Error("section does not belong to the specified course");
-    }
+      if (
+        context.userId !== args.targetUserId &&
+        course.instructorId !== context.userId &&
+        context.userRole !== UserRole.ADMIN
+      ) {
+        throw new Error(
+          "unauthorized: requesting user must be target user, course instructor or admin"
+        );
+      }
 
-    if (args.action === "ENROLL") {
+      if (!course.sectionIds.includes(args.sectionId)) {
+        throw new Error("section does not belong to the specified course");
+      }
+
+      const sectionIndex = studentData.enrolledSections.indexOf(args.sectionId);
+      if (sectionIndex === -1) {
+        throw new Error("user is not enrolled in this section");
+      }
+
+      studentData.enrolledSections.splice(sectionIndex, 1);
+    } else if (args.action === "ENROLL") {
+      // ENROLL action requires only sectionCode
       if (!args.sectionCode) {
         throw new Error("section code is required for enrollment");
       }
-      if (section.sectionCode !== args.sectionCode) {
-        throw new Error("section code does not match");
+
+      const section = await SectionModel.findOne({
+        sectionCode: args.sectionCode,
+      });
+      if (!section) {
+        throw new Error("section not found with the provided section code");
       }
-    }
+      // uses $in operator to find course by sectionId
+      const course = await CourseModel.findOne({ sectionIds: section._id });
+      if (!course) {
+        throw new Error("course not found for the specified section");
+      }
 
-    const sectionIndex = studentData.enrolledSections.indexOf(args.sectionId);
+      if (
+        context.userId !== args.targetUserId &&
+        course.instructorId !== context.userId &&
+        context.userRole !== UserRole.ADMIN
+      ) {
+        throw new Error(
+          "unauthorized: requesting user must be target user, course instructor or admin"
+        );
+      }
 
-    if (args.action === "ENROLL") {
-      if (sectionIndex !== -1) {
+      const sectionIdStr = section._id.toString();
+      const courseIdStr = course._id.toString();
+
+      if (studentData.enrolledSections.includes(sectionIdStr)) {
         throw new Error("user is already enrolled in this section");
       }
 
       // Add course to enrolledCourses if not already enrolled
-      if (!studentData.enrolledCourses.includes(args.courseId)) {
-        studentData.enrolledCourses.push(args.courseId);
+      if (!studentData.enrolledCourses.includes(courseIdStr)) {
+        studentData.enrolledCourses.push(courseIdStr);
       }
 
-      studentData.enrolledSections.push(args.sectionId);
-    } else if (args.action === "REMOVE") {
-      if (sectionIndex === -1) {
-        throw new Error("user is not enrolled in this section");
-      }
-      studentData.enrolledSections.splice(sectionIndex, 1);
+      studentData.enrolledSections.push(sectionIdStr);
     }
 
     await studentData.save();

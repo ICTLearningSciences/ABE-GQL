@@ -78,8 +78,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
             userId
             enrolledSections
@@ -87,8 +87,6 @@ describe("modify section enrollment", () => {
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -114,8 +112,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
             userId
             enrolledSections
@@ -123,8 +121,6 @@ describe("modify section enrollment", () => {
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -156,8 +152,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
             _id
             userId
             enrolledSections
@@ -191,8 +187,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
             userId
             enrolledSections
@@ -200,8 +196,6 @@ describe("modify section enrollment", () => {
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -224,15 +218,13 @@ describe("modify section enrollment", () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
           }
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -254,15 +246,13 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
           }
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -285,8 +275,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
             _id
           }
         }`,
@@ -294,7 +284,7 @@ describe("modify section enrollment", () => {
           targetUserId: studentUserId,
           courseId: "000000000000000000000000",
           sectionId: sectionId,
-          action: "ENROLL",
+          action: "REMOVE",
         },
       });
 
@@ -313,23 +303,22 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
           }
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: "000000000000000000000000",
           action: "ENROLL",
+          sectionCode: "NONEXISTENT",
         },
       });
 
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
-        e.message.includes("section not found")
+        e.message.includes("section not found with the provided section code")
       )
     ).to.exist;
   });
@@ -342,16 +331,15 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
           }
         }`,
         variables: {
           targetUserId: userWithoutStudentData,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
+          sectionCode: "TEST001",
         },
       });
 
@@ -382,8 +370,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
             _id
           }
         }`,
@@ -391,8 +379,7 @@ describe("modify section enrollment", () => {
           targetUserId: studentUserId,
           courseId: courseId,
           sectionId: anotherSectionId,
-          action: "ENROLL",
-          sectionCode: "TEST002",
+          action: "REMOVE",
         },
       });
 
@@ -417,15 +404,13 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
           }
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -446,8 +431,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
             _id
           }
         }`,
@@ -474,8 +459,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
             userId
             enrolledSections
@@ -483,8 +468,6 @@ describe("modify section enrollment", () => {
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -510,15 +493,13 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
           }
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "WRONG001",
         },
@@ -527,7 +508,7 @@ describe("modify section enrollment", () => {
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
-        e.message.includes("section code does not match")
+        e.message.includes("section not found with the provided section code")
       )
     ).to.exist;
   });
@@ -539,17 +520,14 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action) {
             _id
           }
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
-          sectionCode: "TEST001",
         },
       });
 
@@ -575,8 +553,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
             _id
             userId
             enrolledSections
@@ -587,7 +565,6 @@ describe("modify section enrollment", () => {
           courseId: courseId,
           sectionId: sectionId,
           action: "REMOVE",
-          sectionCode: "WRONG001", // Wrong code should not matter for REMOVE
         },
       });
 
@@ -612,8 +589,8 @@ describe("modify section enrollment", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
-          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action, sectionCode: $sectionCode) {
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
             _id
             userId
             enrolledCourses
@@ -622,8 +599,6 @@ describe("modify section enrollment", () => {
         }`,
         variables: {
           targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
           action: "ENROLL",
           sectionCode: "TEST001",
         },
@@ -643,5 +618,33 @@ describe("modify section enrollment", () => {
     });
     expect(updatedStudentData?.enrolledCourses).to.include(courseId);
     expect(updatedStudentData?.enrolledSections).to.include(sectionId);
+  });
+
+  it("throws error when trying to remove without courseId and sectionId", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          action: "REMOVE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes(
+          "courseId and sectionId are required for removing from section"
+        )
+      )
+    ).to.exist;
   });
 });
