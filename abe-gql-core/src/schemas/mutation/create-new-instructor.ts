@@ -27,15 +27,18 @@ export const createNewInstructor = {
       throw new Error("user not found");
     }
 
+    if (user.educationalRole !== EducationalRole.INSTRUCTOR) {
+      user.educationalRole = EducationalRole.INSTRUCTOR;
+      await user.save();
+    }
+
     const existingInstructorData = await InstructorDataModel.findOne({
       userId: args.userId,
     });
-    if (existingInstructorData) {
-      throw new Error("instructor data already exists for this user");
-    }
 
-    user.educationalRole = EducationalRole.INSTRUCTOR;
-    await user.save();
+    if (existingInstructorData) {
+      return existingInstructorData;
+    }
 
     const instructorData = new InstructorDataModel({
       userId: args.userId,

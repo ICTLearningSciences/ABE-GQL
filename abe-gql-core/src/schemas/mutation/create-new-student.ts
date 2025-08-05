@@ -26,16 +26,18 @@ export const createNewStudent = {
     if (!user) {
       throw new Error("user not found");
     }
+    if (user.educationalRole !== EducationalRole.STUDENT) {
+      user.educationalRole = EducationalRole.STUDENT;
+      await user.save();
+    }
 
     const existingStudentData = await StudentDataModel.findOne({
       userId: args.userId,
     });
-    if (existingStudentData) {
-      throw new Error("student data already exists for this user");
-    }
 
-    user.educationalRole = EducationalRole.STUDENT;
-    await user.save();
+    if (existingStudentData) {
+      return existingStudentData;
+    }
 
     const studentData = new StudentDataModel({
       userId: args.userId,

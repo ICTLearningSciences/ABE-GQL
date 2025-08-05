@@ -95,10 +95,10 @@ describe("create new student", () => {
     ).to.exist;
   });
 
-  it("throws error when student data already exists", async () => {
+  it("returns existing student data when student data already exists", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.USER);
 
-    await StudentDataModel.create({
+    const existingStudentData = await StudentDataModel.create({
       userId: "5ffdf1231ee2c62320b49a99",
       enrolledCourses: [],
       enrolledSections: [],
@@ -114,6 +114,13 @@ describe("create new student", () => {
           createNewStudent(userId: $userId) {
             _id
             userId
+            enrolledCourses
+            enrolledSections
+            assignmentProgress {
+              assignmentId
+              complete
+            }
+            deleted
           }
         }`,
         variables: {
@@ -122,10 +129,17 @@ describe("create new student", () => {
       });
 
     expect(response.status).to.equal(200);
-    expect(
-      response.body.errors.find((e: any) =>
-        e.message.includes("student data already exists for this user")
-      )
-    ).to.exist;
+    expect(response.body.errors).to.be.undefined;
+
+    const studentData = response.body.data.createNewStudent;
+    expect(studentData._id).to.equal(existingStudentData._id.toString());
+    expect(studentData.userId).to.equal("5ffdf1231ee2c62320b49a99");
+    expect(studentData.enrolledCourses).to.be.an("array").that.is.empty;
+    expect(studentData.enrolledSections).to.be.an("array").that.is.empty;
+    expect(studentData.assignmentProgress).to.be.an("array").that.is.empty;
+    expect(studentData.deleted).to.be.false;
+
+    const updatedUser = await UserModel.findById("5ffdf1231ee2c62320b49a99");
+    expect(updatedUser?.educationalRole).to.equal(EducationalRole.STUDENT);
   });
 });

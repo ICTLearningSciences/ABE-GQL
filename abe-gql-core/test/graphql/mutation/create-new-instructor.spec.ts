@@ -86,10 +86,10 @@ describe("create new instructor", () => {
     ).to.exist;
   });
 
-  it("throws error when instructor data already exists", async () => {
+  it("returns existing instructor data when instructor data already exists", async () => {
     const token = await getToken("5ffdf1231ee2c62320b49a99", UserRole.USER);
 
-    await InstructorDataModel.create({
+    const existingInstructorData = await InstructorDataModel.create({
       userId: "5ffdf1231ee2c62320b49a99",
       courseIds: [],
     });
@@ -102,6 +102,7 @@ describe("create new instructor", () => {
           createNewInstructor(userId: $userId) {
             _id
             userId
+            courseIds
           }
         }`,
         variables: {
@@ -110,10 +111,14 @@ describe("create new instructor", () => {
       });
 
     expect(response.status).to.equal(200);
-    expect(
-      response.body.errors.find((e: any) =>
-        e.message.includes("instructor data already exists for this user")
-      )
-    ).to.exist;
+    expect(response.body.errors).to.be.undefined;
+
+    const instructorData = response.body.data.createNewInstructor;
+    expect(instructorData._id).to.equal(existingInstructorData._id.toString());
+    expect(instructorData.userId).to.equal("5ffdf1231ee2c62320b49a99");
+    expect(instructorData.courseIds).to.be.an("array").that.is.empty;
+
+    const updatedUser = await UserModel.findById("5ffdf1231ee2c62320b49a99");
+    expect(updatedUser?.educationalRole).to.equal(EducationalRole.INSTRUCTOR);
   });
 });
