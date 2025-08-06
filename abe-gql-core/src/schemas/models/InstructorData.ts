@@ -10,11 +10,13 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
+  GraphQLString,
 } from "graphql";
 
 export interface InstructorData extends Document {
   userId: string;
   courseIds: string[];
+  name: string;
 }
 
 export const InstructorDataType = new GraphQLObjectType({
@@ -23,6 +25,7 @@ export const InstructorDataType = new GraphQLObjectType({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
     courseIds: { type: new GraphQLList(GraphQLID) },
+    name: { type: GraphQLString },
   }),
 });
 
@@ -31,6 +34,7 @@ export const InstructorDataInputType = new GraphQLInputObjectType({
   fields: () => ({
     userId: { type: GraphQLID },
     courseIds: { type: new GraphQLList(GraphQLID) },
+    name: { type: GraphQLString },
   }),
 });
 
@@ -38,6 +42,7 @@ export const InstructorDataSchema = new Schema<InstructorData>(
   {
     userId: { type: String, required: true, unique: true },
     courseIds: [{ type: String, required: true }],
+    name: { type: String },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

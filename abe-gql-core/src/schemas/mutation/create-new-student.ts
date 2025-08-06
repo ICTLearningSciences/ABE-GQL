@@ -41,6 +41,7 @@ export const createNewStudent = {
 
     const studentData = new StudentDataModel({
       userId: args.userId,
+      name: user.name,
       enrolledCourses: [],
       enrolledSections: [],
       assignmentProgress: [],

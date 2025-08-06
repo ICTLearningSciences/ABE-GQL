@@ -42,6 +42,7 @@ describe("create new instructor", () => {
             _id
             userId
             courseIds
+            name
           }
         }`,
         variables: {
@@ -55,7 +56,7 @@ describe("create new instructor", () => {
     const instructorData = response.body.data.createNewInstructor;
     expect(instructorData.userId).to.equal("5ffdf1231ee2c62320b49a99");
     expect(instructorData.courseIds).to.be.an("array").that.is.empty;
-
+    expect(instructorData.name).to.equal("John Admin Doe");
     const updatedUser = await UserModel.findById("5ffdf1231ee2c62320b49a99");
     expect(updatedUser?.educationalRole).to.equal(EducationalRole.INSTRUCTOR);
   });

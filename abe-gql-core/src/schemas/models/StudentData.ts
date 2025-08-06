@@ -11,6 +11,7 @@ import {
   GraphQLInputObjectType,
   GraphQLList,
   GraphQLBoolean,
+  GraphQLString,
 } from "graphql";
 
 export interface AssignmentProgress {
@@ -20,6 +21,7 @@ export interface AssignmentProgress {
 
 export interface StudentData extends Document {
   userId: string;
+  name: string;
   enrolledCourses: string[];
   enrolledSections: string[];
   assignmentProgress: AssignmentProgress[];
@@ -47,6 +49,7 @@ export const StudentDataType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
+    name: { type: GraphQLString },
     enrolledCourses: { type: new GraphQLList(GraphQLID) },
     enrolledSections: { type: new GraphQLList(GraphQLID) },
     assignmentProgress: { type: new GraphQLList(AssignmentProgressType) },
@@ -58,6 +61,7 @@ export const StudentDataInputType = new GraphQLInputObjectType({
   name: "StudentDataInputType",
   fields: () => ({
     userId: { type: GraphQLID },
+    name: { type: GraphQLString },
     enrolledCourses: { type: new GraphQLList(GraphQLID) },
     enrolledSections: { type: new GraphQLList(GraphQLID) },
     assignmentProgress: { type: new GraphQLList(AssignmentProgressInputType) },
@@ -76,6 +80,7 @@ export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
 export const StudentDataSchema = new Schema<StudentData>(
   {
     userId: { type: String, required: true, unique: true },
+    name: { type: String },
     enrolledCourses: { type: [String], default: [] },
     enrolledSections: { type: [String], default: [] },
     assignmentProgress: { type: [AssignmentProgressSchema], default: [] },

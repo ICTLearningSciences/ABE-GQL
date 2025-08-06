@@ -41,6 +41,7 @@ describe("create new student", () => {
           createNewStudent(userId: $userId) {
             _id
             userId
+            name
             enrolledCourses
             enrolledSections
             assignmentProgress {
@@ -60,6 +61,7 @@ describe("create new student", () => {
 
     const studentData = response.body.data.createNewStudent;
     expect(studentData.userId).to.equal("5ffdf1231ee2c62320b49a99");
+    expect(studentData.name).to.equal("John Admin Doe");
     expect(studentData.enrolledCourses).to.be.an("array").that.is.empty;
     expect(studentData.enrolledSections).to.be.an("array").that.is.empty;
     expect(studentData.assignmentProgress).to.be.an("array").that.is.empty;
