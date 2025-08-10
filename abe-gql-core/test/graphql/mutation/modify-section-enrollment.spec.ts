@@ -576,6 +576,122 @@ describe("modify section enrollment", () => {
     expect(enrollmentData.enrolledSections).to.not.include(sectionId);
   });
 
+  it("removes course from enrolledCourses when user has no other sections in that course", async () => {
+    // First enroll the student in both section and course
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    studentData?.enrolledSections.push(sectionId);
+    studentData?.enrolledCourses.push(courseId);
+    await studentData?.save();
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
+            _id
+            userId
+            enrolledSections
+            enrolledCourses
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          action: "REMOVE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const enrollmentData = response.body.data.modifySectionEnrollment;
+    expect(enrollmentData.userId).to.equal(studentUserId);
+    expect(enrollmentData.enrolledSections).to.not.include(sectionId);
+    expect(enrollmentData.enrolledCourses).to.not.include(courseId);
+
+    // Verify in database
+    const updatedStudentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    expect(updatedStudentData?.enrolledSections).to.not.include(sectionId);
+    expect(updatedStudentData?.enrolledCourses).to.not.include(courseId);
+  });
+
+  it("keeps course in enrolledCourses when user still has other sections in that course", async () => {
+    const secondSectionId = new ObjectId().toString();
+
+    // Create a second section for the same course
+    await SectionModel.create({
+      _id: secondSectionId,
+      title: "Test Section 2",
+      sectionCode: "TEST002",
+      description: "Test Section 2 Description",
+      instructorId: instructorUserId,
+      assignments: [],
+      numOptionalAssignmentsRequired: 0,
+      deleted: false,
+    });
+
+    // Add second section to the course
+    await CourseModel.findByIdAndUpdate(courseId, {
+      $push: { sectionIds: secondSectionId },
+    });
+
+    // Enroll student in both sections and the course
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    studentData?.enrolledSections.push(sectionId, secondSectionId);
+    studentData?.enrolledCourses.push(courseId);
+    await studentData?.save();
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    // Remove student from first section only
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $courseId: ID, $sectionId: ID, $action: SectionEnrollmentAction!) {
+          modifySectionEnrollment(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, action: $action) {
+            _id
+            userId
+            enrolledSections
+            enrolledCourses
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          action: "REMOVE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const enrollmentData = response.body.data.modifySectionEnrollment;
+    expect(enrollmentData.userId).to.equal(studentUserId);
+    expect(enrollmentData.enrolledSections).to.not.include(sectionId);
+    expect(enrollmentData.enrolledSections).to.include(secondSectionId);
+    expect(enrollmentData.enrolledCourses).to.include(courseId); // Course should still be there
+
+    // Verify in database
+    const updatedStudentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    expect(updatedStudentData?.enrolledSections).to.not.include(sectionId);
+    expect(updatedStudentData?.enrolledSections).to.include(secondSectionId);
+    expect(updatedStudentData?.enrolledCourses).to.include(courseId);
+  });
+
   it("automatically enrolls user in course when enrolling in section", async () => {
     // Ensure student is not enrolled in the course initially
     const initialStudentData = await StudentDataModel.findOne({

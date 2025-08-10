@@ -99,6 +99,19 @@ export const modifySectionEnrollment = {
       }
 
       studentData.enrolledSections.splice(sectionIndex, 1);
+
+      // Check if user is still enrolled in any other sections of this course
+      const remainingSectionsInCourse = studentData.enrolledSections.filter(
+        (enrolledSectionId) => course.sectionIds.includes(enrolledSectionId)
+      );
+
+      // If no other sections in this course, remove the course from enrolledCourses
+      if (remainingSectionsInCourse.length === 0) {
+        const courseIndex = studentData.enrolledCourses.indexOf(args.courseId);
+        if (courseIndex !== -1) {
+          studentData.enrolledCourses.splice(courseIndex, 1);
+        }
+      }
     } else if (args.action === "ENROLL") {
       // ENROLL action requires only sectionCode
       if (!args.sectionCode) {
