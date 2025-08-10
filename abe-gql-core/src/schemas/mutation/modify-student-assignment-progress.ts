@@ -8,24 +8,17 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLEnumType,
+  GraphQLList,
 } from "graphql";
 import { UserRole } from "../models/User";
 import StudentDataModel, {
   StudentData,
   StudentDataType,
+  ActivityCompletionInputType,
 } from "../models/StudentData";
 import CourseModel from "../models/Course";
 import SectionModel from "../models/Section";
 import AssignmentModel from "../models/Assignment";
-
-const ModifyStudentAssignmentProgressInputType = new GraphQLEnumType({
-  name: "ModifyStudentAssignmentProgressInputType",
-  values: {
-    COMPLETE: { value: "COMPLETE" },
-    INCOMPLETE: { value: "INCOMPLETE" },
-  },
-});
 
 export const modifyStudentAssignmentProgress = {
   type: StudentDataType,
@@ -34,8 +27,8 @@ export const modifyStudentAssignmentProgress = {
     courseId: { type: GraphQLNonNull(GraphQLID) },
     sectionId: { type: GraphQLNonNull(GraphQLID) },
     assignmentId: { type: GraphQLNonNull(GraphQLID) },
-    progress: {
-      type: GraphQLNonNull(ModifyStudentAssignmentProgressInputType),
+    activityCompletions: {
+      type: GraphQLNonNull(new GraphQLList(ActivityCompletionInputType)),
     },
   },
   resolve: async (
@@ -45,7 +38,10 @@ export const modifyStudentAssignmentProgress = {
       courseId: string;
       sectionId: string;
       assignmentId: string;
-      progress: "COMPLETE" | "INCOMPLETE";
+      activityCompletions: Array<{
+        activityId: string;
+        complete: boolean;
+      }>;
     },
     context: {
       userId: string;
@@ -103,14 +99,14 @@ export const modifyStudentAssignmentProgress = {
       (progress) => progress.assignmentId === args.assignmentId
     );
 
-    const complete = args.progress === "COMPLETE";
-
     if (existingProgressIndex !== -1) {
-      studentData.assignmentProgress[existingProgressIndex].complete = complete;
+      studentData.assignmentProgress[
+        existingProgressIndex
+      ].activityCompletions = args.activityCompletions;
     } else {
       studentData.assignmentProgress.push({
         assignmentId: args.assignmentId,
-        complete: complete,
+        activityCompletions: args.activityCompletions,
       });
     }
 

@@ -46,7 +46,10 @@ describe("create new student", () => {
             enrolledSections
             assignmentProgress {
               assignmentId
-              complete
+              activityCompletions {
+                activityId
+                complete
+              }
             }
             deleted
           }
@@ -120,7 +123,10 @@ describe("create new student", () => {
             enrolledSections
             assignmentProgress {
               assignmentId
-              complete
+              activityCompletions {
+                activityId
+                complete
+              }
             }
             deleted
           }

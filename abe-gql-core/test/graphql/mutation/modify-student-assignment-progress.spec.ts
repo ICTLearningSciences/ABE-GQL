@@ -95,13 +95,16 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
             userId
             assignmentProgress {
               assignmentId
-              complete
+              activityCompletions {
+                activityId
+                complete
+              }
             }
           }
         }`,
@@ -110,7 +113,10 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [
+            { activityId: "activity1", complete: true },
+            { activityId: "activity2", complete: false },
+          ],
         },
       });
 
@@ -125,7 +131,15 @@ describe("modify student assignment progress", () => {
       (ap: any) => ap.assignmentId === assignmentId
     );
     expect(assignmentProgress).to.exist;
-    expect(assignmentProgress.complete).to.be.true;
+    expect(assignmentProgress.activityCompletions).to.have.lengthOf(2);
+    expect(assignmentProgress.activityCompletions[0].activityId).to.equal(
+      "activity1"
+    );
+    expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
+    expect(assignmentProgress.activityCompletions[1].activityId).to.equal(
+      "activity2"
+    );
+    expect(assignmentProgress.activityCompletions[1].complete).to.be.false;
 
     const studentData = await StudentDataModel.findOne({
       userId: studentUserId,
@@ -133,7 +147,9 @@ describe("modify student assignment progress", () => {
     const dbProgress = studentData?.assignmentProgress.find(
       (ap) => ap.assignmentId === assignmentId
     );
-    expect(dbProgress?.complete).to.be.true;
+    expect(dbProgress?.activityCompletions).to.have.lengthOf(2);
+    expect(dbProgress?.activityCompletions[0].activityId).to.equal("activity1");
+    expect(dbProgress?.activityCompletions[0].complete).to.be.true;
   });
 
   it("allows student to mark their own assignment as complete", async () => {
@@ -143,13 +159,16 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
             userId
             assignmentProgress {
               assignmentId
-              complete
+              activityCompletions {
+                activityId
+                complete
+              }
             }
           }
         }`,
@@ -158,7 +177,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -169,7 +188,7 @@ describe("modify student assignment progress", () => {
     const assignmentProgress = progressData.assignmentProgress.find(
       (ap: any) => ap.assignmentId === assignmentId
     );
-    expect(assignmentProgress.complete).to.be.true;
+    expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
   });
 
   it("allows updating existing assignment progress", async () => {
@@ -178,7 +197,10 @@ describe("modify student assignment progress", () => {
     });
     studentData?.assignmentProgress.push({
       assignmentId: assignmentId,
-      complete: true,
+      activityCompletions: [
+        { activityId: "activity1", complete: true },
+        { activityId: "activity2", complete: true },
+      ],
     });
     await studentData?.save();
 
@@ -188,13 +210,16 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
             userId
             assignmentProgress {
               assignmentId
-              complete
+              activityCompletions {
+                activityId
+                complete
+              }
             }
           }
         }`,
@@ -203,7 +228,10 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "INCOMPLETE",
+          activityCompletions: [
+            { activityId: "activity1", complete: false },
+            { activityId: "activity2", complete: true },
+          ],
         },
       });
 
@@ -214,7 +242,9 @@ describe("modify student assignment progress", () => {
     const assignmentProgress = progressData.assignmentProgress.find(
       (ap: any) => ap.assignmentId === assignmentId
     );
-    expect(assignmentProgress.complete).to.be.false;
+    expect(assignmentProgress.activityCompletions).to.have.lengthOf(2);
+    expect(assignmentProgress.activityCompletions[0].complete).to.be.false;
+    expect(assignmentProgress.activityCompletions[1].complete).to.be.true;
 
     const updatedStudentData = await StudentDataModel.findOne({
       userId: studentUserId,
@@ -222,7 +252,9 @@ describe("modify student assignment progress", () => {
     const dbProgress = updatedStudentData?.assignmentProgress.find(
       (ap) => ap.assignmentId === assignmentId
     );
-    expect(dbProgress?.complete).to.be.false;
+    expect(dbProgress?.activityCompletions).to.have.lengthOf(2);
+    expect(dbProgress?.activityCompletions[0].complete).to.be.false;
+    expect(dbProgress?.activityCompletions[1].complete).to.be.true;
   });
 
   it("allows admin to modify any student's assignment progress", async () => {
@@ -232,13 +264,16 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
             userId
             assignmentProgress {
               assignmentId
-              complete
+              activityCompletions {
+                activityId
+                complete
+              }
             }
           }
         }`,
@@ -247,7 +282,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -258,15 +293,15 @@ describe("modify student assignment progress", () => {
     const assignmentProgress = progressData.assignmentProgress.find(
       (ap: any) => ap.assignmentId === assignmentId
     );
-    expect(assignmentProgress.complete).to.be.true;
+    expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
   });
 
   it("throws error when non-authenticated user tries to modify progress", async () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -275,7 +310,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -295,8 +330,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -305,7 +340,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -327,8 +362,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -337,7 +372,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -356,8 +391,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -366,7 +401,7 @@ describe("modify student assignment progress", () => {
           courseId: "000000000000000000000000",
           sectionId: sectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -385,8 +420,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -395,7 +430,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: "000000000000000000000000",
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -414,8 +449,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -424,7 +459,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: "000000000000000000000000",
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -460,8 +495,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -470,7 +505,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: anotherSectionId,
           assignmentId: assignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 
@@ -499,8 +534,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $progress: ModifyStudentAssignmentProgressInputType!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, progress: $progress) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
             _id
           }
         }`,
@@ -509,7 +544,7 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: anotherAssignmentId,
-          progress: "COMPLETE",
+          activityCompletions: [{ activityId: "activity1", complete: true }],
         },
       });
 

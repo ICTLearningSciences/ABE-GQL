@@ -14,9 +14,14 @@ import {
   GraphQLString,
 } from "graphql";
 
+export interface ActivityCompletion {
+  activityId: string;
+  complete: boolean;
+}
+
 export interface AssignmentProgress {
   assignmentId: string;
-  complete: boolean;
+  activityCompletions: ActivityCompletion[];
 }
 
 export interface StudentData extends Document {
@@ -28,10 +33,26 @@ export interface StudentData extends Document {
   deleted: boolean;
 }
 
+export const ActivityCompletionType = new GraphQLObjectType({
+  name: "ActivityCompletion",
+  fields: () => ({
+    activityId: { type: GraphQLID },
+    complete: { type: GraphQLBoolean },
+  }),
+});
+
 export const AssignmentProgressType = new GraphQLObjectType({
   name: "AssignmentProgress",
   fields: () => ({
     assignmentId: { type: GraphQLID },
+    activityCompletions: { type: new GraphQLList(ActivityCompletionType) },
+  }),
+});
+
+export const ActivityCompletionInputType = new GraphQLInputObjectType({
+  name: "ActivityCompletionInputType",
+  fields: () => ({
+    activityId: { type: GraphQLID },
     complete: { type: GraphQLBoolean },
   }),
 });
@@ -40,7 +61,7 @@ export const AssignmentProgressInputType = new GraphQLInputObjectType({
   name: "AssignmentProgressInputType",
   fields: () => ({
     assignmentId: { type: GraphQLID },
-    complete: { type: GraphQLBoolean },
+    activityCompletions: { type: new GraphQLList(ActivityCompletionInputType) },
   }),
 });
 
@@ -69,10 +90,18 @@ export const StudentDataInputType = new GraphQLInputObjectType({
   }),
 });
 
+export const ActivityCompletionSchema = new Schema<ActivityCompletion>(
+  {
+    activityId: { type: String, required: true },
+    complete: { type: Boolean, required: true, default: false },
+  },
+  { timestamps: true, collation: { locale: "en", strength: 2 } }
+);
+
 export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
   {
     assignmentId: { type: String, required: true },
-    complete: { type: Boolean, required: true, default: false },
+    activityCompletions: { type: [ActivityCompletionSchema], default: [] },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
