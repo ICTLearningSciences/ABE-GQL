@@ -18,6 +18,7 @@ import SectionModel from "../../../src/schemas/models/Section";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import CourseModel from "../../../src/schemas/models/Course";
 
 const { ObjectId } = mongoose.Types;
 
@@ -28,6 +29,9 @@ describe("fetch sections", () => {
   let sectionId1: string;
   let sectionId2: string;
   let sectionId3: string;
+  let courseId1: string;
+  let courseId2: string;
+  let courseId3: string;
 
   beforeEach(async () => {
     await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
@@ -39,6 +43,9 @@ describe("fetch sections", () => {
     sectionId1 = new ObjectId().toString();
     sectionId2 = new ObjectId().toString();
     sectionId3 = new ObjectId().toString();
+    courseId1 = new ObjectId().toString();
+    courseId2 = new ObjectId().toString();
+    courseId3 = new ObjectId().toString();
 
     // Create instructor user
     await UserModel.create({
@@ -53,7 +60,6 @@ describe("fetch sections", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     // Create student user
@@ -75,6 +81,30 @@ describe("fetch sections", () => {
       deleted: false,
     });
 
+    await CourseModel.create({
+      _id: courseId1,
+      title: "Test Course 1",
+      description: "Test Description 1",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
+    await CourseModel.create({
+      _id: courseId2,
+      title: "Test Course 2",
+      description: "Test Description 2",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
+    await CourseModel.create({
+      _id: courseId3,
+      title: "Test Course 3",
+      description: "Test Description 3",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
     // Create sections for instructor
     await SectionModel.create({
       _id: sectionId1,
@@ -82,6 +112,7 @@ describe("fetch sections", () => {
       sectionCode: "INST001",
       description: "First section by instructor",
       instructorId: instructorUserId,
+      courseId: courseId1,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
@@ -93,6 +124,7 @@ describe("fetch sections", () => {
       sectionCode: "INST002",
       description: "Second section by instructor",
       instructorId: instructorUserId,
+      courseId: courseId2,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
@@ -112,7 +144,6 @@ describe("fetch sections", () => {
 
     await InstructorDataModel.create({
       userId: anotherInstructorId,
-      courseIds: [],
     });
 
     await SectionModel.create({
@@ -121,6 +152,7 @@ describe("fetch sections", () => {
       sectionCode: "OTHER001",
       description: "Section by another instructor",
       instructorId: anotherInstructorId,
+      courseId: courseId3,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
       deleted: false,

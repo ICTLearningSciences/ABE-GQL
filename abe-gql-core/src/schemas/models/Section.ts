@@ -17,6 +17,7 @@ import {
 import { validateIds } from "helpers";
 import AssignmentModel from "./Assignment";
 import InstructorDataModel from "./InstructorData";
+import CourseModel from "./Course";
 
 export interface SectionAssignment {
   assignmentId: string;
@@ -29,6 +30,7 @@ export interface Section {
   sectionCode: string;
   description: string;
   instructorId: string;
+  courseId: string;
   assignments: SectionAssignment[];
   numOptionalAssignmentsRequired: number;
   deleted: boolean;
@@ -58,6 +60,7 @@ export const SectionType = new GraphQLObjectType({
     sectionCode: { type: GraphQLString },
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
+    courseId: { type: GraphQLID },
     assignments: { type: new GraphQLList(SectionAssignmentType) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
     deleted: { type: GraphQLBoolean },
@@ -96,6 +99,15 @@ export const SectionSchema = new Schema<Section>(
             [instructorId],
             InstructorDataModel
           );
+        },
+      },
+    },
+    courseId: {
+      type: String,
+      required: true,
+      validate: {
+        validator: async (courseId: string) => {
+          return await validateIds("_id", [courseId], CourseModel);
         },
       },
     },

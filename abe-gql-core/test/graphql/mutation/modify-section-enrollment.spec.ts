@@ -40,7 +40,6 @@ describe("modify section enrollment", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     await StudentDataModel.create({
@@ -51,23 +50,23 @@ describe("modify section enrollment", () => {
       deleted: false,
     });
 
+    await CourseModel.create({
+      _id: courseId,
+      title: "Test Course",
+      description: "Test Description",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
     await SectionModel.create({
       _id: sectionId,
       title: "Test Section",
       sectionCode: "TEST001",
       description: "Test Section Description",
       instructorId: instructorUserId,
+      courseId: courseId,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
-      deleted: false,
-    });
-
-    await CourseModel.create({
-      _id: courseId,
-      title: "Test Course",
-      description: "Test Description",
-      instructorId: instructorUserId,
-      sectionIds: [sectionId],
       deleted: false,
     });
   });
@@ -358,12 +357,21 @@ describe("modify section enrollment", () => {
 
   it("throws error when section does not belong to course", async () => {
     const anotherSectionId = new ObjectId().toString();
+    const anotherCourseId = new ObjectId().toString();
+    await CourseModel.create({
+      _id: anotherCourseId,
+      title: "Another Course",
+      description: "Another Course Description",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
     await SectionModel.create({
       _id: anotherSectionId,
       title: "Another Section",
       sectionCode: "TEST002",
       description: "Another Section Description",
       instructorId: instructorUserId,
+      courseId: anotherCourseId,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
@@ -633,6 +641,7 @@ describe("modify section enrollment", () => {
       sectionCode: "TEST002",
       description: "Test Section 2 Description",
       instructorId: instructorUserId,
+      courseId: courseId,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
       deleted: false,

@@ -50,7 +50,6 @@ describe("add or update assignment", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     await AssignmentModel.create({
@@ -61,12 +60,21 @@ describe("add or update assignment", () => {
       instructorId: instructorUserId,
     });
 
+    await CourseModel.create({
+      _id: courseId,
+      title: "Test Course",
+      description: "Test Description",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
     await SectionModel.create({
       _id: sectionId,
       title: "Test Section",
       sectionCode: "TEST001",
       description: "Test Description",
       instructorId: instructorUserId,
+      courseId: courseId,
       assignments: [
         {
           assignmentId: assignmentId,
@@ -76,20 +84,6 @@ describe("add or update assignment", () => {
       numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
-
-    await CourseModel.create({
-      _id: courseId,
-      title: "Test Course",
-      description: "Test Description",
-      instructorId: instructorUserId,
-      sectionIds: [sectionId],
-      deleted: false,
-    });
-
-    await InstructorDataModel.findOneAndUpdate(
-      { userId: instructorUserId },
-      { $push: { courseIds: courseId } }
-    );
   });
 
   afterEach(async () => {
@@ -398,7 +392,6 @@ describe("add or update assignment", () => {
     const anotherInstructorId = "5ffdf1231ee2c62320b49c99";
     await InstructorDataModel.create({
       userId: anotherInstructorId,
-      courseIds: [],
     });
 
     const anotherCourseId = new ObjectId().toString();
@@ -408,7 +401,7 @@ describe("add or update assignment", () => {
       title: "Another Course",
       description: "Another Description",
       instructorId: anotherInstructorId,
-      sectionIds: [],
+
       deleted: false,
     });
 

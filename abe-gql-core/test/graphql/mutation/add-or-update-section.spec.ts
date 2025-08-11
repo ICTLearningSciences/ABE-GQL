@@ -42,14 +42,20 @@ describe("add or update section", () => {
 
     await InstructorDataModel.create({
       userId: adminUserId,
-      courseIds: [],
     });
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
     await StudentDataModel.create({
       userId: regularUserId,
+    });
+
+    await CourseModel.create({
+      _id: courseId,
+      title: "Test Course",
+      description: "Test Description",
+      instructorId: instructorUserId,
+      deleted: false,
     });
 
     await SectionModel.create({
@@ -58,17 +64,9 @@ describe("add or update section", () => {
       sectionCode: "ORIG001",
       description: "Original Description",
       instructorId: instructorUserId,
+      courseId: courseId,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
-      deleted: false,
-    });
-
-    await CourseModel.create({
-      _id: courseId,
-      title: "Test Course",
-      description: "Test Description",
-      instructorId: instructorUserId,
-      sectionIds: [],
       deleted: false,
     });
   });
@@ -117,8 +115,9 @@ describe("add or update section", () => {
     expect(sectionData.numOptionalAssignmentsRequired).to.equal(0);
     expect(sectionData.deleted).to.be.false;
 
-    const updatedCourse = await CourseModel.findById(courseId);
-    expect(updatedCourse?.sectionIds).to.include(sectionData._id);
+    // Verify the section belongs to the course
+    const createdSection = await SectionModel.findById(sectionData._id);
+    expect(createdSection?.courseId).to.equal(courseId);
   });
 
   it("allows instructor to create a new section with input data as defaults", async () => {
@@ -167,8 +166,9 @@ describe("add or update section", () => {
     expect(sectionData.numOptionalAssignmentsRequired).to.equal(2);
     expect(sectionData.deleted).to.be.false;
 
-    const updatedCourse = await CourseModel.findById(courseId);
-    expect(updatedCourse?.sectionIds).to.include(sectionData._id);
+    // Verify the section belongs to the course
+    const createdSection = await SectionModel.findById(sectionData._id);
+    expect(createdSection?.courseId).to.equal(courseId);
   });
 
   it("allows admin to create a new section even without instructor data", async () => {
@@ -239,11 +239,6 @@ describe("add or update section", () => {
   });
 
   it("allows instructor to delete their own section", async () => {
-    await CourseModel.findOneAndUpdate(
-      { _id: courseId },
-      { $push: { sectionIds: sectionId } }
-    );
-
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
@@ -275,8 +270,9 @@ describe("add or update section", () => {
     const deletedSection = await SectionModel.findOne({ _id: sectionId });
     expect(deletedSection).to.not.exist;
 
-    const updatedCourse = await CourseModel.findById(courseId);
-    expect(updatedCourse?.sectionIds).to.not.include(sectionId);
+    // Verify no sections remain for this course
+    const sectionsInCourse = await SectionModel.find({ courseId: courseId });
+    expect(sectionsInCourse).to.be.empty;
   });
 
   it("allows admin to modify any section", async () => {
@@ -395,7 +391,6 @@ describe("add or update section", () => {
       title: "Another Course",
       description: "Another Description",
       instructorId: anotherInstructorId,
-      sectionIds: [],
       deleted: false,
     });
 

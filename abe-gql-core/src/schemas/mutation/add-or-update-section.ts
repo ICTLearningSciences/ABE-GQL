@@ -81,14 +81,11 @@ export const addOrUpdateSection = {
         numOptionalAssignmentsRequired:
           args.sectionData?.numOptionalAssignmentsRequired || 0,
         instructorId: context.userId,
+        courseId: args.courseId,
         deleted: false,
       });
 
       await newSection.save();
-
-      course.sectionIds.push(newSection._id.toString());
-      await course.save();
-
       return newSection;
     }
 
@@ -106,13 +103,6 @@ export const addOrUpdateSection = {
     if (args.action === "DELETE") {
       section.deleted = true;
       await section.save();
-
-      const sectionIndex = course.sectionIds.indexOf(args.sectionData._id);
-      if (sectionIndex !== -1) {
-        course.sectionIds.splice(sectionIndex, 1);
-        await course.save();
-      }
-
       return section;
     }
 

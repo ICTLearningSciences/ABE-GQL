@@ -12,10 +12,10 @@ import {
   GraphQLList,
   GraphQLString,
 } from "graphql";
+import CourseModel, { Course } from "./Course";
 
 export interface InstructorData extends Document {
   userId: string;
-  courseIds: string[];
   name: string;
 }
 
@@ -24,7 +24,15 @@ export const InstructorDataType = new GraphQLObjectType({
   fields: () => ({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
-    courseIds: { type: new GraphQLList(GraphQLID) },
+    courseIds: {
+      type: new GraphQLList(GraphQLID),
+      resolve: async (instructor: InstructorData) => {
+        const courses = await CourseModel.find({
+          instructorId: instructor.userId,
+        });
+        return courses.map((course: Course) => course._id.toString());
+      },
+    },
     name: { type: GraphQLString },
   }),
 });
@@ -33,7 +41,6 @@ export const InstructorDataInputType = new GraphQLInputObjectType({
   name: "InstructorDataInputType",
   fields: () => ({
     userId: { type: GraphQLID },
-    courseIds: { type: new GraphQLList(GraphQLID) },
     name: { type: GraphQLString },
   }),
 });
@@ -41,7 +48,6 @@ export const InstructorDataInputType = new GraphQLInputObjectType({
 export const InstructorDataSchema = new Schema<InstructorData>(
   {
     userId: { type: String, required: true, unique: true },
-    courseIds: [{ type: String, required: true }],
     name: { type: String },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }

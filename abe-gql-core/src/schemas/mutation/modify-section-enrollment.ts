@@ -89,7 +89,7 @@ export const modifySectionEnrollment = {
         );
       }
 
-      if (!course.sectionIds.includes(args.sectionId)) {
+      if (section.courseId !== args.courseId) {
         throw new Error("section does not belong to the specified course");
       }
 
@@ -101,9 +101,11 @@ export const modifySectionEnrollment = {
       studentData.enrolledSections.splice(sectionIndex, 1);
 
       // Check if user is still enrolled in any other sections of this course
-      const remainingSectionsInCourse = studentData.enrolledSections.filter(
-        (enrolledSectionId) => course.sectionIds.includes(enrolledSectionId)
-      );
+      const enrolledSections = await SectionModel.find({
+        _id: { $in: studentData.enrolledSections },
+        courseId: args.courseId,
+      });
+      const remainingSectionsInCourse = enrolledSections;
 
       // If no other sections in this course, remove the course from enrolledCourses
       if (remainingSectionsInCourse.length === 0) {
@@ -124,8 +126,8 @@ export const modifySectionEnrollment = {
       if (!section) {
         throw new Error("section not found with the provided section code");
       }
-      // uses $in operator to find course by sectionId
-      const course = await CourseModel.findOne({ sectionIds: section._id });
+      // Find course using section's courseId
+      const course = await CourseModel.findById(section.courseId);
       if (!course) {
         throw new Error("course not found for the specified section");
       }

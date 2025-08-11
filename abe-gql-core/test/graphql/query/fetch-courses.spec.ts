@@ -81,7 +81,7 @@ describe("fetch courses", () => {
       title: "Instructor Course 1",
       description: "First course by instructor",
       instructorId: instructorUserId,
-      sectionIds: [],
+
       deleted: false,
     });
 
@@ -90,7 +90,7 @@ describe("fetch courses", () => {
       title: "Instructor Course 2",
       description: "Second course by instructor",
       instructorId: instructorUserId,
-      sectionIds: [],
+
       deleted: false,
     });
 
@@ -116,7 +116,7 @@ describe("fetch courses", () => {
       title: "Another Instructor Course",
       description: "Course by another instructor",
       instructorId: anotherInstructorId,
-      sectionIds: [],
+
       deleted: false,
     });
 

@@ -16,6 +16,7 @@ import { UserRole, EducationalRole } from "../../../src/schemas/models/User";
 import UserModel from "../../../src/schemas/models/User";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
+import CourseModel from "../../../src/schemas/models/Course";
 import mongoose from "mongoose";
 
 const { ObjectId } = mongoose.Types;
@@ -85,10 +86,54 @@ describe("fetch students in my courses", () => {
       educationalRole: EducationalRole.STUDENT,
     });
 
-    // Create instructor data with courses
+    // Create instructor data
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [courseId1, courseId2],
+    });
+
+    // Create courses for the instructor
+    await CourseModel.create({
+      _id: courseId1,
+      title: "Course 1",
+      description: "First course",
+      instructorId: instructorUserId,
+
+      deleted: false,
+    });
+
+    await CourseModel.create({
+      _id: courseId2,
+      title: "Course 2",
+      description: "Second course",
+      instructorId: instructorUserId,
+
+      deleted: false,
+    });
+
+    // Create a different instructor and their course (to test students not in main instructor's courses)
+    const differentInstructorId = new ObjectId().toString();
+
+    await UserModel.create({
+      _id: differentInstructorId,
+      googleId: "different-instructor-google-id",
+      name: "Different Instructor",
+      email: "different@test.com",
+      userRole: "USER",
+      loginService: "GOOGLE",
+      educationalRole: EducationalRole.INSTRUCTOR,
+    });
+
+    await InstructorDataModel.create({
+      userId: differentInstructorId,
+    });
+
+    await CourseModel.create({
+      _id: courseId3,
+      title: "Course 3",
+      description: "Third course",
+      instructorId: differentInstructorId,
+
+      deleted: false,
     });
 
     // Create student data with enrolled courses
@@ -268,7 +313,6 @@ describe("fetch students in my courses", () => {
 
     await InstructorDataModel.create({
       userId: instructorWithoutCoursesId,
-      courseIds: [],
     });
 
     const token = await getToken(instructorWithoutCoursesId, UserRole.USER);
@@ -311,7 +355,16 @@ describe("fetch students in my courses", () => {
 
     await InstructorDataModel.create({
       userId: instructorWithoutStudentsId,
-      courseIds: [unusedCourseId],
+    });
+
+    // Create a course for this instructor but no students enrolled
+    await CourseModel.create({
+      _id: unusedCourseId,
+      title: "Unused Course",
+      description: "Course with no students",
+      instructorId: instructorWithoutStudentsId,
+
+      deleted: false,
     });
 
     const token = await getToken(instructorWithoutStudentsId, UserRole.USER);

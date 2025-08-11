@@ -53,7 +53,7 @@ describe("modify course enrollment", () => {
       title: "Test Course",
       description: "Test Description",
       instructorId: instructorUserId,
-      sectionIds: [],
+
       deleted: false,
     });
   });
