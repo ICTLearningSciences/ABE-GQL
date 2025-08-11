@@ -18,6 +18,7 @@ import CourseModel from "../../../src/schemas/models/Course";
 import SectionModel from "../../../src/schemas/models/Section";
 import AssignmentModel from "../../../src/schemas/models/Assignment";
 import mongoose from "mongoose";
+import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -39,6 +40,19 @@ describe("modify student assignment progress", () => {
     courseId = new ObjectId().toString();
     sectionId = new ObjectId().toString();
     assignmentId = new ObjectId().toString();
+
+    await StudentDataModel.create({
+      userId: studentUserId,
+      enrolledCourses: [courseId],
+      enrolledSections: [sectionId],
+      assignmentProgress: [],
+      deleted: false,
+    });
+
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courseIds: [],
+    });
 
     await AssignmentModel.create({
       _id: assignmentId,
@@ -71,14 +85,6 @@ describe("modify student assignment progress", () => {
       description: "Test Description",
       instructorId: instructorUserId,
       sectionIds: [sectionId],
-      deleted: false,
-    });
-
-    await StudentDataModel.create({
-      userId: studentUserId,
-      enrolledCourses: [courseId],
-      enrolledSections: [sectionId],
-      assignmentProgress: [],
       deleted: false,
     });
   });
@@ -120,7 +126,6 @@ describe("modify student assignment progress", () => {
         },
       });
 
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
@@ -192,17 +197,20 @@ describe("modify student assignment progress", () => {
   });
 
   it("allows updating existing assignment progress", async () => {
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.assignmentProgress.push({
-      assignmentId: assignmentId,
-      activityCompletions: [
-        { activityId: "activity1", complete: true },
-        { activityId: "activity2", complete: true },
-      ],
-    });
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      {
+        $push: {
+          assignmentProgress: {
+            assignmentId: assignmentId,
+            activityCompletions: [
+              { activityId: "activity1", complete: true },
+              { activityId: "activity2", complete: true },
+            ],
+          },
+        },
+      }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 

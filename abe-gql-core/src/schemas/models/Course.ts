@@ -13,6 +13,9 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from "graphql";
+import { validateIds } from "helpers";
+import SectionModel from "./Section";
+import InstructorDataModel from "./InstructorData";
 
 export interface Course {
   _id: string;
@@ -49,8 +52,29 @@ export const CourseSchema = new Schema<Course>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    instructorId: { type: String, required: true },
-    sectionIds: [{ type: String, required: true }],
+    instructorId: {
+      type: String,
+      required: true,
+      validate: {
+        validator: async (instructorId: string) => {
+          return await validateIds(
+            "userId",
+            [instructorId],
+            InstructorDataModel
+          );
+        },
+      },
+    },
+    sectionIds: {
+      type: [String],
+      ref: "Section",
+      default: [],
+      validate: {
+        validator: async (collectionIds: string[]) => {
+          return await validateIds("_id", collectionIds, SectionModel);
+        },
+      },
+    },
     deleted: { type: Boolean, required: true, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }

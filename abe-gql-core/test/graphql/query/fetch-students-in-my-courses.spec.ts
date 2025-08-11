@@ -366,7 +366,6 @@ describe("fetch students in my courses", () => {
           instructorId: instructorUserId,
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>

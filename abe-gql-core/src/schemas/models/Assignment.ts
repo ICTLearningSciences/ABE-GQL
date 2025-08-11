@@ -13,6 +13,9 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from "graphql";
+import { validateIds } from "../../helpers";
+import InstructorDataModel from "./InstructorData";
+import UserModel from "./User";
 
 export interface Assignment {
   _id: string;
@@ -50,7 +53,21 @@ export const AssignmentSchema = new Schema<Assignment>(
     title: { type: String, default: "" },
     description: { type: String, default: "" },
     activityIds: { type: [String], required: true },
-    instructorId: { type: String, required: true },
+    instructorId: {
+      type: String,
+      required: true,
+      validate: {
+        validator: async (instructorId: string) => {
+          return (
+            (await validateIds(
+              "userId",
+              [instructorId],
+              InstructorDataModel
+            )) || (await validateIds("_id", [instructorId], UserModel))
+          );
+        },
+      },
+    },
     deleted: { type: Boolean, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }

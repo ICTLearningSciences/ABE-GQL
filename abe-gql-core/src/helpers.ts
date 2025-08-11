@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import Ajv from "ajv";
 const ajv = new Ajv();
 import * as dotenv from "dotenv";
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 import GDocVersionModel, {
   VersionType,
 } from "./schemas/models/GoogleDocVersion";
@@ -216,4 +216,14 @@ export function getDeltaDoc(
   deltaDoc.plainTextDelta = JSON.stringify(plainDiff);
   deltaDoc.markdownTextDelta = JSON.stringify(markdownDiff);
   return deltaDoc;
+}
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export async function validateIds<T extends Model<any>>(
+  idField: string,
+  ids: string[],
+  model: T
+): Promise<boolean> {
+  const documents = await model.find().where(idField).in(ids);
+  return documents.length === ids.length;
 }

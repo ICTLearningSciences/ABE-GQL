@@ -16,6 +16,7 @@ import { UserRole } from "../../../src/schemas/models/User";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import CourseModel from "../../../src/schemas/models/Course";
 import mongoose from "mongoose";
+import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -34,13 +35,9 @@ describe("modify course enrollment", () => {
     studentUserId = "5ffdf1231ee2c62320b49b99";
     courseId = new ObjectId().toString();
 
-    await CourseModel.create({
-      _id: courseId,
-      title: "Test Course",
-      description: "Test Description",
-      instructorId: instructorUserId,
-      sectionIds: [],
-      deleted: false,
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courseIds: [],
     });
 
     await StudentDataModel.create({
@@ -48,6 +45,15 @@ describe("modify course enrollment", () => {
       enrolledCourses: [],
       enrolledSections: [],
       assignmentProgress: [],
+      deleted: false,
+    });
+
+    await CourseModel.create({
+      _id: courseId,
+      title: "Test Course",
+      description: "Test Description",
+      instructorId: instructorUserId,
+      sectionIds: [],
       deleted: false,
     });
   });
@@ -125,11 +131,10 @@ describe("modify course enrollment", () => {
   });
 
   it("allows instructor to remove a student from their course", async () => {
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.enrolledCourses.push(courseId);
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledCourses: courseId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 
@@ -335,11 +340,10 @@ describe("modify course enrollment", () => {
   });
 
   it("throws error when trying to enroll user already enrolled", async () => {
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.enrolledCourses.push(courseId);
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledCourses: courseId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 

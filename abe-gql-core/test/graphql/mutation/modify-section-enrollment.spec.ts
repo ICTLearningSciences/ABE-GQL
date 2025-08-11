@@ -17,6 +17,7 @@ import StudentDataModel from "../../../src/schemas/models/StudentData";
 import CourseModel from "../../../src/schemas/models/Course";
 import SectionModel from "../../../src/schemas/models/Section";
 import mongoose from "mongoose";
+import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -37,6 +38,19 @@ describe("modify section enrollment", () => {
     courseId = new ObjectId().toString();
     sectionId = new ObjectId().toString();
 
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courseIds: [],
+    });
+
+    await StudentDataModel.create({
+      userId: studentUserId,
+      enrolledCourses: [],
+      enrolledSections: [],
+      assignmentProgress: [],
+      deleted: false,
+    });
+
     await SectionModel.create({
       _id: sectionId,
       title: "Test Section",
@@ -54,14 +68,6 @@ describe("modify section enrollment", () => {
       description: "Test Description",
       instructorId: instructorUserId,
       sectionIds: [sectionId],
-      deleted: false,
-    });
-
-    await StudentDataModel.create({
-      userId: studentUserId,
-      enrolledCourses: [],
-      enrolledSections: [],
-      assignmentProgress: [],
       deleted: false,
     });
   });
@@ -140,11 +146,10 @@ describe("modify section enrollment", () => {
   });
 
   it("allows instructor to remove a student from a section", async () => {
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.enrolledSections.push(sectionId);
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledSections: sectionId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 
@@ -392,11 +397,10 @@ describe("modify section enrollment", () => {
   });
 
   it("throws error when trying to enroll user already enrolled", async () => {
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.enrolledSections.push(sectionId);
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledSections: sectionId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 
@@ -540,12 +544,10 @@ describe("modify section enrollment", () => {
   });
 
   it("allows removal regardless of sectionCode (sectionCode only validated for ENROLL)", async () => {
-    // First enroll the student
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.enrolledSections.push(sectionId);
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledSections: sectionId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 
@@ -578,12 +580,10 @@ describe("modify section enrollment", () => {
 
   it("removes course from enrolledCourses when user has no other sections in that course", async () => {
     // First enroll the student in both section and course
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    studentData?.enrolledSections.push(sectionId);
-    studentData?.enrolledCourses.push(courseId);
-    await studentData?.save();
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledSections: sectionId, enrolledCourses: courseId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 

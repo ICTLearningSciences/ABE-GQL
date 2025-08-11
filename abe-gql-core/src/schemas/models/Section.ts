@@ -14,6 +14,9 @@ import {
   GraphQLBoolean,
   GraphQLInt,
 } from "graphql";
+import { validateIds } from "helpers";
+import AssignmentModel from "./Assignment";
+import InstructorDataModel from "./InstructorData";
 
 export interface SectionAssignment {
   assignmentId: string;
@@ -83,8 +86,29 @@ export const SectionSchema = new Schema<Section>(
     title: { type: String, default: "" },
     sectionCode: { type: String, default: "" },
     description: { type: String, default: "" },
-    instructorId: { type: String, required: true },
-    assignments: { type: [SectionAssignmentSchema], default: [] },
+    instructorId: {
+      type: String,
+      required: true,
+      validate: {
+        validator: async (instructorId: string) => {
+          return await validateIds(
+            "userId",
+            [instructorId],
+            InstructorDataModel
+          );
+        },
+      },
+    },
+    assignments: {
+      type: [SectionAssignmentSchema],
+      default: [],
+      validate: {
+        validator: async (assignments: SectionAssignment[]) => {
+          const assignmentIds = assignments.map((a) => a.assignmentId);
+          return await validateIds("_id", assignmentIds, AssignmentModel);
+        },
+      },
+    },
     numOptionalAssignmentsRequired: {
       type: Number,
       default: 0,

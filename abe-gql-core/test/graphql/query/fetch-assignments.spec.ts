@@ -18,6 +18,7 @@ import AssignmentModel from "../../../src/schemas/models/Assignment";
 import SectionModel from "../../../src/schemas/models/Section";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
+import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -46,7 +47,6 @@ describe("fetch assignments", () => {
     sectionId2 = new ObjectId().toString();
     sectionId3 = new ObjectId().toString();
 
-    // Create instructor user
     await UserModel.create({
       _id: instructorUserId,
       googleId: "instructor-google-id",
@@ -57,7 +57,6 @@ describe("fetch assignments", () => {
       educationalRole: EducationalRole.INSTRUCTOR,
     });
 
-    // Create student user
     await UserModel.create({
       _id: studentUserId,
       googleId: "student-google-id",
@@ -66,6 +65,19 @@ describe("fetch assignments", () => {
       userRole: "USER",
       loginService: "GOOGLE",
       educationalRole: EducationalRole.STUDENT,
+    });
+
+    await StudentDataModel.create({
+      userId: studentUserId,
+      enrolledCourses: [],
+      enrolledSections: [],
+      assignmentProgress: [],
+      deleted: false,
+    });
+
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courseIds: [],
     });
 
     // Create assignments for instructor
@@ -97,6 +109,11 @@ describe("fetch assignments", () => {
       userRole: "USER",
       loginService: "GOOGLE",
       educationalRole: EducationalRole.INSTRUCTOR,
+    });
+
+    await InstructorDataModel.create({
+      userId: anotherInstructorId,
+      courseIds: [],
     });
 
     await AssignmentModel.create({
@@ -161,14 +178,14 @@ describe("fetch assignments", () => {
       deleted: false,
     });
 
-    // Create student data with enrolled sections
-    await StudentDataModel.create({
-      userId: studentUserId,
-      enrolledCourses: [],
-      enrolledSections: [sectionId1, sectionId3],
-      assignmentProgress: [],
-      deleted: false,
-    });
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      {
+        $push: {
+          enrolledSections: [sectionId1, sectionId3],
+        },
+      }
+    );
   });
 
   afterEach(async () => {

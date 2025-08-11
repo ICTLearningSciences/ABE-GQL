@@ -17,6 +17,7 @@ import UserModel from "../../../src/schemas/models/User";
 import CourseModel from "../../../src/schemas/models/Course";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
+import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -50,6 +51,11 @@ describe("fetch courses", () => {
       educationalRole: EducationalRole.INSTRUCTOR,
     });
 
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courseIds: [],
+    });
+
     // Create student user
     await UserModel.create({
       _id: studentUserId,
@@ -59,6 +65,14 @@ describe("fetch courses", () => {
       userRole: "USER",
       loginService: "GOOGLE",
       educationalRole: EducationalRole.STUDENT,
+    });
+
+    await StudentDataModel.create({
+      userId: studentUserId,
+      enrolledCourses: [],
+      enrolledSections: [],
+      assignmentProgress: [],
+      deleted: false,
     });
 
     // Create courses for instructor
@@ -92,6 +106,11 @@ describe("fetch courses", () => {
       educationalRole: EducationalRole.INSTRUCTOR,
     });
 
+    await InstructorDataModel.create({
+      userId: anotherInstructorId,
+      courseIds: [],
+    });
+
     await CourseModel.create({
       _id: courseId3,
       title: "Another Instructor Course",
@@ -101,14 +120,14 @@ describe("fetch courses", () => {
       deleted: false,
     });
 
-    // Create student data with enrolled courses
-    await StudentDataModel.create({
-      userId: studentUserId,
-      enrolledCourses: [courseId1, courseId3],
-      enrolledSections: [],
-      assignmentProgress: [],
-      deleted: false,
-    });
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      {
+        $push: {
+          enrolledCourses: [courseId1, courseId3],
+        },
+      }
+    );
   });
 
   afterEach(async () => {
@@ -424,7 +443,6 @@ describe("fetch courses", () => {
           forUserId: "000000000000000000000000",
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>

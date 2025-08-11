@@ -17,6 +17,7 @@ import UserModel from "../../../src/schemas/models/User";
 import SectionModel from "../../../src/schemas/models/Section";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
+import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -50,6 +51,11 @@ describe("fetch sections", () => {
       educationalRole: EducationalRole.INSTRUCTOR,
     });
 
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courseIds: [],
+    });
+
     // Create student user
     await UserModel.create({
       _id: studentUserId,
@@ -59,6 +65,14 @@ describe("fetch sections", () => {
       userRole: "USER",
       loginService: "GOOGLE",
       educationalRole: EducationalRole.STUDENT,
+    });
+
+    await StudentDataModel.create({
+      userId: studentUserId,
+      enrolledCourses: [],
+      enrolledSections: [],
+      assignmentProgress: [],
+      deleted: false,
     });
 
     // Create sections for instructor
@@ -96,6 +110,11 @@ describe("fetch sections", () => {
       educationalRole: EducationalRole.INSTRUCTOR,
     });
 
+    await InstructorDataModel.create({
+      userId: anotherInstructorId,
+      courseIds: [],
+    });
+
     await SectionModel.create({
       _id: sectionId3,
       title: "Another Instructor Section",
@@ -107,14 +126,10 @@ describe("fetch sections", () => {
       deleted: false,
     });
 
-    // Create student data with enrolled sections
-    await StudentDataModel.create({
-      userId: studentUserId,
-      enrolledCourses: [],
-      enrolledSections: [sectionId1, sectionId3],
-      assignmentProgress: [],
-      deleted: false,
-    });
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      { $push: { enrolledSections: [sectionId1, sectionId3] } }
+    );
   });
 
   afterEach(async () => {

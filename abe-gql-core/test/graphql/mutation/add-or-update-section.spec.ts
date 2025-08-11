@@ -17,6 +17,7 @@ import SectionModel from "../../../src/schemas/models/Section";
 import CourseModel from "../../../src/schemas/models/Course";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 import mongoose from "mongoose";
+import StudentDataModel from "../../../src/schemas/models/StudentData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -25,6 +26,8 @@ describe("add or update section", () => {
   let instructorUserId: string;
   let courseId: string;
   let sectionId: string;
+  let adminUserId: string;
+  let regularUserId: string;
 
   beforeEach(async () => {
     await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
@@ -34,10 +37,30 @@ describe("add or update section", () => {
     instructorUserId = "5ffdf1231ee2c62320b49a99";
     courseId = new ObjectId().toString();
     sectionId = new ObjectId().toString();
+    adminUserId = "5ffdf1231ee2c62320b49c99";
+    regularUserId = "5ffdf1231ee2c62320b49b99";
 
     await InstructorDataModel.create({
+      userId: adminUserId,
+      courseIds: [],
+    });
+    await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [courseId],
+      courseIds: [],
+    });
+    await StudentDataModel.create({
+      userId: regularUserId,
+    });
+
+    await SectionModel.create({
+      _id: sectionId,
+      title: "Original Section",
+      sectionCode: "ORIG001",
+      description: "Original Description",
+      instructorId: instructorUserId,
+      assignments: [],
+      numOptionalAssignmentsRequired: 0,
+      deleted: false,
     });
 
     await CourseModel.create({
@@ -126,16 +149,7 @@ describe("add or update section", () => {
             title: "Custom Section Title",
             sectionCode: "CUSTOM001",
             description: "Custom Section Description",
-            assignments: [
-              {
-                assignmentId: "assignment1",
-                mandatory: true,
-              },
-              {
-                assignmentId: "assignment2",
-                mandatory: false,
-              },
-            ],
+            assignments: [],
             numOptionalAssignmentsRequired: 2,
           },
           action: "CREATE",
@@ -149,16 +163,7 @@ describe("add or update section", () => {
     expect(sectionData.sectionCode).to.equal("CUSTOM001");
     expect(sectionData.description).to.equal("Custom Section Description");
     expect(sectionData.instructorId).to.equal(instructorUserId);
-    expect(sectionData.assignments).to.deep.equal([
-      {
-        assignmentId: "assignment1",
-        mandatory: true,
-      },
-      {
-        assignmentId: "assignment2",
-        mandatory: false,
-      },
-    ]);
+    expect(sectionData.assignments).to.deep.equal([]);
     expect(sectionData.numOptionalAssignmentsRequired).to.equal(2);
     expect(sectionData.deleted).to.be.false;
 
@@ -167,7 +172,6 @@ describe("add or update section", () => {
   });
 
   it("allows admin to create a new section even without instructor data", async () => {
-    const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);
 
     const response = await request(app)
@@ -195,17 +199,6 @@ describe("add or update section", () => {
   });
 
   it("allows instructor to modify their own section", async () => {
-    await SectionModel.create({
-      _id: sectionId,
-      title: "Original Section",
-      sectionCode: "ORIG001",
-      description: "Original Description",
-      instructorId: instructorUserId,
-      assignments: [],
-      numOptionalAssignmentsRequired: 0,
-      deleted: false,
-    });
-
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
@@ -246,20 +239,10 @@ describe("add or update section", () => {
   });
 
   it("allows instructor to delete their own section", async () => {
-    const course = await CourseModel.findById(courseId);
-    course?.sectionIds.push(sectionId);
-    await course?.save();
-
-    await SectionModel.create({
-      _id: sectionId,
-      title: "Section to Delete",
-      sectionCode: "DEL001",
-      description: "Section Description",
-      instructorId: instructorUserId,
-      assignments: [],
-      numOptionalAssignmentsRequired: 0,
-      deleted: false,
-    });
+    await CourseModel.findOneAndUpdate(
+      { _id: courseId },
+      { $push: { sectionIds: sectionId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 
@@ -297,18 +280,6 @@ describe("add or update section", () => {
   });
 
   it("allows admin to modify any section", async () => {
-    await SectionModel.create({
-      _id: sectionId,
-      title: "Original Section",
-      sectionCode: "ORIG001",
-      description: "Original Description",
-      instructorId: instructorUserId,
-      assignments: [],
-      numOptionalAssignmentsRequired: 0,
-      deleted: false,
-    });
-
-    const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);
 
     const response = await request(app)
@@ -341,7 +312,6 @@ describe("add or update section", () => {
   });
 
   it("throws error when non-instructor tries to create section", async () => {
-    const regularUserId = "5ffdf1231ee2c62320b49b99";
     const token = await getToken(regularUserId, UserRole.USER);
 
     const response = await request(app)

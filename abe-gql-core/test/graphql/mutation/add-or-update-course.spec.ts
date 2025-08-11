@@ -23,6 +23,7 @@ describe("add or update course", () => {
   let app: Express;
   let instructorUserId: string;
   let courseId: string;
+  let adminUserId: string;
 
   beforeEach(async () => {
     await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
@@ -31,11 +32,28 @@ describe("add or update course", () => {
 
     instructorUserId = "5ffdf1231ee2c62320b49a99";
     courseId = new ObjectId().toString();
-
+    adminUserId = "5ffdf1231ee2c62320b49c99";
+    await InstructorDataModel.create({
+      userId: adminUserId,
+      courseIds: [],
+    });
     await InstructorDataModel.create({
       userId: instructorUserId,
       courseIds: [],
     });
+
+    await CourseModel.create({
+      _id: courseId,
+      title: "New Course",
+      description: "Course description",
+      instructorId: instructorUserId,
+      sectionIds: [],
+    });
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: adminUserId },
+      { $push: { courseIds: courseId } }
+    );
   });
 
   afterEach(async () => {
@@ -102,12 +120,11 @@ describe("add or update course", () => {
           courseData: {
             title: "Custom Course Title",
             description: "Custom Course Description",
-            sectionIds: ["section1", "section2"],
+            sectionIds: [],
           },
           action: "CREATE",
         },
       });
-
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
@@ -115,7 +132,7 @@ describe("add or update course", () => {
     expect(courseData.title).to.equal("Custom Course Title");
     expect(courseData.description).to.equal("Custom Course Description");
     expect(courseData.instructorId).to.equal(instructorUserId);
-    expect(courseData.sectionIds).to.deep.equal(["section1", "section2"]);
+    expect(courseData.sectionIds).to.deep.equal([]);
     expect(courseData.deleted).to.be.false;
 
     const instructorData = await InstructorDataModel.findOne({
@@ -125,7 +142,6 @@ describe("add or update course", () => {
   });
 
   it("allows admin to create a new course even without instructor data", async () => {
-    const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);
 
     const response = await request(app)
@@ -146,7 +162,6 @@ describe("add or update course", () => {
           action: "CREATE",
         },
       });
-
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
@@ -157,15 +172,6 @@ describe("add or update course", () => {
   });
 
   it("allows instructor to modify their own course", async () => {
-    const course = await CourseModel.create({
-      _id: courseId,
-      title: "Original Title",
-      description: "Original Description",
-      instructorId: instructorUserId,
-      sectionIds: [],
-      deleted: false,
-    });
-
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
@@ -205,20 +211,10 @@ describe("add or update course", () => {
   });
 
   it("allows instructor to delete their own course", async () => {
-    const instructorData = await InstructorDataModel.findOne({
-      userId: instructorUserId,
-    });
-    instructorData?.courseIds.push(courseId);
-    await instructorData?.save();
-
-    await CourseModel.create({
-      _id: courseId,
-      title: "Course to Delete",
-      description: "Course Description",
-      instructorId: instructorUserId,
-      sectionIds: [],
-      deleted: false,
-    });
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      { $push: { courseIds: courseId } }
+    );
 
     const token = await getToken(instructorUserId, UserRole.USER);
 
@@ -263,16 +259,6 @@ describe("add or update course", () => {
   });
 
   it("allows admin to modify any course", async () => {
-    await CourseModel.create({
-      _id: courseId,
-      title: "Original Title",
-      description: "Original Description",
-      instructorId: instructorUserId,
-      sectionIds: [],
-      deleted: false,
-    });
-
-    const adminUserId = "5ffdf1231ee2c62320b49c99";
     const token = await getToken(adminUserId, UserRole.ADMIN);
 
     const response = await request(app)
@@ -382,8 +368,9 @@ describe("add or update course", () => {
 
   it("throws error when instructor tries to modify another instructor's course", async () => {
     const anotherInstructorId = "5ffdf1231ee2c62320b49c99";
+    const newCourseId = new ObjectId().toString();
     await CourseModel.create({
-      _id: courseId,
+      _id: newCourseId,
       title: "Another Instructor's Course",
       description: "Course Description",
       instructorId: anotherInstructorId,
@@ -404,7 +391,7 @@ describe("add or update course", () => {
         }`,
         variables: {
           courseData: {
-            _id: courseId,
+            _id: newCourseId,
             title: "Hacked Title",
           },
           action: "MODIFY",
