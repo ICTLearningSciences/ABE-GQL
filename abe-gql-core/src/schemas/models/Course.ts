@@ -14,15 +14,15 @@ import {
   GraphQLBoolean,
 } from "graphql";
 import { validateIds } from "helpers";
+import SectionModel from "./Section";
 import InstructorDataModel from "./InstructorData";
-import SectionModel, { Section } from "./Section";
 
 export interface Course {
   _id: string;
   title: string;
   description: string;
   instructorId: string;
-  sharedWithInstructors: string[];
+  sectionIds: string[];
   deleted: boolean;
 }
 
@@ -33,16 +33,7 @@ export const CourseType = new GraphQLObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
-    sharedWithInstructors: {
-      type: new GraphQLList(GraphQLID),
-    },
-    sectionIds: {
-      type: new GraphQLList(GraphQLID),
-      resolve: async (course: Course) => {
-        const sections = await SectionModel.find({ courseId: course._id });
-        return sections.map((section: Section) => section._id.toString());
-      },
-    },
+    sectionIds: { type: new GraphQLList(GraphQLID) },
     deleted: { type: GraphQLBoolean },
   }),
 });
@@ -53,6 +44,7 @@ export const CourseInputType = new GraphQLInputObjectType({
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
+    sectionIds: { type: new GraphQLList(GraphQLID) },
   }),
 });
 
@@ -60,19 +52,6 @@ export const CourseSchema = new Schema<Course>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    sharedWithInstructors: {
-      type: [String],
-      default: [],
-      validate: {
-        validator: async (instructorIds: string[]) => {
-          return await validateIds(
-            "userId",
-            instructorIds,
-            InstructorDataModel
-          );
-        },
-      },
-    },
     instructorId: {
       type: String,
       required: true,
@@ -83,6 +62,16 @@ export const CourseSchema = new Schema<Course>(
             [instructorId],
             InstructorDataModel
           );
+        },
+      },
+    },
+    sectionIds: {
+      type: [String],
+      ref: "Section",
+      default: [],
+      validate: {
+        validator: async (collectionIds: string[]) => {
+          return await validateIds("_id", collectionIds, SectionModel);
         },
       },
     },

@@ -12,7 +12,6 @@ import {
 } from "graphql";
 import { UserRole } from "../models/User";
 import InstructorDataModel from "../models/InstructorData";
-import CourseModel from "../models/Course";
 import StudentDataModel, { StudentDataType } from "../models/StudentData";
 
 export const fetchStudentsInMyCourses = {
@@ -53,12 +52,8 @@ export const fetchStudentsInMyCourses = {
       throw new Error("Only for instructors/admins");
     }
 
-    // Get courses for this instructor
-    const courses = await CourseModel.find({ instructorId: args.instructorId });
-    const courseIds = courses.map((course) => course._id.toString());
-
     const studentDataDocuments = await StudentDataModel.find({
-      enrolledCourses: { $in: courseIds },
+      enrolledCourses: { $in: instructorData.courseIds },
     });
 
     return studentDataDocuments;

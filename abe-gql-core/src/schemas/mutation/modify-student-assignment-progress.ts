@@ -84,7 +84,7 @@ export const modifyStudentAssignmentProgress = {
       );
     }
 
-    if (section.courseId !== args.courseId) {
+    if (!course.sectionIds.includes(args.sectionId)) {
       throw new Error("section does not belong to the specified course");
     }
 

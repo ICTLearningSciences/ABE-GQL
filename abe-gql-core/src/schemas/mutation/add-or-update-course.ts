@@ -54,11 +54,18 @@ export const addOrUpdateCourse = {
       const newCourse = new CourseModel({
         title: args.courseData?.title || "New Course",
         description: args.courseData?.description || "Course description",
+        sectionIds: args.courseData?.sectionIds || [],
         instructorId: context.userId,
         deleted: false,
       });
 
       await newCourse.save();
+
+      if (instructorData) {
+        instructorData.courseIds.push(newCourse._id.toString());
+        await instructorData.save();
+      }
+
       return newCourse;
     }
 
@@ -85,6 +92,17 @@ export const addOrUpdateCourse = {
     if (args.action === "DELETE") {
       course.deleted = true;
       await course.save();
+
+      if (instructorData) {
+        const courseIndex = instructorData.courseIds.indexOf(
+          args.courseData._id
+        );
+        if (courseIndex !== -1) {
+          instructorData.courseIds.splice(courseIndex, 1);
+          await instructorData.save();
+        }
+      }
+
       return course;
     }
 

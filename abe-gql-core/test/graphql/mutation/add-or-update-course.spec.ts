@@ -35,9 +35,11 @@ describe("add or update course", () => {
     adminUserId = "5ffdf1231ee2c62320b49c99";
     await InstructorDataModel.create({
       userId: adminUserId,
+      courseIds: [],
     });
     await InstructorDataModel.create({
       userId: instructorUserId,
+      courseIds: [],
     });
 
     await CourseModel.create({
@@ -45,7 +47,13 @@ describe("add or update course", () => {
       title: "New Course",
       description: "Course description",
       instructorId: instructorUserId,
+      sectionIds: [],
     });
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: adminUserId },
+      { $push: { courseIds: courseId } }
+    );
   });
 
   afterEach(async () => {
@@ -85,13 +93,10 @@ describe("add or update course", () => {
     expect(courseData.sectionIds).to.be.an("array").that.is.empty;
     expect(courseData.deleted).to.be.false;
 
-    // Verify the relationship exists via Course model
-    const coursesForInstructor = await CourseModel.find({
-      instructorId: instructorUserId,
+    const instructorData = await InstructorDataModel.findOne({
+      userId: instructorUserId,
     });
-    expect(coursesForInstructor.map((c) => c._id.toString())).to.include(
-      courseData._id
-    );
+    expect(instructorData?.courseIds).to.include(courseData._id);
   });
 
   it("allows instructor to create a new course with input data as defaults", async () => {
@@ -115,6 +120,7 @@ describe("add or update course", () => {
           courseData: {
             title: "Custom Course Title",
             description: "Custom Course Description",
+            sectionIds: [],
           },
           action: "CREATE",
         },
@@ -129,13 +135,10 @@ describe("add or update course", () => {
     expect(courseData.sectionIds).to.deep.equal([]);
     expect(courseData.deleted).to.be.false;
 
-    // Verify the relationship exists via Course model
-    const coursesForInstructor = await CourseModel.find({
-      instructorId: instructorUserId,
+    const instructorData = await InstructorDataModel.findOne({
+      userId: instructorUserId,
     });
-    expect(coursesForInstructor.map((c) => c._id.toString())).to.include(
-      courseData._id
-    );
+    expect(instructorData?.courseIds).to.include(courseData._id);
   });
 
   it("allows admin to create a new course even without instructor data", async () => {
@@ -208,6 +211,11 @@ describe("add or update course", () => {
   });
 
   it("allows instructor to delete their own course", async () => {
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      { $push: { courseIds: courseId } }
+    );
+
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
@@ -244,11 +252,10 @@ describe("add or update course", () => {
     // pre-filter from deleting the course
     expect(deletedCourse).to.not.exist;
 
-    // Verify no active courses remain for instructor
-    const activeCourses = await CourseModel.find({
-      instructorId: instructorUserId,
+    const updatedInstructorData = await InstructorDataModel.findOne({
+      userId: instructorUserId,
     });
-    expect(activeCourses).to.be.empty;
+    expect(updatedInstructorData?.courseIds).to.not.include(courseId);
   });
 
   it("allows admin to modify any course", async () => {
@@ -367,7 +374,7 @@ describe("add or update course", () => {
       title: "Another Instructor's Course",
       description: "Course Description",
       instructorId: anotherInstructorId,
-
+      sectionIds: [],
       deleted: false,
     });
 
