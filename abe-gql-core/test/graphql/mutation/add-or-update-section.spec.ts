@@ -508,4 +508,105 @@ describe("add or update section", () => {
       )
     ).to.exist;
   });
+
+  it("throws error when creating section with duplicate sectionCode", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
+          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          sectionData: {
+            sectionCode: "ORIG001",
+          },
+          action: "CREATE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("sectionCode must be unique")
+      )
+    ).to.exist;
+  });
+
+  it("throws error when modifying section with duplicate sectionCode", async () => {
+    const anotherSectionId = new ObjectId().toString();
+    await SectionModel.create({
+      _id: anotherSectionId,
+      title: "Another Section",
+      sectionCode: "ANOTHER001",
+      description: "Another Description",
+      instructorId: instructorUserId,
+      assignments: [],
+      numOptionalAssignmentsRequired: 0,
+      deleted: false,
+    });
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
+          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          sectionData: {
+            _id: anotherSectionId,
+            sectionCode: "ORIG001",
+          },
+          action: "MODIFY",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("sectionCode must be unique")
+      )
+    ).to.exist;
+  });
+
+  it("allows modifying section to same sectionCode", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
+          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+            _id
+            sectionCode
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          sectionData: {
+            _id: sectionId,
+            sectionCode: "ORIG001",
+          },
+          action: "MODIFY",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+    expect(response.body.data.addOrUpdateSection.sectionCode).to.equal(
+      "ORIG001"
+    );
+  });
 });

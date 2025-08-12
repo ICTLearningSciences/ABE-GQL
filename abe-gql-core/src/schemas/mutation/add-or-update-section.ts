@@ -72,6 +72,25 @@ export const addOrUpdateSection = {
       );
     }
 
+    if (
+      (args.action === "CREATE" || args.action === "MODIFY") &&
+      args.sectionData?.sectionCode
+    ) {
+      const query: any = {
+        sectionCode: args.sectionData.sectionCode,
+        deleted: false,
+      };
+
+      if (args.action === "MODIFY" && args.sectionData._id) {
+        query._id = { $ne: args.sectionData._id };
+      }
+
+      const existingSection = await SectionModel.findOne(query);
+      if (existingSection) {
+        throw new Error("sectionCode must be unique");
+      }
+    }
+
     if (args.action === "CREATE") {
       const newSection = new SectionModel({
         title: args.sectionData?.title || "New Section",
