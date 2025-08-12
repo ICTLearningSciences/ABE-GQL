@@ -56,7 +56,7 @@ export const fetchCourses = {
         userId: args.forUserId,
       });
       const courses = await CourseModel.find({
-        _id: { $in: instructorData.courses.map((c) => c.courseId) },
+        _id: { $in: (instructorData.courses || []).map((c) => c.courseId) },
       });
       return courses;
     }

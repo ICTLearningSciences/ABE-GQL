@@ -80,9 +80,6 @@ export const CourseSchema = new Schema<Course>(
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-CourseSchema.index({ instructorId: 1 });
-CourseSchema.index({ title: 1 });
-
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 CourseSchema.pre(/^find/, function (this: any) {
   this.where({ deleted: { $ne: true } });
