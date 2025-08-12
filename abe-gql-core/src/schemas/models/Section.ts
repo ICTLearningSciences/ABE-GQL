@@ -14,7 +14,7 @@ import {
   GraphQLBoolean,
   GraphQLInt,
 } from "graphql";
-import { validateIds } from "helpers";
+import { validateIds } from "../../helpers";
 import AssignmentModel from "./Assignment";
 import InstructorDataModel from "./InstructorData";
 

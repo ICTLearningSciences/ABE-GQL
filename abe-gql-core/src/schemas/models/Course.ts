@@ -13,7 +13,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from "graphql";
-import { validateIds } from "helpers";
+import { validateIds } from "../../helpers";
 import SectionModel from "./Section";
 import InstructorDataModel from "./InstructorData";
 

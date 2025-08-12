@@ -13,7 +13,7 @@ import {
   GraphQLEnumType,
 } from "graphql";
 import CourseModel from "./Course";
-import { validateIds } from "helpers";
+import { validateIds } from "../../helpers";
 
 export enum CourseOwnership {
   OWNER = "OWNER",
