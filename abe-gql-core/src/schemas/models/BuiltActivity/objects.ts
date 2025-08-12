@@ -20,6 +20,7 @@ export const ActivityBuilderStepType = new GraphQLObjectType({
     stepId: { type: GraphQLString },
     stepType: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
+    setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
 
@@ -29,6 +30,7 @@ export const ActivityBuilderStepTypeInput = new GraphQLInputObjectType({
     stepId: { type: GraphQLString },
     stepType: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
+    setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
 
@@ -42,6 +44,7 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
       value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
     },
     message: { type: GraphQLString },
+    setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
 
@@ -55,6 +58,7 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
       value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
     },
     message: { type: GraphQLString },
+    setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
 
@@ -102,6 +106,7 @@ export const RequestUserInputActivityStepType = new GraphQLObjectType({
     saveResponseVariableName: { type: GraphQLString },
     disableFreeInput: { type: GraphQLBoolean },
     predefinedResponses: { type: GraphQLList(PredefinedResponseType) },
+    setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
 
@@ -120,6 +125,7 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
       saveResponseVariableName: { type: GraphQLString },
       disableFreeInput: { type: GraphQLBoolean },
       predefinedResponses: { type: GraphQLList(PredefinedResponseTypeInput) },
+      setStudentActivityComplete: { type: GraphQLBoolean },
     }),
   }
 );
@@ -129,7 +135,7 @@ export const PromptActivityStepType = new GraphQLObjectType({
   fields: () => ({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
-
+    setStudentActivityComplete: { type: GraphQLBoolean },
     stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
     promptText: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
@@ -197,6 +203,7 @@ export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
   fields: () => ({
     stepId: { type: GraphQLString },
     jumpToStepId: { type: GraphQLString },
+    setStudentActivityComplete: { type: GraphQLBoolean },
     stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
     promptText: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
@@ -217,6 +224,7 @@ const ActivityBuilderStepSchema = new Schema(
     stepId: { type: String },
     stepType: { type: String },
     jumpToStepId: { type: String },
+    setStudentActivityComplete: { type: Boolean, default: false },
     // other common fields...
   },
   { timestamps: true, discriminatorKey: "stepType" } // Use stepType as the discriminator key
@@ -240,6 +248,7 @@ export const SystemMessageActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
   stepType: { type: String, default: _ActivityBuilderStepType.SYSTEM_MESSAGE },
   message: { type: String },
+  setStudentActivityComplete: { type: Boolean },
 });
 
 export const RequestUserInputActivityStepSchema = new Schema({
