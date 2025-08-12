@@ -14,9 +14,12 @@ import request from "supertest";
 import { getToken } from "../../helpers";
 import { UserRole, EducationalRole } from "../../../src/schemas/models/User";
 import UserModel from "../../../src/schemas/models/User";
-import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import InstructorDataModel, {
+  CourseOwnership,
+} from "../../../src/schemas/models/InstructorData";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
+import CourseModel from "../../../src/schemas/models/Course";
 
 const { ObjectId } = mongoose.Types;
 
@@ -54,6 +57,11 @@ describe("fetch students in my courses", () => {
       educationalRole: EducationalRole.INSTRUCTOR,
     });
 
+    await InstructorDataModel.create({
+      userId: instructorUserId,
+      courses: [],
+    });
+
     // Create student users
     await UserModel.create({
       _id: student1UserId,
@@ -85,11 +93,47 @@ describe("fetch students in my courses", () => {
       educationalRole: EducationalRole.STUDENT,
     });
 
-    // Create instructor data with courses
-    await InstructorDataModel.create({
-      userId: instructorUserId,
-      courseIds: [courseId1, courseId2],
+    await CourseModel.create({
+      _id: courseId1,
+      title: "Test Course 1",
+      description: "Test Description 1",
+      instructorId: instructorUserId,
+      deleted: false,
     });
+
+    await CourseModel.create({
+      _id: courseId2,
+      title: "Test Course 2",
+      description: "Test Description 2",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
+    await CourseModel.create({
+      _id: courseId3,
+      title: "Test Course 3",
+      description: "Test Description 3",
+      instructorId: instructorUserId,
+      deleted: false,
+    });
+
+    // Create instructor data with courses
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      {
+        $push: {
+          courses: { courseId: courseId1, ownership: CourseOwnership.OWNER },
+        },
+      }
+    );
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      {
+        $push: {
+          courses: { courseId: courseId2, ownership: CourseOwnership.OWNER },
+        },
+      }
+    );
 
     // Create student data with enrolled courses
     // Student 1 enrolled in course 1
@@ -268,7 +312,6 @@ describe("fetch students in my courses", () => {
 
     await InstructorDataModel.create({
       userId: instructorWithoutCoursesId,
-      courseIds: [],
     });
 
     const token = await getToken(instructorWithoutCoursesId, UserRole.USER);
@@ -311,8 +354,28 @@ describe("fetch students in my courses", () => {
 
     await InstructorDataModel.create({
       userId: instructorWithoutStudentsId,
-      courseIds: [unusedCourseId],
+      courses: [],
     });
+
+    await CourseModel.create({
+      _id: unusedCourseId,
+      title: "Unused Course",
+      description: "Unused Description",
+      instructorId: instructorWithoutStudentsId,
+      deleted: false,
+    });
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorWithoutStudentsId },
+      {
+        $push: {
+          courses: {
+            courseId: unusedCourseId,
+            ownership: CourseOwnership.OWNER,
+          },
+        },
+      }
+    );
 
     const token = await getToken(instructorWithoutStudentsId, UserRole.USER);
 

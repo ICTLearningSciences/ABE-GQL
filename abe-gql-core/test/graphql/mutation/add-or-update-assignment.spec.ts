@@ -16,7 +16,9 @@ import { UserRole } from "../../../src/schemas/models/User";
 import AssignmentModel from "../../../src/schemas/models/Assignment";
 import CourseModel from "../../../src/schemas/models/Course";
 import SectionModel from "../../../src/schemas/models/Section";
-import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import InstructorDataModel, {
+  CourseOwnership,
+} from "../../../src/schemas/models/InstructorData";
 import UserModel from "../../../src/schemas/models/User";
 import mongoose from "mongoose";
 
@@ -50,7 +52,6 @@ describe("add or update assignment", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     await AssignmentModel.create({
@@ -88,7 +89,11 @@ describe("add or update assignment", () => {
 
     await InstructorDataModel.findOneAndUpdate(
       { userId: instructorUserId },
-      { $push: { courseIds: courseId } }
+      {
+        $push: {
+          courses: { courseId: courseId, ownership: CourseOwnership.OWNER },
+        },
+      }
     );
   });
 
@@ -398,7 +403,6 @@ describe("add or update assignment", () => {
     const anotherInstructorId = "5ffdf1231ee2c62320b49c99";
     await InstructorDataModel.create({
       userId: anotherInstructorId,
-      courseIds: [],
     });
 
     const anotherCourseId = new ObjectId().toString();

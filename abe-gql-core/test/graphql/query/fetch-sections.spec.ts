@@ -17,17 +17,24 @@ import UserModel from "../../../src/schemas/models/User";
 import SectionModel from "../../../src/schemas/models/Section";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
-import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import InstructorDataModel, {
+  CourseOwnership,
+} from "../../../src/schemas/models/InstructorData";
+import CourseModel from "../../../src/schemas/models/Course";
 
 const { ObjectId } = mongoose.Types;
 
 describe("fetch sections", () => {
   let app: Express;
   let instructorUserId: string;
+  let anotherInstructorUserId: string;
+  let sharedInstructorUserId: string;
   let studentUserId: string;
   let sectionId1: string;
   let sectionId2: string;
   let sectionId3: string;
+  let mainInstructorCourseId: string;
+  let anotherInstructorCourseId: string;
 
   beforeEach(async () => {
     await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
@@ -35,10 +42,14 @@ describe("fetch sections", () => {
     await appStart();
 
     instructorUserId = new ObjectId().toString();
+    anotherInstructorUserId = new ObjectId().toString();
+    sharedInstructorUserId = new ObjectId().toString();
     studentUserId = new ObjectId().toString();
     sectionId1 = new ObjectId().toString();
     sectionId2 = new ObjectId().toString();
     sectionId3 = new ObjectId().toString();
+    mainInstructorCourseId = new ObjectId().toString();
+    anotherInstructorCourseId = new ObjectId().toString();
 
     // Create instructor user
     await UserModel.create({
@@ -53,7 +64,6 @@ describe("fetch sections", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     // Create student user
@@ -98,10 +108,29 @@ describe("fetch sections", () => {
       deleted: false,
     });
 
+    await CourseModel.create({
+      _id: mainInstructorCourseId,
+      title: "Instructor Course 1",
+      description: "First course by instructor",
+      instructorId: instructorUserId,
+      sectionIds: [sectionId1, sectionId2],
+    });
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      {
+        $push: {
+          courses: {
+            courseId: mainInstructorCourseId,
+            ownership: CourseOwnership.OWNER,
+          },
+        },
+      }
+    );
+
     // Create section by another instructor
-    const anotherInstructorId = new ObjectId().toString();
     await UserModel.create({
-      _id: anotherInstructorId,
+      _id: anotherInstructorUserId,
       googleId: "another-instructor-google-id",
       name: "Another Instructor",
       email: "another@test.com",
@@ -111,8 +140,7 @@ describe("fetch sections", () => {
     });
 
     await InstructorDataModel.create({
-      userId: anotherInstructorId,
-      courseIds: [],
+      userId: anotherInstructorUserId,
     });
 
     await SectionModel.create({
@@ -120,16 +148,57 @@ describe("fetch sections", () => {
       title: "Another Instructor Section",
       sectionCode: "OTHER001",
       description: "Section by another instructor",
-      instructorId: anotherInstructorId,
+      instructorId: anotherInstructorUserId,
       assignments: [],
       numOptionalAssignmentsRequired: 0,
       deleted: false,
     });
 
+    await CourseModel.create({
+      _id: anotherInstructorCourseId,
+      title: "Another Instructor Course",
+      description: "Course by another instructor",
+      instructorId: anotherInstructorUserId,
+      sectionIds: [sectionId3],
+    });
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: anotherInstructorUserId },
+      {
+        $push: {
+          courses: {
+            courseId: anotherInstructorCourseId,
+            ownership: CourseOwnership.OWNER,
+          },
+        },
+      }
+    );
+
     await StudentDataModel.findOneAndUpdate(
       { userId: studentUserId },
       { $push: { enrolledSections: [sectionId1, sectionId3] } }
     );
+
+    // shared instructor
+    await UserModel.create({
+      _id: sharedInstructorUserId,
+      googleId: "shared-instructor-google-id",
+      name: "Shared Instructor",
+      email: "shared@test.com",
+      userRole: "USER",
+      loginService: "GOOGLE",
+      educationalRole: EducationalRole.INSTRUCTOR,
+    });
+
+    await InstructorDataModel.create({
+      userId: sharedInstructorUserId,
+      courses: [
+        {
+          courseId: mainInstructorCourseId,
+          ownership: CourseOwnership.SHARED,
+        },
+      ],
+    });
   });
 
   afterEach(async () => {
@@ -462,5 +531,30 @@ describe("fetch sections", () => {
         e.message.includes("user not found")
       )
     ).to.exist;
+  });
+
+  it("fetches shared sections", async () => {
+    const token = await getToken(sharedInstructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `query FetchSections($forUserId: ID!) {
+          fetchSections(forUserId: $forUserId) {
+            _id
+            title
+          }
+        }`,
+        variables: {
+          forUserId: sharedInstructorUserId,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const sections = response.body.data.fetchSections;
+    expect(sections).to.be.an("array").with.length(2);
   });
 });

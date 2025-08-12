@@ -53,7 +53,7 @@ export const fetchStudentsInMyCourses = {
     }
 
     const studentDataDocuments = await StudentDataModel.find({
-      enrolledCourses: { $in: instructorData.courseIds },
+      enrolledCourses: { $in: instructorData.courses.map((c) => c.courseId) },
     });
 
     return studentDataDocuments;

@@ -14,6 +14,7 @@ import { UserRole, EducationalRole } from "../models/User";
 import UserModel from "../models/User";
 import CourseModel, { CourseType } from "../models/Course";
 import StudentDataModel from "../models/StudentData";
+import InstructorDataModel from "../models/InstructorData";
 
 export const fetchCourses = {
   type: new GraphQLList(CourseType),
@@ -51,7 +52,12 @@ export const fetchCourses = {
     }
 
     if (user.educationalRole === EducationalRole.INSTRUCTOR) {
-      const courses = await CourseModel.find({ instructorId: args.forUserId });
+      const instructorData = await InstructorDataModel.findOne({
+        userId: args.forUserId,
+      });
+      const courses = await CourseModel.find({
+        _id: { $in: instructorData.courses.map((c) => c.courseId) },
+      });
       return courses;
     }
 

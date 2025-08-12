@@ -14,7 +14,9 @@ import request from "supertest";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/models/User";
 import CourseModel from "../../../src/schemas/models/Course";
-import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import InstructorDataModel, {
+  CourseOwnership,
+} from "../../../src/schemas/models/InstructorData";
 import mongoose from "mongoose";
 
 const { ObjectId } = mongoose.Types;
@@ -35,11 +37,11 @@ describe("add or update course", () => {
     adminUserId = "5ffdf1231ee2c62320b49c99";
     await InstructorDataModel.create({
       userId: adminUserId,
-      courseIds: [],
+      courses: [],
     });
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
+      courses: [],
     });
 
     await CourseModel.create({
@@ -52,7 +54,11 @@ describe("add or update course", () => {
 
     await InstructorDataModel.findOneAndUpdate(
       { userId: adminUserId },
-      { $push: { courseIds: courseId } }
+      {
+        $push: {
+          courses: { courseId: courseId, ownership: CourseOwnership.OWNER },
+        },
+      }
     );
   });
 
@@ -95,8 +101,13 @@ describe("add or update course", () => {
 
     const instructorData = await InstructorDataModel.findOne({
       userId: instructorUserId,
-    });
-    expect(instructorData?.courseIds).to.include(courseData._id);
+    }).lean();
+    expect(instructorData?.courses).to.deep.include.members([
+      {
+        courseId: courseData._id,
+        ownership: CourseOwnership.OWNER,
+      },
+    ]);
   });
 
   it("allows instructor to create a new course with input data as defaults", async () => {
@@ -137,8 +148,13 @@ describe("add or update course", () => {
 
     const instructorData = await InstructorDataModel.findOne({
       userId: instructorUserId,
-    });
-    expect(instructorData?.courseIds).to.include(courseData._id);
+    }).lean();
+    expect(instructorData?.courses).to.deep.include.members([
+      {
+        courseId: courseData._id,
+        ownership: CourseOwnership.OWNER,
+      },
+    ]);
   });
 
   it("allows admin to create a new course even without instructor data", async () => {
@@ -213,7 +229,11 @@ describe("add or update course", () => {
   it("allows instructor to delete their own course", async () => {
     await InstructorDataModel.findOneAndUpdate(
       { userId: instructorUserId },
-      { $push: { courseIds: courseId } }
+      {
+        $push: {
+          courses: { courseId: courseId, ownership: CourseOwnership.OWNER },
+        },
+      }
     );
 
     const token = await getToken(instructorUserId, UserRole.USER);
@@ -255,7 +275,12 @@ describe("add or update course", () => {
     const updatedInstructorData = await InstructorDataModel.findOne({
       userId: instructorUserId,
     });
-    expect(updatedInstructorData?.courseIds).to.not.include(courseId);
+    expect(updatedInstructorData?.courses).to.not.deep.include.members([
+      {
+        courseId: courseId,
+        ownership: CourseOwnership.OWNER,
+      },
+    ]);
   });
 
   it("allows admin to modify any course", async () => {
@@ -397,12 +422,11 @@ describe("add or update course", () => {
           action: "MODIFY",
         },
       });
-
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
         e.message.includes(
-          "Only owning instructor or admins can modify this course"
+          "Only owning/shared instructor or admin can modify this course"
         )
       )
     ).to.exist;

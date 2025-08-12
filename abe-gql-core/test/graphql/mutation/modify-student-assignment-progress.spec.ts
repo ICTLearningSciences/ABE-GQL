@@ -51,7 +51,6 @@ describe("modify student assignment progress", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     await AssignmentModel.create({

@@ -41,7 +41,10 @@ describe("create new instructor", () => {
           createNewInstructor(userId: $userId) {
             _id
             userId
-            courseIds
+            courses{
+              courseId
+              ownership
+            }
             name
           }
         }`,
@@ -50,12 +53,13 @@ describe("create new instructor", () => {
         },
       });
 
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
     const instructorData = response.body.data.createNewInstructor;
     expect(instructorData.userId).to.equal("5ffdf1231ee2c62320b49a99");
-    expect(instructorData.courseIds).to.be.an("array").that.is.empty;
+    expect(instructorData.courses).to.be.an("array").that.is.empty;
     expect(instructorData.name).to.equal("John Admin Doe");
     const updatedUser = await UserModel.findById("5ffdf1231ee2c62320b49a99");
     expect(updatedUser?.educationalRole).to.equal(EducationalRole.INSTRUCTOR);
@@ -92,7 +96,7 @@ describe("create new instructor", () => {
 
     const existingInstructorData = await InstructorDataModel.create({
       userId: "5ffdf1231ee2c62320b49a99",
-      courseIds: [],
+      courses: [],
     });
 
     const response = await request(app)
@@ -103,7 +107,10 @@ describe("create new instructor", () => {
           createNewInstructor(userId: $userId) {
             _id
             userId
-            courseIds
+            courses{
+              courseId
+              ownership
+            }
           }
         }`,
         variables: {
@@ -117,7 +124,7 @@ describe("create new instructor", () => {
     const instructorData = response.body.data.createNewInstructor;
     expect(instructorData._id).to.equal(existingInstructorData._id.toString());
     expect(instructorData.userId).to.equal("5ffdf1231ee2c62320b49a99");
-    expect(instructorData.courseIds).to.be.an("array").that.is.empty;
+    expect(instructorData.courses).to.be.an("array").that.is.empty;
 
     const updatedUser = await UserModel.findById("5ffdf1231ee2c62320b49a99");
     expect(updatedUser?.educationalRole).to.equal(EducationalRole.INSTRUCTOR);

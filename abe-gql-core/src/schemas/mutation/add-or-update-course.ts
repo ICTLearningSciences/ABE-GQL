@@ -11,7 +11,7 @@ import CourseModel, {
   CourseType,
   CourseInputType,
 } from "../models/Course";
-import InstructorDataModel from "../models/InstructorData";
+import InstructorDataModel, { CourseOwnership } from "../models/InstructorData";
 
 const CourseActionType = new GraphQLEnumType({
   name: "CourseAction",
@@ -62,7 +62,10 @@ export const addOrUpdateCourse = {
       await newCourse.save();
 
       if (instructorData) {
-        instructorData.courseIds.push(newCourse._id.toString());
+        instructorData.courses.push({
+          courseId: newCourse._id,
+          ownership: CourseOwnership.OWNER,
+        });
         await instructorData.save();
       }
 
@@ -80,28 +83,58 @@ export const addOrUpdateCourse = {
       throw new Error("course not found");
     }
 
+    const ownsCourse = course.instructorId === context.userId;
+    const sharedWithInstructor = instructorData?.courses.some(
+      (c) => c.courseId === course._id
+    );
+
     if (
-      course.instructorId !== context.userId &&
+      !ownsCourse &&
+      !sharedWithInstructor &&
       context.userRole !== UserRole.ADMIN
     ) {
       throw new Error(
-        "Only owning instructor or admins can modify this course"
+        "Only owning/shared instructor or admin can modify this course"
       );
     }
 
     if (args.action === "DELETE") {
+      if (!ownsCourse) {
+        throw new Error("Only owning instructor can delete this course");
+      }
+
       course.deleted = true;
       await course.save();
 
       if (instructorData) {
-        const courseIndex = instructorData.courseIds.indexOf(
-          args.courseData._id
+        const courseIndex = instructorData.courses.findIndex(
+          (c) => c.courseId === args.courseData._id
         );
         if (courseIndex !== -1) {
-          instructorData.courseIds.splice(courseIndex, 1);
+          instructorData.courses.splice(courseIndex, 1);
           await instructorData.save();
         }
       }
+
+      // pull from all instructors that this was shared with
+      await InstructorDataModel.updateMany(
+        {
+          courses: {
+            $elemMatch: {
+              courseId: args.courseData._id,
+              ownership: CourseOwnership.SHARED,
+            },
+          },
+        },
+        {
+          $pull: {
+            courses: {
+              courseId: args.courseData._id,
+              ownership: CourseOwnership.SHARED,
+            },
+          },
+        }
+      );
 
       return course;
     }

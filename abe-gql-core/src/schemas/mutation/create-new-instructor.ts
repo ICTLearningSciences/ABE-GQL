@@ -42,7 +42,6 @@ export const createNewInstructor = {
 
     const instructorData = new InstructorDataModel({
       userId: args.userId,
-      courseIds: [],
       name: user.name,
     });
 

@@ -18,13 +18,19 @@ import AssignmentModel from "../../../src/schemas/models/Assignment";
 import SectionModel from "../../../src/schemas/models/Section";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
-import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import InstructorDataModel, {
+  CourseOwnership,
+} from "../../../src/schemas/models/InstructorData";
+import CourseModel from "../../../src/schemas/models/Course";
 
 const { ObjectId } = mongoose.Types;
 
 describe("fetch assignments", () => {
   let app: Express;
   let instructorUserId: string;
+  let anotherInstructorUserId: string;
+  let instructorCourseId: string;
+  let anotherInstructorCourseId: string;
   let studentUserId: string;
   let assignmentId1: string;
   let assignmentId2: string;
@@ -39,6 +45,9 @@ describe("fetch assignments", () => {
     await appStart();
 
     instructorUserId = new ObjectId().toString();
+    anotherInstructorUserId = new ObjectId().toString();
+    instructorCourseId = new ObjectId().toString();
+    anotherInstructorCourseId = new ObjectId().toString();
     studentUserId = new ObjectId().toString();
     assignmentId1 = new ObjectId().toString();
     assignmentId2 = new ObjectId().toString();
@@ -77,7 +86,6 @@ describe("fetch assignments", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     // Create assignments for instructor
@@ -100,9 +108,8 @@ describe("fetch assignments", () => {
     });
 
     // Create assignment by another instructor
-    const anotherInstructorId = new ObjectId().toString();
     await UserModel.create({
-      _id: anotherInstructorId,
+      _id: anotherInstructorUserId,
       googleId: "another-instructor-google-id",
       name: "Another Instructor",
       email: "another@test.com",
@@ -112,8 +119,7 @@ describe("fetch assignments", () => {
     });
 
     await InstructorDataModel.create({
-      userId: anotherInstructorId,
-      courseIds: [],
+      userId: anotherInstructorUserId,
     });
 
     await AssignmentModel.create({
@@ -121,7 +127,7 @@ describe("fetch assignments", () => {
       title: "Another Instructor Assignment",
       description: "Assignment by another instructor",
       activityIds: [],
-      instructorId: anotherInstructorId,
+      instructorId: anotherInstructorUserId,
       deleted: false,
     });
 
@@ -167,7 +173,7 @@ describe("fetch assignments", () => {
       title: "Section 3",
       sectionCode: "SEC003",
       description: "Third section by another instructor",
-      instructorId: anotherInstructorId,
+      instructorId: anotherInstructorUserId,
       assignments: [
         {
           assignmentId: assignmentId3,
@@ -178,11 +184,51 @@ describe("fetch assignments", () => {
       deleted: false,
     });
 
+    await CourseModel.create({
+      _id: instructorCourseId,
+      title: "Instructor Course",
+      description: "Course by instructor",
+      instructorId: instructorUserId,
+      sectionIds: [sectionId1, sectionId2],
+    });
+
+    await CourseModel.create({
+      _id: anotherInstructorCourseId,
+      title: "Another Instructor Course",
+      description: "Course by another instructor",
+      instructorId: anotherInstructorUserId,
+      sectionIds: [sectionId3],
+    });
+
     await StudentDataModel.findOneAndUpdate(
       { userId: studentUserId },
       {
         $push: {
           enrolledSections: [sectionId1, sectionId3],
+        },
+      }
+    );
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      {
+        $push: {
+          courses: {
+            courseId: instructorCourseId,
+            ownership: CourseOwnership.OWNER,
+          },
+        },
+      }
+    );
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: anotherInstructorUserId },
+      {
+        $push: {
+          courses: {
+            courseId: anotherInstructorCourseId,
+            ownership: CourseOwnership.OWNER,
+          },
         },
       }
     );

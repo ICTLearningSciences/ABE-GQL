@@ -8,32 +8,51 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import {
   GraphQLObjectType,
   GraphQLID,
-  GraphQLInputObjectType,
   GraphQLList,
   GraphQLString,
+  GraphQLEnumType,
 } from "graphql";
+import CourseModel from "./Course";
+import { validateIds } from "helpers";
+
+export enum CourseOwnership {
+  OWNER = "OWNER",
+  SHARED = "SHARED",
+}
+
+export interface CourseData {
+  courseId: string;
+  ownership: CourseOwnership;
+}
 
 export interface InstructorData extends Document {
   userId: string;
-  courseIds: string[];
+  courses: CourseData[];
   name: string;
 }
+
+export const CourseOwnershipType = new GraphQLEnumType({
+  name: "CourseOwnership",
+  values: {
+    OWNER: { value: CourseOwnership.OWNER },
+    SHARED: { value: CourseOwnership.SHARED },
+  },
+});
+
+export const CourseDataType = new GraphQLObjectType({
+  name: "CourseData",
+  fields: () => ({
+    courseId: { type: GraphQLID },
+    ownership: { type: CourseOwnershipType },
+  }),
+});
 
 export const InstructorDataType = new GraphQLObjectType({
   name: "InstructorData",
   fields: () => ({
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
-    courseIds: { type: new GraphQLList(GraphQLID) },
-    name: { type: GraphQLString },
-  }),
-});
-
-export const InstructorDataInputType = new GraphQLInputObjectType({
-  name: "InstructorDataInputType",
-  fields: () => ({
-    userId: { type: GraphQLID },
-    courseIds: { type: new GraphQLList(GraphQLID) },
+    courses: { type: new GraphQLList(CourseDataType) },
     name: { type: GraphQLString },
   }),
 });
@@ -41,7 +60,23 @@ export const InstructorDataInputType = new GraphQLInputObjectType({
 export const InstructorDataSchema = new Schema<InstructorData>(
   {
     userId: { type: String, required: true, unique: true },
-    courseIds: [{ type: String, required: true }],
+    courses: {
+      type: [
+        {
+          _id: false,
+          courseId: { type: String, required: true },
+          ownership: { type: String, required: true },
+        },
+      ],
+      required: true,
+      default: [],
+      validate: {
+        validator: async (instructorData: CourseData[]): Promise<boolean> => {
+          const courseIds = instructorData.map((c) => c.courseId);
+          return await validateIds("_id", courseIds, CourseModel);
+        },
+      },
+    },
     name: { type: String },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }

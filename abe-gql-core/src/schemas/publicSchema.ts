@@ -55,6 +55,7 @@ import fetchCourses from "./query/fetch-courses";
 import fetchSections from "./query/fetch-sections";
 import fetchAssignments from "./query/fetch-assignments";
 import fetchStudentsInMyCourses from "./query/fetch-students-in-my-courses";
+import modifyCourseShareStatus from "./mutation/modify-course-share-status";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -103,6 +104,7 @@ const publicMutations = {
   addOrUpdateCourse,
   addOrUpdateSection,
   addOrUpdateAssignment,
+  modifyCourseShareStatus,
 };
 
 const contentManagerMutations = {

@@ -40,7 +40,6 @@ describe("modify section enrollment", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     await StudentDataModel.create({

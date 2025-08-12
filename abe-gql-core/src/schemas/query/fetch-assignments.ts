@@ -13,8 +13,10 @@ import {
 import { UserRole, EducationalRole } from "../models/User";
 import UserModel from "../models/User";
 import AssignmentModel, { AssignmentType } from "../models/Assignment";
-import SectionModel from "../models/Section";
 import StudentDataModel from "../models/StudentData";
+import InstructorDataModel from "../models/InstructorData";
+import CourseModel from "../models/Course";
+import SectionModel from "../models/Section";
 
 export const fetchAssignments = {
   type: new GraphQLList(AssignmentType),
@@ -52,8 +54,21 @@ export const fetchAssignments = {
     }
 
     if (user.educationalRole === EducationalRole.INSTRUCTOR) {
+      const instructorData = await InstructorDataModel.findOne({
+        userId: args.forUserId,
+      });
+      const courses = await CourseModel.find({
+        _id: { $in: instructorData.courses.map((c) => c.courseId) },
+      });
+      const sectionIds = courses.flatMap((c) => c.sectionIds);
+      const sections = await SectionModel.find({
+        _id: { $in: sectionIds },
+      });
+      const assignmentIds = sections.flatMap((s) =>
+        s.assignments.map((a) => a.assignmentId)
+      );
       const assignments = await AssignmentModel.find({
-        instructorId: args.forUserId,
+        _id: { $in: assignmentIds },
       });
       return assignments;
     }

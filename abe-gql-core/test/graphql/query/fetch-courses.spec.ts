@@ -17,7 +17,9 @@ import UserModel from "../../../src/schemas/models/User";
 import CourseModel from "../../../src/schemas/models/Course";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
-import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import InstructorDataModel, {
+  CourseOwnership,
+} from "../../../src/schemas/models/InstructorData";
 
 const { ObjectId } = mongoose.Types;
 
@@ -28,6 +30,7 @@ describe("fetch courses", () => {
   let courseId1: string;
   let courseId2: string;
   let courseId3: string;
+  let course1SharedInstructorId: string;
 
   beforeEach(async () => {
     await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
@@ -35,6 +38,7 @@ describe("fetch courses", () => {
     await appStart();
 
     instructorUserId = new ObjectId().toString();
+    course1SharedInstructorId = new ObjectId().toString();
     studentUserId = new ObjectId().toString();
     courseId1 = new ObjectId().toString();
     courseId2 = new ObjectId().toString();
@@ -53,7 +57,6 @@ describe("fetch courses", () => {
 
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
 
     // Create student user
@@ -73,6 +76,17 @@ describe("fetch courses", () => {
       enrolledSections: [],
       assignmentProgress: [],
       deleted: false,
+    });
+
+    // create instructor data with shared course
+    await UserModel.create({
+      _id: course1SharedInstructorId,
+      googleId: "shared-instructor-google-id",
+      name: "Shared Instructor",
+      email: "shared@test.com",
+      userRole: "USER",
+      loginService: "GOOGLE",
+      educationalRole: EducationalRole.INSTRUCTOR,
     });
 
     // Create courses for instructor
@@ -108,7 +122,6 @@ describe("fetch courses", () => {
 
     await InstructorDataModel.create({
       userId: anotherInstructorId,
-      courseIds: [],
     });
 
     await CourseModel.create({
@@ -120,6 +133,30 @@ describe("fetch courses", () => {
       deleted: false,
     });
 
+    // Add courses to instructors/students
+    await InstructorDataModel.findOneAndUpdate({
+      userId: instructorUserId,
+      courses: [
+        {
+          courseId: courseId1,
+          ownership: CourseOwnership.OWNER,
+        },
+        {
+          courseId: courseId2,
+          ownership: CourseOwnership.OWNER,
+        },
+      ],
+    });
+
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: anotherInstructorId },
+      {
+        $push: {
+          courses: { courseId: courseId3, ownership: CourseOwnership.OWNER },
+        },
+      }
+    );
+
     await StudentDataModel.findOneAndUpdate(
       { userId: studentUserId },
       {
@@ -128,6 +165,16 @@ describe("fetch courses", () => {
         },
       }
     );
+
+    await InstructorDataModel.create({
+      userId: course1SharedInstructorId,
+      courses: [
+        {
+          courseId: courseId1,
+          ownership: CourseOwnership.SHARED,
+        },
+      ],
+    });
   });
 
   afterEach(async () => {
@@ -171,6 +218,38 @@ describe("fetch courses", () => {
     courses.forEach((course: any) => {
       expect(course.instructorId).to.equal(instructorUserId);
     });
+  });
+
+  it("fetches shared courses", async () => {
+    const token = await getToken(course1SharedInstructorId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `query FetchCourses($forUserId: ID!) {
+          fetchCourses(forUserId: $forUserId) {
+            _id
+            title
+            description
+            instructorId
+            sectionIds
+            deleted
+          }
+        }`,
+        variables: {
+          forUserId: course1SharedInstructorId,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const courses = response.body.data.fetchCourses;
+    expect(courses).to.be.an("array").with.length(1);
+
+    const courseTitles = courses.map((c: any) => c.title);
+    expect(courseTitles).to.include("Instructor Course 1");
   });
 
   it("allows student to fetch their enrolled courses", async () => {

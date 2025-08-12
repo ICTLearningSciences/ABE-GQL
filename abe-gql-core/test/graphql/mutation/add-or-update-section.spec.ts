@@ -42,11 +42,9 @@ describe("add or update section", () => {
 
     await InstructorDataModel.create({
       userId: adminUserId,
-      courseIds: [],
     });
     await InstructorDataModel.create({
       userId: instructorUserId,
-      courseIds: [],
     });
     await StudentDataModel.create({
       userId: regularUserId,
