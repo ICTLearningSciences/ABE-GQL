@@ -760,4 +760,35 @@ describe("modify section enrollment", () => {
       )
     ).to.exist;
   });
+
+  it("throws error when trying to enroll banned student in section", async () => {
+    await SectionModel.findByIdAndUpdate(sectionId, {
+      $push: { bannedStudentUserIds: studentUserId },
+    });
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifySectionEnrollment($targetUserId: ID!, $action: SectionEnrollmentAction!, $sectionCode: String) {
+          modifySectionEnrollment(targetUserId: $targetUserId, action: $action, sectionCode: $sectionCode) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          action: "ENROLL",
+          sectionCode: "TEST001",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("student is banned from this section")
+      )
+    ).to.exist;
+  });
 });

@@ -128,6 +128,10 @@ export const modifySectionEnrollment = {
         );
       }
 
+      if (section.bannedStudentUserIds.includes(args.targetUserId)) {
+        throw new Error("student is banned from this section");
+      }
+
       const sectionIdStr = section._id.toString();
       const courseIdStr = course._id.toString();
 
