@@ -15,6 +15,7 @@ import StudentDataModel, {
   StudentData,
   StudentDataType,
   ActivityCompletionInputType,
+  ActivityCompletion,
 } from "../models/StudentData";
 import CourseModel from "../models/Course";
 import SectionModel from "../models/Section";
@@ -38,10 +39,7 @@ export const modifyStudentAssignmentProgress = {
       courseId: string;
       sectionId: string;
       assignmentId: string;
-      activityCompletions: Array<{
-        activityId: string;
-        complete: boolean;
-      }>;
+      activityCompletions: ActivityCompletion[];
     },
     context: {
       userId: string;

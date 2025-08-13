@@ -18,6 +18,7 @@ import SectionModel, {
 } from "../models/Section";
 import CourseModel from "../models/Course";
 import InstructorDataModel from "../models/InstructorData";
+import { removeSectionFromAllStudentsAndCourse } from "../../helpers";
 
 const SectionActionType = new GraphQLEnumType({
   name: "SectionAction",
@@ -127,11 +128,7 @@ export const addOrUpdateSection = {
       section.deleted = true;
       await section.save();
 
-      const sectionIndex = course.sectionIds.indexOf(args.sectionData._id);
-      if (sectionIndex !== -1) {
-        course.sectionIds.splice(sectionIndex, 1);
-        await course.save();
-      }
+      await removeSectionFromAllStudentsAndCourse(course, section._id);
 
       return section;
     }

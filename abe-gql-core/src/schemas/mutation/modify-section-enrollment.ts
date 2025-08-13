@@ -63,7 +63,6 @@ export const modifySectionEnrollment = {
     }
 
     if (args.action === "REMOVE") {
-      // REMOVE action requires courseId and sectionId
       if (!args.courseId || !args.sectionId) {
         throw new Error(
           "courseId and sectionId are required for removing from section"
@@ -101,7 +100,6 @@ export const modifySectionEnrollment = {
 
       return await removeStudentFromSection(args.targetUserId, args.sectionId);
     } else {
-      // ENROLL action requires only sectionCode
       if (!args.sectionCode) {
         throw new Error("section code is required for enrollment");
       }
@@ -112,7 +110,6 @@ export const modifySectionEnrollment = {
       if (!section) {
         throw new Error("section not found with the provided section code");
       }
-      // uses $in operator to find course by sectionId
       const course = await CourseModel.findOne({ sectionIds: section._id });
       if (!course) {
         throw new Error("course not found for the specified section");

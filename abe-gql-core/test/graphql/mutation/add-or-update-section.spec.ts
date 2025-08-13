@@ -609,4 +609,76 @@ describe("add or update section", () => {
       "ORIG001"
     );
   });
+
+  it("removes section from all students and course from students when deleting section", async () => {
+    const student1Id = "5ffdf1231ee2c62320b49d99";
+    const student2Id = "5ffdf1231ee2c62320b49e99";
+    const section2Id = new ObjectId().toString();
+
+    await StudentDataModel.create({
+      userId: student1Id,
+      enrolledCourses: [courseId],
+      enrolledSections: [sectionId],
+    });
+
+    await StudentDataModel.create({
+      userId: student2Id,
+      enrolledCourses: [courseId],
+      enrolledSections: [sectionId, section2Id],
+    });
+
+    await SectionModel.create({
+      _id: section2Id,
+      title: "Section 2",
+      sectionCode: "SEC002",
+      description: "Another section",
+      instructorId: instructorUserId,
+      assignments: [],
+      numOptionalAssignmentsRequired: 0,
+      deleted: false,
+    });
+
+    await CourseModel.findOneAndUpdate(
+      { _id: courseId },
+      { $push: { sectionIds: { $each: [sectionId, section2Id] } } }
+    );
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation AddOrUpdateSection($courseId: ID!, $sectionData: SectionInputType, $action: SectionAction!) {
+          addOrUpdateSection(courseId: $courseId, sectionData: $sectionData, action: $action) {
+            _id
+            deleted
+          }
+        }`,
+        variables: {
+          courseId: courseId,
+          sectionData: {
+            _id: sectionId,
+          },
+          action: "DELETE",
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+    expect(response.body.data.addOrUpdateSection.deleted).to.be.true;
+
+    const updatedCourse = await CourseModel.findById(courseId);
+    expect(updatedCourse?.sectionIds).to.not.include(sectionId);
+    expect(updatedCourse?.sectionIds).to.include(section2Id);
+
+    const student1 = await StudentDataModel.findOne({ userId: student1Id });
+    expect(student1?.enrolledSections).to.not.include(sectionId);
+    expect(student1?.enrolledCourses).to.not.include(courseId);
+
+    const student2 = await StudentDataModel.findOne({ userId: student2Id });
+    expect(student2?.enrolledSections).to.not.include(sectionId);
+    expect(student2?.enrolledSections).to.include(section2Id);
+    expect(student2?.enrolledCourses).to.include(courseId);
+  });
 });

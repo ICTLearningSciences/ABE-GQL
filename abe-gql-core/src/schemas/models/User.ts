@@ -133,7 +133,7 @@ export const UserSchema = new Schema<User, UserModel>(
     educationalRole: {
       type: String,
       enum: [EducationalRole.STUDENT, EducationalRole.INSTRUCTOR],
-      default: EducationalRole.STUDENT,
+      requird: false,
     },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }

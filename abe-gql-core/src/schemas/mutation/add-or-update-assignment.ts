@@ -120,10 +120,6 @@ export const addOrUpdateAssignment = {
     }
 
     if (args.action === "MODIFY") {
-      if (!args.assignmentData) {
-        throw new Error("assignmentData is required for MODIFY action");
-      }
-
       const updatedAssignment = await AssignmentModel.findByIdAndUpdate(
         args.assignmentData._id,
         { $set: args.assignmentData },

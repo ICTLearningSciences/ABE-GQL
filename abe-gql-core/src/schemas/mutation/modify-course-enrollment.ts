@@ -82,6 +82,9 @@ export const modifyCourseEnrollment = {
         throw new Error("user is not enrolled in this course");
       }
       studentData.enrolledCourses.splice(courseIndex, 1);
+      studentData.enrolledSections = studentData.enrolledSections.filter(
+        (section) => !course.sectionIds.includes(section)
+      );
     }
 
     await studentData.save();

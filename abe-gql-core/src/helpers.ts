@@ -15,7 +15,7 @@ import { IGDocVersion } from "./schemas/models/GoogleDocVersion";
 import TextDiffCreate, { Change } from "textdiff-create";
 import TextDiffPatch from "textdiff-patch";
 import StudentDataModel, { StudentData } from "./schemas/models/StudentData";
-import CourseModel from "./schemas/models/Course";
+import CourseModel, { Course } from "./schemas/models/Course";
 dotenv.config();
 
 const queryPayloadSchema = {
@@ -248,7 +248,7 @@ export async function removeStudentFromSection(
     (section) => `${section}` !== `${sectionId}`
   );
   const courseWithSection = await CourseModel.findOne({
-    sectionIds: { $in: [sectionId] },
+    sectionIds: sectionId,
   });
   if (!courseWithSection) {
     throw new Error("course not found");
@@ -265,3 +265,33 @@ export async function removeStudentFromSection(
   }
   return await student.save();
 }
+
+export const removeSectionFromAllStudentsAndCourse = async (
+  course: Course,
+  sectionId: string
+) => {
+  // remove section from all students
+  await StudentDataModel.updateMany(
+    { enrolledSections: sectionId },
+    { $pull: { enrolledSections: sectionId } }
+  );
+
+  // remove section from course
+  const updatedCourse = await CourseModel.findByIdAndUpdate(
+    course._id,
+    {
+      $pull: { sectionIds: sectionId },
+    },
+    { new: true }
+  );
+
+  // pull course from all students who no longer have a section within the course
+  const sectionsInCourse = updatedCourse.sectionIds;
+  await StudentDataModel.updateMany(
+    {
+      enrolledCourses: course._id,
+      enrolledSections: { $nin: sectionsInCourse }, // no sections from this course remain
+    },
+    { $pull: { enrolledCourses: course._id } }
+  );
+};
