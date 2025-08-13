@@ -20,6 +20,7 @@ import InstructorDataModel, {
 import StudentDataModel from "../../../src/schemas/models/StudentData";
 import mongoose from "mongoose";
 import CourseModel from "../../../src/schemas/models/Course";
+import SectionModel from "../../../src/schemas/models/Section";
 
 const { ObjectId } = mongoose.Types;
 
@@ -519,5 +520,122 @@ describe("fetch students in my courses", () => {
     const studentUserIds = studentData.map((s: any) => s.userId);
     expect(studentUserIds).to.include(student2UserId);
     expect(studentUserIds).to.not.include(student1UserId);
+  });
+
+  it("fetches banned students from instructor sections", async () => {
+    const bannedStudentUserId = new ObjectId().toString();
+    const sectionId = new ObjectId().toString();
+
+    // Create banned student user
+    await UserModel.create({
+      _id: bannedStudentUserId,
+      googleId: "banned-student-google-id",
+      name: "Banned Student",
+      email: "banned@test.com",
+      userRole: "USER",
+      loginService: "GOOGLE",
+      educationalRole: EducationalRole.STUDENT,
+    });
+
+    // Create student data for banned student (not enrolled in any courses)
+    await StudentDataModel.create({
+      userId: bannedStudentUserId,
+      enrolledCourses: [],
+      enrolledSections: [],
+      assignmentProgress: [],
+      deleted: false,
+    });
+
+    // Create section with banned student
+    await SectionModel.create({
+      _id: sectionId,
+      instructorId: instructorUserId,
+      courseId: courseId1,
+      name: "Section A",
+      bannedStudentUserIds: [bannedStudentUserId],
+    });
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `query FetchStudentsInMyCourses($instructorId: ID!) {
+          fetchStudentsInMyCourses(instructorId: $instructorId) {
+            _id
+            userId
+            enrolledCourses
+          }
+        }`,
+        variables: {
+          instructorId: instructorUserId,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").with.length(3);
+
+    const studentUserIds = studentData.map((s: any) => s.userId);
+    expect(studentUserIds).to.include(student1UserId);
+    expect(studentUserIds).to.include(student2UserId);
+    expect(studentUserIds).to.include(bannedStudentUserId);
+
+    // Verify banned student has no enrolled courses
+    const bannedStudent = studentData.find(
+      (s: any) => s.userId === bannedStudentUserId
+    );
+    expect(bannedStudent.enrolledCourses).to.be.an("array").that.is.empty;
+  });
+
+  it("fetches students who are both enrolled and banned", async () => {
+    const sectionId = new ObjectId().toString();
+
+    // Create section and ban student1 (who is already enrolled in courseId1)
+    await SectionModel.create({
+      _id: sectionId,
+      instructorId: instructorUserId,
+      courseId: courseId1,
+      name: "Section A",
+      bannedStudentUserIds: [student1UserId],
+    });
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `query FetchStudentsInMyCourses($instructorId: ID!) {
+          fetchStudentsInMyCourses(instructorId: $instructorId) {
+            _id
+            userId
+            enrolledCourses
+          }
+        }`,
+        variables: {
+          instructorId: instructorUserId,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const studentData = response.body.data.fetchStudentsInMyCourses;
+    expect(studentData).to.be.an("array").with.length(2);
+
+    const studentUserIds = studentData.map((s: any) => s.userId);
+    expect(studentUserIds).to.include(student1UserId);
+    expect(studentUserIds).to.include(student2UserId);
+
+    // Student1 should still be returned only once despite being both enrolled and banned
+    const student1Entries = studentData.filter(
+      (s: any) => s.userId === student1UserId
+    );
+    expect(student1Entries).to.have.length(1);
+    expect(student1Entries[0].enrolledCourses).to.include(courseId1);
   });
 });

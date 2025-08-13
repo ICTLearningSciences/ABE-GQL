@@ -13,6 +13,7 @@ import {
 import { UserRole } from "../models/User";
 import InstructorDataModel from "../models/InstructorData";
 import StudentDataModel, { StudentDataType } from "../models/StudentData";
+import SectionModel from "../models/Section";
 
 export const fetchStudentsInMyCourses = {
   type: new GraphQLList(StudentDataType),
@@ -52,8 +53,21 @@ export const fetchStudentsInMyCourses = {
       throw new Error("Only for instructors/admins");
     }
 
+    const myCourseIds = instructorData.courses.map((c) => c.courseId);
+    const mySections = await SectionModel.find({
+      instructorId: args.instructorId,
+    }).lean();
+
+    const studentsBannedFromMySections = mySections.flatMap(
+      (s) => s.bannedStudentUserIds
+    );
+
     const studentDataDocuments = await StudentDataModel.find({
-      enrolledCourses: { $in: instructorData.courses.map((c) => c.courseId) },
+      $or: [
+        { enrolledCourses: { $in: myCourseIds } },
+        // so that we can CRUD students who are banned from my sections
+        { userId: { $in: studentsBannedFromMySections } },
+      ],
     });
 
     return studentDataDocuments;
