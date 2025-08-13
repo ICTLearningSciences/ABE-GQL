@@ -29,6 +29,7 @@ export interface Section {
   sectionCode: string;
   description: string;
   instructorId: string;
+  bannedStudentUserIds: string[];
   assignments: SectionAssignment[];
   numOptionalAssignmentsRequired: number;
   deleted: boolean;
@@ -58,6 +59,7 @@ export const SectionType = new GraphQLObjectType({
     sectionCode: { type: GraphQLString },
     description: { type: GraphQLString },
     instructorId: { type: GraphQLID },
+    bannedStudentUserIds: { type: new GraphQLList(GraphQLID) },
     assignments: { type: new GraphQLList(SectionAssignmentType) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
     deleted: { type: GraphQLBoolean },
@@ -71,6 +73,7 @@ export const SectionInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     sectionCode: { type: GraphQLString },
     description: { type: GraphQLString },
+    bannedStudentUserIds: { type: new GraphQLList(GraphQLID) },
     assignments: { type: new GraphQLList(SectionAssignmentInputType) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
   }),
@@ -99,6 +102,7 @@ export const SectionSchema = new Schema<Section>(
         },
       },
     },
+    bannedStudentUserIds: { type: [String], default: [] },
     assignments: {
       type: [SectionAssignmentSchema],
       default: [],

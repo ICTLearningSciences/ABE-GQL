@@ -76,6 +76,7 @@ export const addOrUpdateSection = {
       (args.action === "CREATE" || args.action === "MODIFY") &&
       args.sectionData?.sectionCode
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const query: any = {
         sectionCode: args.sectionData.sectionCode,
         deleted: false,

@@ -14,6 +14,8 @@ import GDocVersionModel, {
 import { IGDocVersion } from "./schemas/models/GoogleDocVersion";
 import TextDiffCreate, { Change } from "textdiff-create";
 import TextDiffPatch from "textdiff-patch";
+import StudentDataModel, { StudentData } from "./schemas/models/StudentData";
+import CourseModel from "./schemas/models/Course";
 dotenv.config();
 
 const queryPayloadSchema = {
@@ -226,4 +228,40 @@ export async function validateIds<T extends Model<any>>(
 ): Promise<boolean> {
   const documents = await model.find().where(idField).in(ids);
   return documents.length === ids.length;
+}
+
+const hasCommonString = (arr1: string[], arr2: string[]): boolean => {
+  return arr1.some((item) => arr2.includes(item));
+};
+
+export async function removeStudentFromSection(
+  studentId: string,
+  sectionId: string
+): Promise<StudentData> {
+  const student = await StudentDataModel.findOne({
+    userId: studentId,
+  });
+  if (!student) {
+    throw new Error("student not found");
+  }
+  student.enrolledSections = student.enrolledSections.filter(
+    (section) => `${section}` !== `${sectionId}`
+  );
+  const courseWithSection = await CourseModel.findOne({
+    sectionIds: { $in: [sectionId] },
+  });
+  if (!courseWithSection) {
+    throw new Error("course not found");
+  }
+  // remove course if hanging.
+  const hasSectionInCourse = hasCommonString(
+    student.enrolledSections,
+    courseWithSection.sectionIds
+  );
+  if (!hasSectionInCourse) {
+    student.enrolledCourses = student.enrolledCourses.filter(
+      (course) => `${course}` !== `${courseWithSection._id}`
+    );
+  }
+  return await student.save();
 }

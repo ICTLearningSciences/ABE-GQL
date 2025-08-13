@@ -170,7 +170,6 @@ describe("modify section enrollment", () => {
           action: "REMOVE",
         },
       });
-
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
@@ -446,7 +445,6 @@ describe("modify section enrollment", () => {
           action: "REMOVE",
         },
       });
-
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
