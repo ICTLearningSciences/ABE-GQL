@@ -39,6 +39,7 @@ export const fullBuiltActivityQueryData = `
                               stepType
                               jumpToStepId
                               message
+                              setStudentActivityComplete
                           }
 
                           ... on RequestUserInputActivityStepType {
@@ -56,6 +57,7 @@ export const fullBuiltActivityQueryData = `
                                   jumpToStepId
                                   responseWeight
                               }
+                              setStudentActivityComplete
                           }
 
                           ... on PromptActivityStepType{
@@ -71,6 +73,7 @@ export const fullBuiltActivityQueryData = `
                               jsonResponseData
                               customSystemRole
                               webSearch
+                              setStudentActivityComplete
                           }
 
                           ... on ConditionalActivityStepType {
@@ -278,6 +281,7 @@ describe("update built activity", () => {
             message: "message 1",
             jumpToStepId: "456",
             stepId: "123",
+            setStudentActivityComplete: true,
           },
         ],
       },
@@ -318,6 +322,7 @@ describe("update built activity", () => {
             message: "message 1",
             jumpToStepId: "456",
             stepId: "123",
+            setStudentActivityComplete: false,
           },
         ],
       },
@@ -394,6 +399,7 @@ describe("update built activity", () => {
             message: "message 1",
             jumpToStepId: "456",
             stepId: "123",
+            setStudentActivityComplete: true,
           },
         ],
       },
@@ -433,6 +439,7 @@ describe("update built activity", () => {
             jumpToStepId: "456",
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
+            setStudentActivityComplete: true,
           },
           {
             stepId: "456",
@@ -451,6 +458,7 @@ describe("update built activity", () => {
                 responseWeight: "1",
               },
             ],
+            setStudentActivityComplete: true,
           },
           {
             stepId: "789",
@@ -465,6 +473,7 @@ describe("update built activity", () => {
             outputDataType: "JSON",
             customSystemRole: "custom system role 1",
             webSearch: true,
+            setStudentActivityComplete: true,
           },
           {
             stepId: "101112",

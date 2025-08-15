@@ -26,6 +26,11 @@ export enum UserRole {
   ADMIN = "ADMIN",
 }
 
+export enum EducationalRole {
+  STUDENT = "STUDENT",
+  INSTRUCTOR = "INSTRUCTOR",
+}
+
 export interface ClassroomCode {
   code: string;
   createdAt: Date;
@@ -40,6 +45,7 @@ export interface User extends Document {
   classroomCode: ClassroomCode;
   previousClassroomCodes: ClassroomCode[];
   loginService: LoginService;
+  educationalRole: EducationalRole;
 }
 
 export const ClassroomCodeType = new GraphQLObjectType({
@@ -62,6 +68,7 @@ export const UserType = new GraphQLObjectType({
     lastLoginAt: { type: DateType },
     classroomCode: { type: ClassroomCodeType },
     previousClassroomCodes: { type: new GraphQLList(ClassroomCodeType) },
+    educationalRole: { type: GraphQLString },
   }),
 });
 
@@ -79,6 +86,7 @@ export const UserInputType = new GraphQLInputObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     classroomCode: { type: GraphQLString },
+    educationalRole: { type: GraphQLString },
   }),
 });
 
@@ -92,6 +100,7 @@ export interface IUserInputType {
   name?: string;
   email?: string;
   classroomCode?: string;
+  educationalRole?: EducationalRole;
 }
 
 export const ClassroomCodeSchema = new Schema<ClassroomCode>({
@@ -120,6 +129,11 @@ export const UserSchema = new Schema<User, UserModel>(
         LoginService.MICROSOFT,
       ],
       default: LoginService.GOOGLE,
+    },
+    educationalRole: {
+      type: String,
+      enum: [EducationalRole.STUDENT, EducationalRole.INSTRUCTOR],
+      requird: false,
     },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
