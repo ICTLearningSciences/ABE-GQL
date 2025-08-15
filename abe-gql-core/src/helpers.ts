@@ -7,13 +7,15 @@ The full terms of this copyright and license should always be found in the root 
 import Ajv from "ajv";
 const ajv = new Ajv();
 import * as dotenv from "dotenv";
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 import GDocVersionModel, {
   VersionType,
 } from "./schemas/models/GoogleDocVersion";
 import { IGDocVersion } from "./schemas/models/GoogleDocVersion";
 import TextDiffCreate, { Change } from "textdiff-create";
 import TextDiffPatch from "textdiff-patch";
+import StudentDataModel, { StudentData } from "./schemas/models/StudentData";
+import CourseModel, { Course } from "./schemas/models/Course";
 dotenv.config();
 
 const queryPayloadSchema = {
@@ -217,3 +219,79 @@ export function getDeltaDoc(
   deltaDoc.markdownTextDelta = JSON.stringify(markdownDiff);
   return deltaDoc;
 }
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export async function validateIds<T extends Model<any>>(
+  idField: string,
+  ids: string[],
+  model: T
+): Promise<boolean> {
+  const documents = await model.find().where(idField).in(ids);
+  return documents.length === ids.length;
+}
+
+const hasCommonString = (arr1: string[], arr2: string[]): boolean => {
+  return arr1.some((item) => arr2.includes(item));
+};
+
+export async function removeStudentFromSection(
+  studentId: string,
+  sectionId: string
+): Promise<StudentData> {
+  const student = await StudentDataModel.findOne({
+    userId: studentId,
+  });
+  if (!student) {
+    throw new Error("student not found");
+  }
+  student.enrolledSections = student.enrolledSections.filter(
+    (section) => `${section}` !== `${sectionId}`
+  );
+  const courseWithSection = await CourseModel.findOne({
+    sectionIds: sectionId,
+  });
+  if (!courseWithSection) {
+    throw new Error("course not found");
+  }
+  // remove course if hanging.
+  const hasSectionInCourse = hasCommonString(
+    student.enrolledSections,
+    courseWithSection.sectionIds
+  );
+  if (!hasSectionInCourse) {
+    student.enrolledCourses = student.enrolledCourses.filter(
+      (course) => `${course}` !== `${courseWithSection._id}`
+    );
+  }
+  return await student.save();
+}
+
+export const removeSectionFromAllStudentsAndCourse = async (
+  course: Course,
+  sectionId: string
+) => {
+  // remove section from all students
+  await StudentDataModel.updateMany(
+    { enrolledSections: sectionId },
+    { $pull: { enrolledSections: sectionId } }
+  );
+
+  // remove section from course
+  const updatedCourse = await CourseModel.findByIdAndUpdate(
+    course._id,
+    {
+      $pull: { sectionIds: sectionId },
+    },
+    { new: true }
+  );
+
+  // pull course from all students who no longer have a section within the course
+  const sectionsInCourse = updatedCourse.sectionIds;
+  await StudentDataModel.updateMany(
+    {
+      enrolledCourses: course._id,
+      enrolledSections: { $nin: sectionsInCourse }, // no sections from this course remain
+    },
+    { $pull: { enrolledCourses: course._id } }
+  );
+};

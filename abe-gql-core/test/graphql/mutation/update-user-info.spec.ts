@@ -12,7 +12,11 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
-import { ClassroomCode, UserRole } from "../../../src/schemas/models/User";
+import {
+  ClassroomCode,
+  EducationalRole,
+  UserRole,
+} from "../../../src/schemas/models/User";
 
 export const fullUserQueryData = `
   name
@@ -25,6 +29,7 @@ export const fullUserQueryData = `
     code
     createdAt
   }
+  educationalRole
 `;
 
 describe("update user info", () => {
@@ -81,6 +86,7 @@ describe("update user info", () => {
         variables: {
           userInfo: {
             classroomCode: "5ffdf1231ee2c62320b49e2f",
+            educationalRole: EducationalRole.INSTRUCTOR,
           },
         },
       });
@@ -94,5 +100,6 @@ describe("update user info", () => {
     );
     expect(previousClassroomCode).to.exist;
     expect(previousClassroomCode.createdAt).to.exist;
+    expect(updatedUser.educationalRole).to.equal(EducationalRole.INSTRUCTOR);
   });
 });
