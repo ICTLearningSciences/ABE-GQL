@@ -16,7 +16,6 @@ import GDocVersionModel, {
   VersionType,
 } from "../../../src/schemas/models/GoogleDocVersion";
 import { dateNMinutesInPast } from "../../../src/helpers";
-import TextDiffPatch from "textdiff-patch";
 import TextDiffCreate from "textdiff-create";
 
 describe("submit google doc version", () => {
@@ -74,6 +73,7 @@ describe("submit google doc version", () => {
       plainText: "hello, world!",
       markdownText: "# hello, world!",
       lastChangedId: "123",
+      courseAssignmentId: "course-assignment-id",
       chatLog: [
         {
           sender: "USER",
@@ -108,6 +108,7 @@ describe("submit google doc version", () => {
                       plainText
                       markdownText
                       versionType
+                      courseAssignmentId
                     }
                 }`,
         variables: {
@@ -132,6 +133,7 @@ describe("submit google doc version", () => {
     expect(docVersion).to.not.be.null;
     expect(docVersion!.versionType).to.equal(VersionType.SNAPSHOT);
     expect(docVersion!.plainText).to.equal("hello, world!");
+    expect(docVersion!.courseAssignmentId).to.equal("course-assignment-id");
   });
 
   it(`creates delta version when currentState exists`, async () => {
