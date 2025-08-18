@@ -174,7 +174,7 @@ export const GDocVersionSchema = new Schema(
     markdownTextDelta: String,
     lastChangedId: String,
     sessionId: String,
-    courseAssignmentId: String,
+    courseAssignmentId: { type: String, required: false, default: "" },
     sessionIntention: IntentionSchema,
     documentIntention: IntentionSchema,
     dayIntention: IntentionSchema,
