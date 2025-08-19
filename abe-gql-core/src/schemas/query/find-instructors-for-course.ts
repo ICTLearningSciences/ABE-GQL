@@ -10,12 +10,12 @@ import {
   GraphQLID,
   GraphQLList,
 } from "graphql";
-import { UserRole } from "../models/User";
 import InstructorDataModel, {
   InstructorDataType,
   InstructorData,
 } from "../models/InstructorData";
 import CourseModel from "../models/Course";
+import UserModel from "../models/User";
 
 export const findInstructorsForCourse = {
   type: new GraphQLList(InstructorDataType),
@@ -29,25 +29,20 @@ export const findInstructorsForCourse = {
     },
     context: {
       userId: string;
-      userRole: UserRole;
     }
   ): Promise<InstructorData[]> => {
     if (!context.userId) {
       throw new Error("authenticated user required");
     }
 
+    const user = await UserModel.findById(context.userId);
+    if (!user) {
+      throw new Error("requesting user not found");
+    }
+
     const course = await CourseModel.findById(args.courseId);
     if (!course) {
       throw new Error("course not found");
-    }
-
-    if (
-      context.userRole !== UserRole.ADMIN &&
-      course.instructorId !== context.userId
-    ) {
-      throw new Error(
-        "unauthorized: only admins and instructors of the course can fetch instructors for this course"
-      );
     }
 
     const instructorData = await InstructorDataModel.find({

@@ -154,7 +154,7 @@ describe("find instructors for course", () => {
     await mongoUnit.drop();
   });
 
-  it("allows instructor to fetch instructors for their own course", async () => {
+  it("allows instructor to fetch instructors for course", async () => {
     const token = await getToken(instructorUserId1, UserRole.USER);
 
     const response = await request(app)
@@ -198,7 +198,7 @@ describe("find instructors for course", () => {
     expect(instructors[0].name).to.equal("Test Instructor 1");
   });
 
-  it("throws error when student tries to fetch instructors for course", async () => {
+  it("allows student to fetch instructors for course", async () => {
     const token = await getToken(studentUserId, UserRole.USER);
 
     const response = await request(app)
@@ -212,13 +212,12 @@ describe("find instructors for course", () => {
       });
 
     expect(response.status).to.equal(200);
-    expect(
-      response.body.errors.find((e: any) =>
-        e.message.includes(
-          "unauthorized: only admins and instructors of the course can fetch instructors for this course"
-        )
-      )
-    ).to.exist;
+    expect(response.body.errors).to.be.undefined;
+    const instructors = response.body.data.findInstructorsForCourse;
+    expect(instructors).to.be.an("array").with.length(1);
+    expect(instructors[0].userId).to.equal(instructorUserId1);
+    expect(instructors[0].name).to.equal("Test Instructor 1");
+    expect(instructors[0].userData.email).to.equal("instructor1@test.com");
   });
 
   it("throws error when non-authenticated user tries to fetch instructors for course", async () => {
@@ -267,39 +266,6 @@ describe("find instructors for course", () => {
 
     const instructors = response.body.data.findInstructorsForCourse;
     expect(instructors).to.be.an("array").that.is.empty;
-  });
-
-  it("throws error when instructor tries to fetch instructors for course they don't own", async () => {
-    const courseId2 = new ObjectId().toString();
-    await CourseModel.create({
-      _id: courseId2,
-      title: "Test Course 2",
-      description: "Test Course 2 Description",
-      instructorId: instructorUserId2,
-      sectionIds: [],
-      deleted: false,
-    });
-
-    const token = await getToken(instructorUserId1, UserRole.USER);
-
-    const response = await request(app)
-      .post("/graphql")
-      .set("Authorization", `bearer ${token}`)
-      .send({
-        query: findInstructorsForCourseQuery,
-        variables: {
-          courseId: courseId2,
-        },
-      });
-
-    expect(response.status).to.equal(200);
-    expect(
-      response.body.errors.find((e: any) =>
-        e.message.includes(
-          "unauthorized: only admins and instructors of the course can fetch instructors for this course"
-        )
-      )
-    ).to.exist;
   });
 
   it("throws error when course does not exist", async () => {
