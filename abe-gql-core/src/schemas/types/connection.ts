@@ -15,6 +15,7 @@ import { Document } from "mongoose";
 import base64url from "base64url";
 import objectPath from "object-path";
 import { ObjectType } from "./object";
+import { UserRole } from "../models/User";
 export const PageInfoType = new GraphQLObjectType({
   name: "PageInfo",
   fields: {
@@ -105,6 +106,10 @@ export interface PaginatedResolveArgs {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parent: any;
   args: HasPaginationArgs;
+  context: {
+    userRole: UserRole;
+    userId: string;
+  };
 }
 
 export interface PaginatedResolveFunction {
@@ -160,9 +165,10 @@ export function makeConnection(args: MakeConnectionArgs): any {
         limit?: number;
         sortBy?: string;
         sortAscending?: boolean;
-      }
+      },
+      context: { userRole: UserRole; userId: string }
     ) => {
-      const paginateResult = await resolve({ parent, args });
+      const paginateResult = await resolve({ parent, args, context });
       return {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         edges: paginateResult.results.map((m: any) => {

@@ -67,6 +67,8 @@ export function setupFilter(inputFilter: object | string) {
 export function findAll<T extends PaginatedResolveResult>(config: {
   nodeType: GraphQLObjectType;
   model: HasPaginate<T>;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  filterInvalid?: (val: PaginatedResolveResult, context: any) => Promise<T> | T;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any {
   const { nodeType, model } = config;
@@ -88,14 +90,19 @@ export function findAll<T extends PaginatedResolveResult>(config: {
           next = cursor;
         }
       }
-      return await model.paginate({
+      const paginateArgs = {
         query: filter,
         limit: Number(args.limit) || 100,
         paginatedField: args.sortBy || "_id",
         sortAscending: args.sortAscending,
         next: next,
         previous: prev,
-      });
+      };
+      const result = await model.paginate(paginateArgs);
+      if (config.filterInvalid) {
+        return config.filterInvalid(result, resolveArgs.context);
+      }
+      return result;
     },
   });
 }
