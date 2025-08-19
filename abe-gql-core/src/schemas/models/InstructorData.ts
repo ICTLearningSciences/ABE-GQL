@@ -13,7 +13,9 @@ import {
   GraphQLEnumType,
 } from "graphql";
 import CourseModel from "./Course";
+import UserModel from "./User";
 import { validateIds } from "../../helpers";
+import { UserType } from "./User";
 
 export enum CourseOwnership {
   OWNER = "OWNER",
@@ -54,6 +56,12 @@ export const InstructorDataType = new GraphQLObjectType({
     userId: { type: GraphQLID },
     courses: { type: new GraphQLList(CourseDataType) },
     name: { type: GraphQLString },
+    userData: {
+      type: UserType,
+      resolve: async (parent: InstructorData) => {
+        return await UserModel.findById(parent.userId);
+      },
+    },
   }),
 });
 
