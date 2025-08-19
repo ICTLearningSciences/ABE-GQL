@@ -26,6 +26,9 @@ query FindInstructorsForCourse($courseId: ID!){
             findInstructorsForCourse(courseId: $courseId) {
                 userId
                 name
+                userData {
+                    email
+                }
                 courses {
                     courseId
                     ownership
@@ -170,6 +173,7 @@ describe("find instructors for course", () => {
     expect(instructors).to.be.an("array").with.length(1);
     expect(instructors[0].userId).to.equal(instructorUserId1);
     expect(instructors[0].name).to.equal("Test Instructor 1");
+    expect(instructors[0].userData.email).to.equal("instructor1@test.com");
   });
 
   it("allows admin to fetch instructors for any course", async () => {
