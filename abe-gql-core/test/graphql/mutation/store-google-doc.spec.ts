@@ -80,7 +80,7 @@ describe("store google doc", () => {
             admin: true,
             title: "test_title_input",
             service: "GOOGLE_DOCS",
-            courseAssignmentId: "test_course_assignment_id",
+            courseAssignmentId: "5ffdf1231ee2c62320b49e99",
           },
         },
       });
@@ -93,7 +93,7 @@ describe("store google doc", () => {
       currentDayIntention: null,
       assignmentDescription: null,
       service: "GOOGLE_DOCS",
-      courseAssignmentId: "test_course_assignment_id",
+      courseAssignmentId: "5ffdf1231ee2c62320b49e99",
     });
   });
 
