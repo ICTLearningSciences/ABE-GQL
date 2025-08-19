@@ -42,6 +42,7 @@ export interface GoogleDoc {
   userClassroomCode: string;
   createdAt: Date;
   updatedAt: Date;
+  courseAssignmentId: string;
 }
 
 export const GoogleDocType = new GraphQLObjectType({
@@ -49,6 +50,7 @@ export const GoogleDocType = new GraphQLObjectType({
   fields: () => ({
     googleDocId: { type: GraphQLString },
     wordDocId: { type: GraphQLString },
+    courseAssignmentId: { type: GraphQLID },
     user: { type: GraphQLID },
     deleted: { type: GraphQLBoolean },
     archived: { type: GraphQLBoolean },
@@ -97,6 +99,7 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
     currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
     service: { type: GraphQLString },
+    courseAssignmentId: { type: GraphQLString },
   }),
 });
 
@@ -118,6 +121,7 @@ export const GoogleDocSchema = new Schema(
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },
     userClassroomCode: { type: String },
+    courseAssignmentId: { type: String, required: false, default: "" },
   },
   { timestamps: true }
 );

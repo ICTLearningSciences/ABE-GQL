@@ -70,6 +70,7 @@ describe("store google doc", () => {
                       }
                       assignmentDescription
                       service
+                      courseAssignmentId
                   }
                 }`,
         variables: {
@@ -79,6 +80,7 @@ describe("store google doc", () => {
             admin: true,
             title: "test_title_input",
             service: "GOOGLE_DOCS",
+            courseAssignmentId: "test_course_assignment_id",
           },
         },
       });
@@ -91,6 +93,7 @@ describe("store google doc", () => {
       currentDayIntention: null,
       assignmentDescription: null,
       service: "GOOGLE_DOCS",
+      courseAssignmentId: "test_course_assignment_id",
     });
   });
 
