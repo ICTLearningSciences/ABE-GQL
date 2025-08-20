@@ -8,18 +8,124 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLList,
+  GraphQLString,
 } from "graphql";
 import { UserRole } from "../models/User";
 import StudentDataModel, {
+  ActivityCompletion,
   StudentData,
   StudentDataType,
-  ActivityCompletionInputType,
-  ActivityCompletion,
 } from "../models/StudentData";
 import CourseModel from "../models/Course";
 import SectionModel from "../models/Section";
 import AssignmentModel from "../models/Assignment";
+
+export enum ModifyStudentAssignmentProgressActions {
+  ACTIVITY_STARTED = "ACTIVITY_STARTED", // if activity not in list, add it with complete false
+  ACTIVITY_COMPLETED = "ACTIVITY_COMPLETED", // if activity in list, set complete to true
+
+  NEW_DOC_CREATED = "NEW_DOC_CREATED", // if doc not in list, add it with primaryDocument true IF only doc in list, else set primaryDocument to false
+  DOC_PRIMARY_STATUS_SET = "DOC_PRIMARY_STATUS_SET", // if doc in list, update it with primaryDocument
+  DOC_DELETED = "DOC_DELETED", // if doc in list, delete it
+}
+
+function applyActionToActivityCompletion(
+  activityCompletions: ActivityCompletion[],
+  action: ModifyStudentAssignmentProgressActions,
+  activityId: string,
+  docId?: string
+): ActivityCompletion[] {
+  // If ACTIVITY_STARTED, just add incomplete activity to activityCompletions list if not already there
+  if (action === ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED) {
+    const existingActivityCompletion = activityCompletions.find(
+      (ac) => ac.activityId === activityId
+    );
+    if (existingActivityCompletion) {
+      return activityCompletions;
+    }
+    return [
+      ...activityCompletions,
+      { activityId, complete: false, relevantGoogleDocs: [] },
+    ];
+  }
+  const existingActivityCompletionIdx = activityCompletions.findIndex(
+    (ac) => ac.activityId === activityId
+  );
+  if (existingActivityCompletionIdx === -1) {
+    throw new Error(
+      "Activity has not been started, it must be started before modify actions."
+    );
+  }
+  const existingActivityCompletion =
+    activityCompletions[existingActivityCompletionIdx];
+  if (action === ModifyStudentAssignmentProgressActions.ACTIVITY_COMPLETED) {
+    // If ACTIVITY_COMPLETED, set complete to true for activity
+    return [
+      ...activityCompletions.slice(0, existingActivityCompletionIdx),
+      {
+        ...existingActivityCompletion,
+        complete: true,
+      },
+    ];
+  }
+  if (!docId) {
+    throw new Error("docId is required for doc actions");
+  }
+  if (action === ModifyStudentAssignmentProgressActions.NEW_DOC_CREATED) {
+    // If NEW_DOC_CREATED, add doc to relevantGoogleDocs list if not already there
+    const existingDocIdx =
+      existingActivityCompletion.relevantGoogleDocs.findIndex(
+        (rd) => rd.docId === docId
+      );
+    if (existingDocIdx !== -1) {
+      return activityCompletions;
+    }
+    return [
+      ...activityCompletions.slice(0, existingActivityCompletionIdx),
+      {
+        ...existingActivityCompletion,
+        relevantGoogleDocs: [
+          ...existingActivityCompletion.relevantGoogleDocs,
+          // set to primary if there are no existing relevant documents
+          {
+            docId,
+            primaryDocument:
+              existingActivityCompletion.relevantGoogleDocs.length === 0,
+          },
+        ],
+      },
+    ];
+  } else if (
+    action === ModifyStudentAssignmentProgressActions.DOC_PRIMARY_STATUS_SET
+  ) {
+    // If DOC_PRIMARY_STATUS_SET, set the target doc primaryDocument status to True, and ALL other docs to false.
+    return [
+      ...activityCompletions.slice(0, existingActivityCompletionIdx),
+      {
+        ...existingActivityCompletion,
+        relevantGoogleDocs: existingActivityCompletion.relevantGoogleDocs.map(
+          (rd) =>
+            rd.docId === docId
+              ? { ...rd, primaryDocument: true }
+              : { ...rd, primaryDocument: false }
+        ),
+      },
+    ];
+  } else if (action === ModifyStudentAssignmentProgressActions.DOC_DELETED) {
+    // If DOC_DELETED, removed docId from the activities relevantGoogleDocs list
+    return [
+      ...activityCompletions.slice(0, existingActivityCompletionIdx),
+      {
+        ...existingActivityCompletion,
+        relevantGoogleDocs:
+          existingActivityCompletion.relevantGoogleDocs.filter(
+            (rd) => rd.docId !== docId
+          ),
+      },
+    ];
+  }
+  throw new Error("Invalid action");
+}
 
 export const modifyStudentAssignmentProgress = {
   type: StudentDataType,
@@ -28,9 +134,12 @@ export const modifyStudentAssignmentProgress = {
     courseId: { type: GraphQLNonNull(GraphQLID) },
     sectionId: { type: GraphQLNonNull(GraphQLID) },
     assignmentId: { type: GraphQLNonNull(GraphQLID) },
-    activityCompletions: {
-      type: GraphQLNonNull(new GraphQLList(ActivityCompletionInputType)),
+    activityId: { type: GraphQLNonNull(GraphQLID) },
+    action: {
+      type: GraphQLNonNull(GraphQLString),
+      enum: Object.values(ModifyStudentAssignmentProgressActions),
     },
+    docId: { type: GraphQLString },
   },
   resolve: async (
     _root: GraphQLObjectType,
@@ -39,7 +148,9 @@ export const modifyStudentAssignmentProgress = {
       courseId: string;
       sectionId: string;
       assignmentId: string;
-      activityCompletions: ActivityCompletion[];
+      activityId: string;
+      action: ModifyStudentAssignmentProgressActions;
+      docId?: string;
     },
     context: {
       userId: string;
@@ -97,14 +208,29 @@ export const modifyStudentAssignmentProgress = {
       (progress) => progress.assignmentId === args.assignmentId
     );
 
+    const activityCompletions = studentData.assignmentProgress[
+      existingProgressIndex
+    ]
+      ? studentData.assignmentProgress[existingProgressIndex]
+          .activityCompletions
+      : [];
+
+    const newActivityCompletions: ActivityCompletion[] =
+      applyActionToActivityCompletion(
+        activityCompletions,
+        args.action,
+        args.activityId,
+        args.docId
+      );
+
     if (existingProgressIndex !== -1) {
       studentData.assignmentProgress[
         existingProgressIndex
-      ].activityCompletions = args.activityCompletions;
+      ].activityCompletions = newActivityCompletions;
     } else {
       studentData.assignmentProgress.push({
         assignmentId: args.assignmentId,
-        activityCompletions: args.activityCompletions,
+        activityCompletions: newActivityCompletions,
       });
     }
 

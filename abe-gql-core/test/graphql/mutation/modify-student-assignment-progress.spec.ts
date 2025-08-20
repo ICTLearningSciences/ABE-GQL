@@ -19,6 +19,7 @@ import SectionModel from "../../../src/schemas/models/Section";
 import AssignmentModel from "../../../src/schemas/models/Assignment";
 import mongoose from "mongoose";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";
+import { ModifyStudentAssignmentProgressActions } from "../../../src/schemas/mutation/modify-student-assignment-progress";
 
 const { ObjectId } = mongoose.Types;
 
@@ -93,78 +94,15 @@ describe("modify student assignment progress", () => {
     await mongoUnit.drop();
   });
 
-  it("allows instructor to mark assignment as complete for student", async () => {
+  it("allows instructor to start activity for student", async () => {
     const token = await getToken(instructorUserId, UserRole.USER);
 
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
-            _id
-            userId
-            assignmentProgress {
-              assignmentId
-              activityCompletions {
-                activityId
-                complete
-              }
-            }
-          }
-        }`,
-        variables: {
-          targetUserId: studentUserId,
-          courseId: courseId,
-          sectionId: sectionId,
-          assignmentId: assignmentId,
-          activityCompletions: [
-            { activityId: "activity1", complete: true },
-            { activityId: "activity2", complete: false },
-          ],
-        },
-      });
-
-    expect(response.status).to.equal(200);
-    expect(response.body.errors).to.be.undefined;
-
-    const progressData = response.body.data.modifyStudentAssignmentProgress;
-    expect(progressData.userId).to.equal(studentUserId);
-
-    const assignmentProgress = progressData.assignmentProgress.find(
-      (ap: any) => ap.assignmentId === assignmentId
-    );
-    expect(assignmentProgress).to.exist;
-    expect(assignmentProgress.activityCompletions).to.have.lengthOf(2);
-    expect(assignmentProgress.activityCompletions[0].activityId).to.equal(
-      "activity1"
-    );
-    expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
-    expect(assignmentProgress.activityCompletions[1].activityId).to.equal(
-      "activity2"
-    );
-    expect(assignmentProgress.activityCompletions[1].complete).to.be.false;
-
-    const studentData = await StudentDataModel.findOne({
-      userId: studentUserId,
-    });
-    const dbProgress = studentData?.assignmentProgress.find(
-      (ap) => ap.assignmentId === assignmentId
-    );
-    expect(dbProgress?.activityCompletions).to.have.lengthOf(2);
-    expect(dbProgress?.activityCompletions[0].activityId).to.equal("activity1");
-    expect(dbProgress?.activityCompletions[0].complete).to.be.true;
-  });
-
-  it("allows student to mark their own assignment as complete", async () => {
-    const token = await getToken(studentUserId, UserRole.USER);
-
-    const response = await request(app)
-      .post("/graphql")
-      .set("Authorization", `bearer ${token}`)
-      .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
             userId
             assignmentProgress {
@@ -185,15 +123,112 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [
-            {
-              activityId: "activity1",
-              complete: true,
-              relevantGoogleDocs: [
-                { docId: "googleDocId1", primaryDocument: true },
-              ],
-            },
-          ],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const progressData = response.body.data.modifyStudentAssignmentProgress;
+    expect(progressData.userId).to.equal(studentUserId);
+
+    const assignmentProgress = progressData.assignmentProgress.find(
+      (ap: any) => ap.assignmentId === assignmentId
+    );
+    expect(assignmentProgress).to.exist;
+    expect(assignmentProgress.activityCompletions).to.have.lengthOf(1);
+    expect(assignmentProgress.activityCompletions[0].activityId).to.equal(
+      "activity1"
+    );
+    expect(assignmentProgress.activityCompletions[0].complete).to.be.false;
+    expect(assignmentProgress.activityCompletions[0].relevantGoogleDocs).to.be
+      .empty;
+
+    const studentData = await StudentDataModel.findOne({
+      userId: studentUserId,
+    });
+    const dbProgress = studentData?.assignmentProgress.find(
+      (ap) => ap.assignmentId === assignmentId
+    );
+    expect(dbProgress?.activityCompletions).to.have.lengthOf(1);
+    expect(dbProgress?.activityCompletions[0].activityId).to.equal("activity1");
+    expect(dbProgress?.activityCompletions[0].complete).to.be.false;
+  });
+
+  it("allows student to create doc and mark activity complete", async () => {
+    const token = await getToken(studentUserId, UserRole.USER);
+
+    // First start the activity
+    await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
+        },
+      });
+
+    // Then create a document
+    await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!, $docId: String) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action, docId: $docId) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.NEW_DOC_CREATED,
+          docId: "googleDocId1",
+        },
+      });
+
+    // Finally complete the activity
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
+            _id
+            userId
+            assignmentProgress {
+              assignmentId
+              activityCompletions {
+                activityId
+                complete
+                relevantGoogleDocs {
+                  docId
+                  primaryDocument
+                }
+              }
+            }
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_COMPLETED,
         },
       });
 
@@ -210,7 +245,8 @@ describe("modify student assignment progress", () => {
     ).to.deep.equal([{ docId: "googleDocId1", primaryDocument: true }]);
   });
 
-  it("allows updating existing assignment progress", async () => {
+  it("allows admin to complete and then restart an activity", async () => {
+    // Start with completed activity
     await StudentDataModel.findOneAndUpdate(
       { userId: studentUserId },
       {
@@ -218,22 +254,46 @@ describe("modify student assignment progress", () => {
           assignmentProgress: {
             assignmentId: assignmentId,
             activityCompletions: [
-              { activityId: "activity1", complete: true },
-              { activityId: "activity2", complete: true },
+              {
+                activityId: "activity1",
+                complete: true,
+                relevantGoogleDocs: [],
+              },
             ],
           },
         },
       }
     );
 
-    const token = await getToken(instructorUserId, UserRole.USER);
+    const token = await getToken(instructorUserId, UserRole.ADMIN);
 
+    // First start a new activity
+    await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity2",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
+        },
+      });
+
+    // Then complete the new activity
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
             userId
             assignmentProgress {
@@ -250,10 +310,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [
-            { activityId: "activity1", complete: false },
-            { activityId: "activity2", complete: true },
-          ],
+          activityId: "activity2",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_COMPLETED,
         },
       });
 
@@ -265,8 +323,15 @@ describe("modify student assignment progress", () => {
       (ap: any) => ap.assignmentId === assignmentId
     );
     expect(assignmentProgress.activityCompletions).to.have.lengthOf(2);
-    expect(assignmentProgress.activityCompletions[0].complete).to.be.false;
-    expect(assignmentProgress.activityCompletions[1].complete).to.be.true;
+
+    const activity1 = assignmentProgress.activityCompletions.find(
+      (ac: any) => ac.activityId === "activity1"
+    );
+    const activity2 = assignmentProgress.activityCompletions.find(
+      (ac: any) => ac.activityId === "activity2"
+    );
+    expect(activity1.complete).to.be.true;
+    expect(activity2.complete).to.be.true;
 
     const updatedStudentData = await StudentDataModel.findOne({
       userId: studentUserId,
@@ -275,19 +340,39 @@ describe("modify student assignment progress", () => {
       (ap) => ap.assignmentId === assignmentId
     );
     expect(dbProgress?.activityCompletions).to.have.lengthOf(2);
-    expect(dbProgress?.activityCompletions[0].complete).to.be.false;
-    expect(dbProgress?.activityCompletions[1].complete).to.be.true;
   });
 
-  it("allows admin to modify any student's assignment progress", async () => {
-    const token = await getToken(instructorUserId, UserRole.ADMIN);
+  it("allows deleting a document from an activity", async () => {
+    // First start the activity and add a doc
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      {
+        $push: {
+          assignmentProgress: {
+            assignmentId: assignmentId,
+            activityCompletions: [
+              {
+                activityId: "activity1",
+                complete: false,
+                relevantGoogleDocs: [
+                  { docId: "googleDocId1", primaryDocument: true },
+                  { docId: "googleDocId2", primaryDocument: false },
+                ],
+              },
+            ],
+          },
+        },
+      }
+    );
+
+    const token = await getToken(studentUserId, UserRole.USER);
 
     const response = await request(app)
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!, $docId: String) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action, docId: $docId) {
             _id
             userId
             assignmentProgress {
@@ -295,6 +380,10 @@ describe("modify student assignment progress", () => {
               activityCompletions {
                 activityId
                 complete
+                relevantGoogleDocs {
+                  docId
+                  primaryDocument
+                }
               }
             }
           }
@@ -304,7 +393,9 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.DOC_DELETED,
+          docId: "googleDocId1",
         },
       });
 
@@ -315,15 +406,17 @@ describe("modify student assignment progress", () => {
     const assignmentProgress = progressData.assignmentProgress.find(
       (ap: any) => ap.assignmentId === assignmentId
     );
-    expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
+    const docs = assignmentProgress.activityCompletions[0].relevantGoogleDocs;
+    expect(docs).to.have.lengthOf(1);
+    expect(docs[0].docId).to.equal("googleDocId2");
   });
 
   it("throws error when non-authenticated user tries to modify progress", async () => {
     const response = await request(app)
       .post("/graphql")
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -332,7 +425,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -352,8 +446,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -362,7 +456,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -384,8 +479,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -394,7 +489,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -413,8 +509,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -423,7 +519,8 @@ describe("modify student assignment progress", () => {
           courseId: "000000000000000000000000",
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -442,8 +539,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -452,7 +549,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: "000000000000000000000000",
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -471,8 +569,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -481,7 +579,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: "000000000000000000000000",
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -517,8 +616,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -527,7 +626,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: anotherSectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -556,8 +656,8 @@ describe("modify student assignment progress", () => {
       .post("/graphql")
       .set("Authorization", `bearer ${token}`)
       .send({
-        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityCompletions: [ActivityCompletionInputType!]!) {
-          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityCompletions: $activityCompletions) {
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
             _id
           }
         }`,
@@ -566,7 +666,8 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: anotherAssignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED,
         },
       });
 
@@ -576,6 +677,87 @@ describe("modify student assignment progress", () => {
         e.message.includes(
           "assignment does not belong to the specified section"
         )
+      )
+    ).to.exist;
+  });
+
+  it("throws error when trying to complete activity that hasn't been started", async () => {
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.ACTIVITY_COMPLETED,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes(
+          "Activity has not been started, it must be started before modify actions."
+        )
+      )
+    ).to.exist;
+  });
+
+  it("throws error when docId is missing for doc actions", async () => {
+    // First start the activity
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      {
+        $push: {
+          assignmentProgress: {
+            assignmentId: assignmentId,
+            activityCompletions: [
+              {
+                activityId: "activity1",
+                complete: false,
+                relevantGoogleDocs: [],
+              },
+            ],
+          },
+        },
+      }
+    );
+
+    const token = await getToken(instructorUserId, UserRole.USER);
+
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action) {
+            _id
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.NEW_DOC_CREATED,
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(
+      response.body.errors.find((e: any) =>
+        e.message.includes("docId is required for doc actions")
       )
     ).to.exist;
   });
