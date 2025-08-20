@@ -172,6 +172,10 @@ describe("modify student assignment progress", () => {
               activityCompletions {
                 activityId
                 complete
+                relevantGoogleDocs {
+                  docId
+                  primaryDocument
+                }
               }
             }
           }
@@ -181,7 +185,15 @@ describe("modify student assignment progress", () => {
           courseId: courseId,
           sectionId: sectionId,
           assignmentId: assignmentId,
-          activityCompletions: [{ activityId: "activity1", complete: true }],
+          activityCompletions: [
+            {
+              activityId: "activity1",
+              complete: true,
+              relevantGoogleDocs: [
+                { docId: "googleDocId1", primaryDocument: true },
+              ],
+            },
+          ],
         },
       });
 
@@ -193,6 +205,9 @@ describe("modify student assignment progress", () => {
       (ap: any) => ap.assignmentId === assignmentId
     );
     expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
+    expect(
+      assignmentProgress.activityCompletions[0].relevantGoogleDocs
+    ).to.deep.equal([{ docId: "googleDocId1", primaryDocument: true }]);
   });
 
   it("allows updating existing assignment progress", async () => {
