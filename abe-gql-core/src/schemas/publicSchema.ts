@@ -59,6 +59,7 @@ import fetchInstructors from "./query/fetch-instructors";
 import modifyCourseShareStatus from "./mutation/modify-course-share-status";
 import modifyStudentBanInSection from "./mutation/ban-student-from-section";
 import findInstructorsForCourse from "./query/find-instructors-for-course";
+import findAllGoogleDocs from "./query/find-all-google-docs";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -80,6 +81,7 @@ const publicQueries = {
   fetchStudentsInMyCourses,
   fetchInstructors,
   findInstructorsForCourse,
+  findAllGoogleDocs,
 };
 
 const getAuthenticatedQueries = () => {

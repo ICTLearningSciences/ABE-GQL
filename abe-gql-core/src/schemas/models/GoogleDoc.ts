@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -20,6 +20,13 @@ import GoogleDocVersionsModel, {
   IntentionObjectType,
   IntentionSchema,
 } from "./GoogleDocVersion";
+import {
+  PaginateOptions,
+  PaginateQuery,
+  PaginatedResolveResult,
+  pluginPagination,
+} from "./Paginatation";
+import { Assignment } from "./Assignment";
 
 export enum DocService {
   GOOGLE_DOCS = "GOOGLE_DOCS",
@@ -42,6 +49,7 @@ export interface GoogleDoc {
   userClassroomCode: string;
   createdAt: Date;
   updatedAt: Date;
+  courseAssignmentId: Assignment["_id"];
 }
 
 export const GoogleDocType = new GraphQLObjectType({
@@ -49,6 +57,7 @@ export const GoogleDocType = new GraphQLObjectType({
   fields: () => ({
     googleDocId: { type: GraphQLString },
     wordDocId: { type: GraphQLString },
+    courseAssignmentId: { type: GraphQLID },
     user: { type: GraphQLID },
     deleted: { type: GraphQLBoolean },
     archived: { type: GraphQLBoolean },
@@ -97,6 +106,7 @@ export const GoogleDocInputType = new GraphQLInputObjectType({
     currentDayIntention: { type: IntentionInputType },
     assignmentDescription: { type: GraphQLString },
     service: { type: GraphQLString },
+    courseAssignmentId: { type: GraphQLID },
   }),
 });
 
@@ -118,8 +128,21 @@ export const GoogleDocSchema = new Schema(
     user: { type: mongoose.Types.ObjectId, ref: "User" },
     title: { type: String },
     userClassroomCode: { type: String },
+    courseAssignmentId: { type: mongoose.Types.ObjectId, ref: "Assignment" },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("GoogleDoc", GoogleDocSchema);
+export interface GoogleDocModel extends Model<GoogleDoc> {
+  paginate(
+    query?: PaginateQuery<GoogleDoc>,
+    options?: PaginateOptions
+  ): Promise<PaginatedResolveResult<GoogleDoc>>;
+}
+
+pluginPagination(GoogleDocSchema);
+
+export default mongoose.model<GoogleDoc, GoogleDocModel>(
+  "GoogleDoc",
+  GoogleDocSchema
+);
