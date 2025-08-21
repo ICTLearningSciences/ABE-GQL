@@ -14,8 +14,14 @@ import {
   GraphQLString,
 } from "graphql";
 
+export interface RelevantGoogleDoc {
+  docId: string;
+  primaryDocument: boolean;
+}
+
 export interface ActivityCompletion {
   activityId: string;
+  relevantGoogleDocs: RelevantGoogleDoc[];
   complete: boolean;
 }
 
@@ -33,10 +39,27 @@ export interface StudentData extends Document {
   deleted: boolean;
 }
 
+export const RelevantGoogleDocType = new GraphQLObjectType({
+  name: "RelevantGoogleDoc",
+  fields: () => ({
+    docId: { type: GraphQLString },
+    primaryDocument: { type: GraphQLBoolean },
+  }),
+});
+
+export const RelevantGoogleDocInputType = new GraphQLInputObjectType({
+  name: "RelevantGoogleDocInputType",
+  fields: () => ({
+    docId: { type: GraphQLString },
+    primaryDocument: { type: GraphQLBoolean },
+  }),
+});
+
 export const ActivityCompletionType = new GraphQLObjectType({
   name: "ActivityCompletion",
   fields: () => ({
     activityId: { type: GraphQLID },
+    relevantGoogleDocs: { type: new GraphQLList(RelevantGoogleDocType) },
     complete: { type: GraphQLBoolean },
   }),
 });
@@ -53,6 +76,7 @@ export const ActivityCompletionInputType = new GraphQLInputObjectType({
   name: "ActivityCompletionInputType",
   fields: () => ({
     activityId: { type: GraphQLID },
+    relevantGoogleDocs: { type: new GraphQLList(RelevantGoogleDocInputType) },
     complete: { type: GraphQLBoolean },
   }),
 });
@@ -90,12 +114,21 @@ export const StudentDataInputType = new GraphQLInputObjectType({
   }),
 });
 
+export const RelevantGoogleDocSchema = new Schema<RelevantGoogleDoc>(
+  {
+    docId: { type: String, required: true },
+    primaryDocument: { type: Boolean, required: true, default: false },
+  },
+  { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
+);
+
 export const ActivityCompletionSchema = new Schema<ActivityCompletion>(
   {
     activityId: { type: String, required: true },
     complete: { type: Boolean, required: true, default: false },
+    relevantGoogleDocs: { type: [RelevantGoogleDocSchema], default: [] },
   },
-  { timestamps: true, collation: { locale: "en", strength: 2 } }
+  { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );
 
 export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
@@ -103,7 +136,7 @@ export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
     assignmentId: { type: String, required: true },
     activityCompletions: { type: [ActivityCompletionSchema], default: [] },
   },
-  { timestamps: true, collation: { locale: "en", strength: 2 } }
+  { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );
 
 export const StudentDataSchema = new Schema<StudentData>(
