@@ -33,7 +33,8 @@ describe("fetch students in my courses", () => {
   let courseId1: string;
   let courseId2: string;
   let courseId3: string;
-
+  let assignmentId1: string;
+  let activityId1: string;
   beforeEach(async () => {
     await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
     app = await createApp();
@@ -43,6 +44,8 @@ describe("fetch students in my courses", () => {
     student1UserId = new ObjectId().toString();
     student2UserId = new ObjectId().toString();
     student3UserId = new ObjectId().toString();
+    assignmentId1 = new ObjectId().toString();
+    activityId1 = new ObjectId().toString();
     courseId1 = new ObjectId().toString();
     courseId2 = new ObjectId().toString();
     courseId3 = new ObjectId().toString();
@@ -151,7 +154,22 @@ describe("fetch students in my courses", () => {
       userId: student2UserId,
       enrolledCourses: [courseId1, courseId2],
       enrolledSections: [],
-      assignmentProgress: [],
+      assignmentProgress: [
+        {
+          assignmentId: assignmentId1,
+          activityCompletions: [
+            {
+              activityId: activityId1,
+              relevantGoogleDocs: [
+                {
+                  docId: "test_google_doc_id",
+                  primaryDocument: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
       deleted: false,
     });
 
@@ -184,13 +202,25 @@ describe("fetch students in my courses", () => {
             enrolledCourses
             enrolledSections
             deleted
+            assignmentProgress {
+              assignmentId
+              activityCompletions {
+                activityId
+                relevantGoogleDocs {
+                  docId
+                  primaryDocument
+                  docData {
+                    title
+                  }
+                }
+              }
+            }
           }
         }`,
         variables: {
           instructorId: instructorUserId,
         },
       });
-
     expect(response.status).to.equal(200);
     expect(response.body.errors).to.be.undefined;
 
@@ -206,6 +236,27 @@ describe("fetch students in my courses", () => {
       expect(student.deleted).to.equal(false);
       expect(student.enrolledCourses).to.be.an("array");
       expect(student.enrolledSections).to.be.an("array");
+    });
+
+    const student2 = studentData.find((s: any) => s.userId === student2UserId);
+    expect(student2.assignmentProgress).to.be.an("array").with.length(1);
+    expect(student2.assignmentProgress[0].assignmentId).to.equal(assignmentId1);
+    expect(student2.assignmentProgress[0]).to.deep.equal({
+      assignmentId: assignmentId1,
+      activityCompletions: [
+        {
+          activityId: activityId1,
+          relevantGoogleDocs: [
+            {
+              docId: "test_google_doc_id",
+              primaryDocument: true,
+              docData: {
+                title: "Test Document",
+              },
+            },
+          ],
+        },
+      ],
     });
   });
 

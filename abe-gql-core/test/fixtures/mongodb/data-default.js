@@ -383,6 +383,7 @@ module.exports = {
     {
       _id: new ObjectId("5ffdf1231ee2c62320b49ea0"),
       googleDocId: "test_google_doc_id",
+      title: "Test Document",
       user: new ObjectId("5ffdf1231ee2c62320b49e99"),
       documentIntention: {
         description: "test-intention",
