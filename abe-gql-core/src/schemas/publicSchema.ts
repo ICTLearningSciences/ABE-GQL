@@ -60,6 +60,7 @@ import modifyCourseShareStatus from "./mutation/modify-course-share-status";
 import modifyStudentBanInSection from "./mutation/ban-student-from-section";
 import findInstructorsForCourse from "./query/find-instructors-for-course";
 import findAllGoogleDocs from "./query/find-all-google-docs";
+import gradeStudentAssignment from "./mutation/grade-student-assignment";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -113,6 +114,7 @@ const publicMutations = {
   addOrUpdateAssignment,
   modifyCourseShareStatus,
   modifyStudentBanInSection,
+  gradeStudentAssignment,
 };
 
 const contentManagerMutations = {
