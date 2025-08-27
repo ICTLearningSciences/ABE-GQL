@@ -110,10 +110,10 @@ describe("modify student assignment progress", () => {
               activityCompletions {
                 activityId
                 complete
-                relevantGoogleDocs {
-                  docId
-                  primaryDocument
-                }
+              }
+              relevantGoogleDocs {
+                docId
+                primaryDocument
               }
             }
           }
@@ -142,8 +142,7 @@ describe("modify student assignment progress", () => {
       "activity1"
     );
     expect(assignmentProgress.activityCompletions[0].complete).to.be.false;
-    expect(assignmentProgress.activityCompletions[0].relevantGoogleDocs).to.be
-      .empty;
+    expect(assignmentProgress.relevantGoogleDocs).to.be.empty;
 
     const studentData = await StudentDataModel.findOne({
       userId: studentUserId,
@@ -214,10 +213,10 @@ describe("modify student assignment progress", () => {
               activityCompletions {
                 activityId
                 complete
-                relevantGoogleDocs {
-                  docId
-                  primaryDocument
-                }
+              }
+              relevantGoogleDocs {
+                docId
+                primaryDocument
               }
             }
           }
@@ -240,9 +239,9 @@ describe("modify student assignment progress", () => {
       (ap: any) => ap.assignmentId === assignmentId
     );
     expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
-    expect(
-      assignmentProgress.activityCompletions[0].relevantGoogleDocs
-    ).to.deep.equal([{ docId: "googleDocId1", primaryDocument: true }]);
+    expect(assignmentProgress.relevantGoogleDocs).to.deep.equal([
+      { docId: "googleDocId1", primaryDocument: true },
+    ]);
   });
 
   it("allows admin to complete and then restart an activity", async () => {
@@ -342,7 +341,7 @@ describe("modify student assignment progress", () => {
     expect(dbProgress?.activityCompletions).to.have.lengthOf(2);
   });
 
-  it("allows deleting a document from an activity", async () => {
+  it("allows deleting a document from an assignment", async () => {
     // First start the activity and add a doc
     await StudentDataModel.findOneAndUpdate(
       { userId: studentUserId },
@@ -354,11 +353,11 @@ describe("modify student assignment progress", () => {
               {
                 activityId: "activity1",
                 complete: false,
-                relevantGoogleDocs: [
-                  { docId: "googleDocId1", primaryDocument: true },
-                  { docId: "googleDocId2", primaryDocument: false },
-                ],
               },
+            ],
+            relevantGoogleDocs: [
+              { docId: "googleDocId1", primaryDocument: true },
+              { docId: "googleDocId2", primaryDocument: false },
             ],
           },
         },
@@ -380,10 +379,10 @@ describe("modify student assignment progress", () => {
               activityCompletions {
                 activityId
                 complete
-                relevantGoogleDocs {
-                  docId
-                  primaryDocument
-                }
+              }
+              relevantGoogleDocs {
+                docId
+                primaryDocument
               }
             }
           }
@@ -406,7 +405,7 @@ describe("modify student assignment progress", () => {
     const assignmentProgress = progressData.assignmentProgress.find(
       (ap: any) => ap.assignmentId === assignmentId
     );
-    const docs = assignmentProgress.activityCompletions[0].relevantGoogleDocs;
+    const docs = assignmentProgress.relevantGoogleDocs;
     expect(docs).to.have.lengthOf(1);
     expect(docs[0].docId).to.equal("googleDocId2");
   });
@@ -725,9 +724,9 @@ describe("modify student assignment progress", () => {
               {
                 activityId: "activity1",
                 complete: false,
-                relevantGoogleDocs: [],
               },
             ],
+            relevantGoogleDocs: [],
           },
         },
       }
