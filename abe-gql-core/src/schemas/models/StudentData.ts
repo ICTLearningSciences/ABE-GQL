@@ -8,16 +8,21 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import {
   GraphQLObjectType,
   GraphQLID,
-  GraphQLInputObjectType,
   GraphQLList,
   GraphQLBoolean,
   GraphQLString,
+  GraphQLInt,
 } from "graphql";
 import GoogleDocModel, { GoogleDocType } from "./GoogleDoc";
 
 export interface RelevantGoogleDoc {
   docId: string;
   primaryDocument: boolean;
+}
+
+export interface InstructorGrade {
+  grade: number;
+  comment: string;
 }
 
 export interface ActivityCompletion {
@@ -29,6 +34,7 @@ export interface ActivityCompletion {
 export interface AssignmentProgress {
   assignmentId: string;
   activityCompletions: ActivityCompletion[];
+  instructorGrade?: InstructorGrade;
 }
 
 export interface StudentData extends Document {
@@ -54,14 +60,6 @@ export const RelevantGoogleDocType = new GraphQLObjectType({
   }),
 });
 
-export const RelevantGoogleDocInputType = new GraphQLInputObjectType({
-  name: "RelevantGoogleDocInputType",
-  fields: () => ({
-    docId: { type: GraphQLString },
-    primaryDocument: { type: GraphQLBoolean },
-  }),
-});
-
 export const ActivityCompletionType = new GraphQLObjectType({
   name: "ActivityCompletion",
   fields: () => ({
@@ -76,23 +74,15 @@ export const AssignmentProgressType = new GraphQLObjectType({
   fields: () => ({
     assignmentId: { type: GraphQLID },
     activityCompletions: { type: new GraphQLList(ActivityCompletionType) },
-  }),
-});
-
-export const ActivityCompletionInputType = new GraphQLInputObjectType({
-  name: "ActivityCompletionInputType",
-  fields: () => ({
-    activityId: { type: GraphQLID },
-    relevantGoogleDocs: { type: new GraphQLList(RelevantGoogleDocInputType) },
-    complete: { type: GraphQLBoolean },
-  }),
-});
-
-export const AssignmentProgressInputType = new GraphQLInputObjectType({
-  name: "AssignmentProgressInputType",
-  fields: () => ({
-    assignmentId: { type: GraphQLID },
-    activityCompletions: { type: new GraphQLList(ActivityCompletionInputType) },
+    instructorGrade: {
+      type: new GraphQLObjectType({
+        name: "InstructorGrade",
+        fields: () => ({
+          grade: { type: GraphQLInt },
+          comment: { type: GraphQLString },
+        }),
+      }),
+    },
   }),
 });
 
@@ -109,22 +99,18 @@ export const StudentDataType = new GraphQLObjectType({
   }),
 });
 
-export const StudentDataInputType = new GraphQLInputObjectType({
-  name: "StudentDataInputType",
-  fields: () => ({
-    userId: { type: GraphQLID },
-    name: { type: GraphQLString },
-    enrolledCourses: { type: new GraphQLList(GraphQLID) },
-    enrolledSections: { type: new GraphQLList(GraphQLID) },
-    assignmentProgress: { type: new GraphQLList(AssignmentProgressInputType) },
-    deleted: { type: GraphQLBoolean },
-  }),
-});
-
 export const RelevantGoogleDocSchema = new Schema<RelevantGoogleDoc>(
   {
     docId: { type: String, required: true },
     primaryDocument: { type: Boolean, required: true, default: false },
+  },
+  { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
+);
+
+export const InstructorGradeSchema = new Schema<InstructorGrade>(
+  {
+    grade: { type: Number, required: true },
+    comment: { type: String, required: true },
   },
   { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );
@@ -142,6 +128,11 @@ export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
   {
     assignmentId: { type: String, required: true },
     activityCompletions: { type: [ActivityCompletionSchema], default: [] },
+    instructorGrade: {
+      type: InstructorGradeSchema,
+      default: null,
+      required: false,
+    },
   },
   { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );
