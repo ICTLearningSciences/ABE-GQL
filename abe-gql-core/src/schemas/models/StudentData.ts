@@ -13,6 +13,7 @@ import {
   GraphQLBoolean,
   GraphQLString,
 } from "graphql";
+import GoogleDocModel, { GoogleDocType } from "./GoogleDoc";
 
 export interface RelevantGoogleDoc {
   docId: string;
@@ -44,6 +45,12 @@ export const RelevantGoogleDocType = new GraphQLObjectType({
   fields: () => ({
     docId: { type: GraphQLString },
     primaryDocument: { type: GraphQLBoolean },
+    docData: {
+      type: GoogleDocType,
+      resolve: async (doc: RelevantGoogleDoc) => {
+        return await GoogleDocModel.findOne({ googleDocId: doc.docId });
+      },
+    },
   }),
 });
 
