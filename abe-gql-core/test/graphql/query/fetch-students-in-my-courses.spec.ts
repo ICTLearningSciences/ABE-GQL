@@ -157,15 +157,15 @@ describe("fetch students in my courses", () => {
       assignmentProgress: [
         {
           assignmentId: assignmentId1,
+          relevantGoogleDocs: [
+            {
+              docId: "test_google_doc_id",
+              primaryDocument: true,
+            },
+          ],
           activityCompletions: [
             {
               activityId: activityId1,
-              relevantGoogleDocs: [
-                {
-                  docId: "test_google_doc_id",
-                  primaryDocument: true,
-                },
-              ],
             },
           ],
         },
@@ -203,16 +203,16 @@ describe("fetch students in my courses", () => {
             enrolledSections
             deleted
             assignmentProgress {
-              assignmentId
-              activityCompletions {
-                activityId
-                relevantGoogleDocs {
+            relevantGoogleDocs {
                   docId
                   primaryDocument
                   docData {
                     title
                   }
                 }
+              assignmentId
+              activityCompletions {
+                activityId
               }
             }
           }
@@ -243,18 +243,18 @@ describe("fetch students in my courses", () => {
     expect(student2.assignmentProgress[0].assignmentId).to.equal(assignmentId1);
     expect(student2.assignmentProgress[0]).to.deep.equal({
       assignmentId: assignmentId1,
+      relevantGoogleDocs: [
+        {
+          docId: "test_google_doc_id",
+          primaryDocument: true,
+          docData: {
+            title: "Test Document",
+          },
+        },
+      ],
       activityCompletions: [
         {
           activityId: activityId1,
-          relevantGoogleDocs: [
-            {
-              docId: "test_google_doc_id",
-              primaryDocument: true,
-              docData: {
-                title: "Test Document",
-              },
-            },
-          ],
         },
       ],
     });

@@ -13,6 +13,7 @@ import {
 import { UserRole } from "../models/User";
 import StudentDataModel, {
   ActivityCompletion,
+  RelevantGoogleDoc,
   StudentData,
   StudentDataType,
 } from "../models/StudentData";
@@ -32,8 +33,7 @@ export enum ModifyStudentAssignmentProgressActions {
 function applyActionToActivityCompletion(
   activityCompletions: ActivityCompletion[],
   action: ModifyStudentAssignmentProgressActions,
-  activityId: string,
-  docId?: string
+  activityId: string
 ): ActivityCompletion[] {
   // If ACTIVITY_STARTED, just add incomplete activity to activityCompletions list if not already there
   if (action === ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED) {
@@ -43,10 +43,7 @@ function applyActionToActivityCompletion(
     if (existingActivityCompletion) {
       return activityCompletions;
     }
-    return [
-      ...activityCompletions,
-      { activityId, complete: false, relevantGoogleDocs: [] },
-    ];
+    return [...activityCompletions, { activityId, complete: false }];
   }
   const existingActivityCompletionIdx = activityCompletions.findIndex(
     (ac) => ac.activityId === activityId
@@ -68,63 +65,45 @@ function applyActionToActivityCompletion(
       },
     ];
   }
+  return activityCompletions;
+}
+
+function applyActionToRelevantGoogleDocs(
+  relevantGoogleDocs: RelevantGoogleDoc[],
+  action: ModifyStudentAssignmentProgressActions,
+  docId: string
+): RelevantGoogleDoc[] {
   if (!docId) {
-    throw new Error("docId is required for doc actions");
+    return relevantGoogleDocs;
   }
+  const existingDocIdx = relevantGoogleDocs.findIndex(
+    (rd) => rd.docId === docId
+  );
   if (action === ModifyStudentAssignmentProgressActions.NEW_DOC_CREATED) {
     // If NEW_DOC_CREATED, add doc to relevantGoogleDocs list if not already there
-    const existingDocIdx =
-      existingActivityCompletion.relevantGoogleDocs.findIndex(
-        (rd) => rd.docId === docId
-      );
     if (existingDocIdx !== -1) {
-      return activityCompletions;
+      return relevantGoogleDocs;
     }
     return [
-      ...activityCompletions.slice(0, existingActivityCompletionIdx),
+      ...relevantGoogleDocs,
       {
-        ...existingActivityCompletion,
-        relevantGoogleDocs: [
-          ...existingActivityCompletion.relevantGoogleDocs,
-          // set to primary if there are no existing relevant documents
-          {
-            docId,
-            primaryDocument:
-              existingActivityCompletion.relevantGoogleDocs.length === 0,
-          },
-        ],
+        docId,
+        primaryDocument: relevantGoogleDocs.length === 0,
       },
     ];
   } else if (
     action === ModifyStudentAssignmentProgressActions.DOC_PRIMARY_STATUS_SET
   ) {
     // If DOC_PRIMARY_STATUS_SET, set the target doc primaryDocument status to True, and ALL other docs to false.
-    return [
-      ...activityCompletions.slice(0, existingActivityCompletionIdx),
-      {
-        ...existingActivityCompletion,
-        relevantGoogleDocs: existingActivityCompletion.relevantGoogleDocs.map(
-          (rd) =>
-            rd.docId === docId
-              ? { ...rd, primaryDocument: true }
-              : { ...rd, primaryDocument: false }
-        ),
-      },
-    ];
+    return relevantGoogleDocs.map((rd) => ({
+      ...rd,
+      primaryDocument: rd.docId === docId,
+    }));
   } else if (action === ModifyStudentAssignmentProgressActions.DOC_DELETED) {
     // If DOC_DELETED, removed docId from the activities relevantGoogleDocs list
-    return [
-      ...activityCompletions.slice(0, existingActivityCompletionIdx),
-      {
-        ...existingActivityCompletion,
-        relevantGoogleDocs:
-          existingActivityCompletion.relevantGoogleDocs.filter(
-            (rd) => rd.docId !== docId
-          ),
-      },
-    ];
+    return relevantGoogleDocs.filter((rd) => rd.docId !== docId);
   }
-  throw new Error("Invalid action");
+  return relevantGoogleDocs;
 }
 
 export const modifyStudentAssignmentProgress = {
@@ -159,6 +138,15 @@ export const modifyStudentAssignmentProgress = {
   ): Promise<StudentData> => {
     if (!context.userId) {
       throw new Error("authenticated user required");
+    }
+
+    const docActions = [
+      ModifyStudentAssignmentProgressActions.NEW_DOC_CREATED,
+      ModifyStudentAssignmentProgressActions.DOC_PRIMARY_STATUS_SET,
+      ModifyStudentAssignmentProgressActions.DOC_DELETED,
+    ];
+    if (docActions.includes(args.action) && !args.docId) {
+      throw new Error("docId is required for doc actions");
     }
 
     const studentData = await StudentDataModel.findOne({
@@ -219,7 +207,16 @@ export const modifyStudentAssignmentProgress = {
       applyActionToActivityCompletion(
         activityCompletions,
         args.action,
-        args.activityId,
+        args.activityId
+      );
+
+    const newRelevantGoogleDocs: RelevantGoogleDoc[] =
+      applyActionToRelevantGoogleDocs(
+        studentData.assignmentProgress[existingProgressIndex]
+          ? studentData.assignmentProgress[existingProgressIndex]
+              .relevantGoogleDocs
+          : [],
+        args.action,
         args.docId
       );
 
@@ -227,10 +224,13 @@ export const modifyStudentAssignmentProgress = {
       studentData.assignmentProgress[
         existingProgressIndex
       ].activityCompletions = newActivityCompletions;
+      studentData.assignmentProgress[existingProgressIndex].relevantGoogleDocs =
+        newRelevantGoogleDocs;
     } else {
       studentData.assignmentProgress.push({
         assignmentId: args.assignmentId,
         activityCompletions: newActivityCompletions,
+        relevantGoogleDocs: newRelevantGoogleDocs,
       });
     }
 
