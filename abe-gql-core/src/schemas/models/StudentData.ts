@@ -27,13 +27,13 @@ export interface InstructorGrade {
 
 export interface ActivityCompletion {
   activityId: string;
-  relevantGoogleDocs: RelevantGoogleDoc[];
   complete: boolean;
 }
 
 export interface AssignmentProgress {
   assignmentId: string;
   activityCompletions: ActivityCompletion[];
+  relevantGoogleDocs: RelevantGoogleDoc[];
   instructorGrade?: InstructorGrade;
 }
 
@@ -64,7 +64,6 @@ export const ActivityCompletionType = new GraphQLObjectType({
   name: "ActivityCompletion",
   fields: () => ({
     activityId: { type: GraphQLID },
-    relevantGoogleDocs: { type: new GraphQLList(RelevantGoogleDocType) },
     complete: { type: GraphQLBoolean },
   }),
 });
@@ -74,6 +73,7 @@ export const AssignmentProgressType = new GraphQLObjectType({
   fields: () => ({
     assignmentId: { type: GraphQLID },
     activityCompletions: { type: new GraphQLList(ActivityCompletionType) },
+    relevantGoogleDocs: { type: new GraphQLList(RelevantGoogleDocType) },
     instructorGrade: {
       type: new GraphQLObjectType({
         name: "InstructorGrade",
@@ -119,7 +119,6 @@ export const ActivityCompletionSchema = new Schema<ActivityCompletion>(
   {
     activityId: { type: String, required: true },
     complete: { type: Boolean, required: true, default: false },
-    relevantGoogleDocs: { type: [RelevantGoogleDocSchema], default: [] },
   },
   { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );
@@ -128,6 +127,7 @@ export const AssignmentProgressSchema = new Schema<AssignmentProgress>(
   {
     assignmentId: { type: String, required: true },
     activityCompletions: { type: [ActivityCompletionSchema], default: [] },
+    relevantGoogleDocs: { type: [RelevantGoogleDocSchema], default: [] },
     instructorGrade: {
       type: InstructorGradeSchema,
       default: null,
