@@ -149,8 +149,6 @@ export const StudentDataSchema = new Schema<StudentData>(
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-StudentDataSchema.index({ userId: 1 });
-
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 StudentDataSchema.pre(/^find/, function (this: any) {
   this.where({ deleted: { $ne: true } });
