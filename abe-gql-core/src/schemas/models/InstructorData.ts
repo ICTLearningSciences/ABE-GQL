@@ -90,8 +90,6 @@ export const InstructorDataSchema = new Schema<InstructorData>(
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-InstructorDataSchema.index({ userId: 1 });
-
 export default mongoose.model<InstructorData, Model<InstructorData>>(
   "InstructorData",
   InstructorDataSchema

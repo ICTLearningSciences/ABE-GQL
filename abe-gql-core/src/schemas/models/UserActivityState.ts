@@ -37,11 +37,6 @@ export const UserActivityStateSchema = new Schema<UserActivityState>(
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );
 
-UserActivityStateSchema.index(
-  { userId: 1, activityId: 1, googleDocId: 1 },
-  { unique: true }
-);
-
 export default mongoose.model<UserActivityState>(
   "UserActivityState",
   UserActivityStateSchema
