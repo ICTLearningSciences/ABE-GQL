@@ -41,6 +41,7 @@ describe("config", () => {
               surveyQueryParam
               surveyClassroomParam
             }
+              privacyPolicy
             bannerConfig {
               bannerText
               bannerTextColor
@@ -67,6 +68,7 @@ describe("config", () => {
         surveyQueryParam: "",
         surveyClassroomParam: "",
       },
+      privacyPolicy: "",
       bannerConfig: {
         bannerText: "",
         bannerTextColor: "",
@@ -97,6 +99,7 @@ describe("config", () => {
         surveyQueryParam: "param",
         surveyClassroomParam: "classroomParam",
       },
+      privacyPolicy: "Privacy Policy",
       bannerConfig: {
         bannerText: "Hello, world!",
         bannerTextColor: "#000000",
@@ -129,6 +132,7 @@ describe("config", () => {
               surveyQueryParam
               surveyClassroomParam
             }
+            privacyPolicy
             bannerConfig {
               bannerText
               bannerTextColor

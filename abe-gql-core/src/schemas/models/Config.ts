@@ -161,6 +161,7 @@ export interface Config {
   loginScreenTitle?: string;
   surveyConfig?: SurveyConfig;
   bannerConfig?: BannerConfig;
+  privacyPolicy?: string;
 }
 
 type ConfigKey = keyof Config;
@@ -178,6 +179,7 @@ export const ConfigKeys: ConfigKey[] = [
   "loginScreenTitle",
   "surveyConfig",
   "bannerConfig",
+  "privacyPolicy",
 ];
 
 export function getDefaultConfig(): Config {
@@ -203,6 +205,7 @@ export function getDefaultConfig(): Config {
       bannerTextColor: "",
       bannerBgColor: "",
     },
+    privacyPolicy: "",
   };
 }
 
@@ -288,6 +291,7 @@ export const ConfigType = new GraphQLObjectType({
     loginScreenTitle: { type: GraphQLString },
     surveyConfig: { type: SurveyConfigType },
     bannerConfig: { type: BannerConfigType },
+    privacyPolicy: { type: GraphQLString },
   }),
 });
 
