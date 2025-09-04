@@ -20,6 +20,7 @@ import StudentDataModel, {
 import CourseModel from "../models/Course";
 import SectionModel from "../models/Section";
 import AssignmentModel from "../models/Assignment";
+import { AiModelService, AiModelServiceInputType } from "../models/Config";
 
 export enum ModifyStudentAssignmentProgressActions {
   ACTIVITY_STARTED = "ACTIVITY_STARTED", // if activity not in list, add it with complete false
@@ -28,26 +29,48 @@ export enum ModifyStudentAssignmentProgressActions {
   NEW_DOC_CREATED = "NEW_DOC_CREATED", // if doc not in list, add it with primaryDocument true IF only doc in list, else set primaryDocument to false
   DOC_PRIMARY_STATUS_SET = "DOC_PRIMARY_STATUS_SET", // if doc in list, update it with primaryDocument
   DOC_DELETED = "DOC_DELETED", // if doc in list, delete it
+
+  DEFAULT_LLM_SET = "DEFAULT_LLM_SET", // if defaultLLM not in list, add it with defaultLLM
 }
 
 function applyActionToActivityCompletion(
   activityCompletions: ActivityCompletion[],
   action: ModifyStudentAssignmentProgressActions,
-  activityId: string
+  activityId: string,
+  defaultLLM?: AiModelService
 ): ActivityCompletion[] {
+  const existingActivityCompletionIdx = activityCompletions.findIndex(
+    (ac) => ac.activityId === activityId
+  );
+  console.log(activityCompletions);
+  console.log(existingActivityCompletionIdx);
+
+  if (action === ModifyStudentAssignmentProgressActions.DEFAULT_LLM_SET) {
+    if (existingActivityCompletionIdx === -1) {
+      return [
+        ...activityCompletions,
+        { activityId, complete: false, defaultLLM: defaultLLM },
+      ];
+    }
+    return [
+      ...activityCompletions.slice(0, existingActivityCompletionIdx),
+      {
+        ...activityCompletions[existingActivityCompletionIdx],
+        defaultLLM: defaultLLM,
+      },
+      ...activityCompletions.slice(existingActivityCompletionIdx + 1),
+    ];
+  }
+
   // If ACTIVITY_STARTED, just add incomplete activity to activityCompletions list if not already there
   if (action === ModifyStudentAssignmentProgressActions.ACTIVITY_STARTED) {
-    const existingActivityCompletion = activityCompletions.find(
-      (ac) => ac.activityId === activityId
-    );
+    const existingActivityCompletion =
+      activityCompletions[existingActivityCompletionIdx];
     if (existingActivityCompletion) {
       return activityCompletions;
     }
     return [...activityCompletions, { activityId, complete: false }];
   }
-  const existingActivityCompletionIdx = activityCompletions.findIndex(
-    (ac) => ac.activityId === activityId
-  );
   if (existingActivityCompletionIdx === -1) {
     throw new Error(
       "Activity has not been started, it must be started before modify actions."
@@ -63,6 +86,7 @@ function applyActionToActivityCompletion(
         ...existingActivityCompletion,
         complete: true,
       },
+      ...activityCompletions.slice(existingActivityCompletionIdx + 1),
     ];
   }
   return activityCompletions;
@@ -119,6 +143,7 @@ export const modifyStudentAssignmentProgress = {
       enum: Object.values(ModifyStudentAssignmentProgressActions),
     },
     docId: { type: GraphQLString },
+    defaultLLM: { type: AiModelServiceInputType },
   },
   resolve: async (
     _root: GraphQLObjectType,
@@ -130,6 +155,7 @@ export const modifyStudentAssignmentProgress = {
       activityId: string;
       action: ModifyStudentAssignmentProgressActions;
       docId?: string;
+      defaultLLM?: AiModelService;
     },
     context: {
       userId: string;
@@ -138,6 +164,13 @@ export const modifyStudentAssignmentProgress = {
   ): Promise<StudentData> => {
     if (!context.userId) {
       throw new Error("authenticated user required");
+    }
+
+    if (
+      args.action === ModifyStudentAssignmentProgressActions.DEFAULT_LLM_SET &&
+      !args.defaultLLM
+    ) {
+      throw new Error("defaultLLM is required for defaultLLM actions");
     }
 
     const docActions = [
@@ -192,40 +225,41 @@ export const modifyStudentAssignmentProgress = {
       throw new Error("assignment does not belong to the specified section");
     }
 
-    const existingProgressIndex = studentData.assignmentProgress.findIndex(
+    const assignmentProgressIndex = studentData.assignmentProgress.findIndex(
       (progress) => progress.assignmentId === args.assignmentId
     );
 
-    const activityCompletions = studentData.assignmentProgress[
-      existingProgressIndex
-    ]
-      ? studentData.assignmentProgress[existingProgressIndex]
-          .activityCompletions
-      : [];
+    const activityCompletionsForAssignment =
+      assignmentProgressIndex !== -1
+        ? studentData.assignmentProgress[assignmentProgressIndex]
+            .activityCompletions
+        : [];
 
     const newActivityCompletions: ActivityCompletion[] =
       applyActionToActivityCompletion(
-        activityCompletions,
+        activityCompletionsForAssignment,
         args.action,
-        args.activityId
+        args.activityId,
+        args.defaultLLM
       );
 
     const newRelevantGoogleDocs: RelevantGoogleDoc[] =
       applyActionToRelevantGoogleDocs(
-        studentData.assignmentProgress[existingProgressIndex]
-          ? studentData.assignmentProgress[existingProgressIndex]
+        studentData.assignmentProgress[assignmentProgressIndex]
+          ? studentData.assignmentProgress[assignmentProgressIndex]
               .relevantGoogleDocs
           : [],
         args.action,
         args.docId
       );
 
-    if (existingProgressIndex !== -1) {
+    if (assignmentProgressIndex !== -1) {
       studentData.assignmentProgress[
-        existingProgressIndex
+        assignmentProgressIndex
       ].activityCompletions = newActivityCompletions;
-      studentData.assignmentProgress[existingProgressIndex].relevantGoogleDocs =
-        newRelevantGoogleDocs;
+      studentData.assignmentProgress[
+        assignmentProgressIndex
+      ].relevantGoogleDocs = newRelevantGoogleDocs;
     } else {
       studentData.assignmentProgress.push({
         assignmentId: args.assignmentId,

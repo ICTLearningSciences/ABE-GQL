@@ -16,6 +16,12 @@ import {
 import { validateIds } from "../../helpers";
 import InstructorDataModel from "./InstructorData";
 import UserModel from "./User";
+import {
+  AiModelService,
+  AiModelServiceInputType,
+  AiModelServiceSchema,
+  AiModelServiceType,
+} from "./Config";
 
 export interface Assignment {
   _id: string;
@@ -23,6 +29,7 @@ export interface Assignment {
   description: string;
   activityIds: string[];
   instructorId: string;
+  defaultLLM: AiModelService;
   deleted: boolean;
 }
 
@@ -34,6 +41,7 @@ export const AssignmentType = new GraphQLObjectType({
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
     instructorId: { type: GraphQLString },
+    defaultLLM: { type: AiModelServiceType },
     deleted: { type: GraphQLBoolean },
   }),
 });
@@ -45,6 +53,7 @@ export const AssignmentInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
+    defaultLLM: { type: AiModelServiceInputType },
   }),
 });
 
@@ -68,6 +77,7 @@ export const AssignmentSchema = new Schema<Assignment>(
         },
       },
     },
+    defaultLLM: { type: AiModelServiceSchema },
     deleted: { type: Boolean, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
