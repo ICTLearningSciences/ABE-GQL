@@ -31,6 +31,7 @@ export interface Section {
   instructorId: string;
   bannedStudentUserIds: string[];
   assignments: SectionAssignment[];
+  assignmentOrder: string[];
   numOptionalAssignmentsRequired: number;
   deleted: boolean;
 }
@@ -61,6 +62,21 @@ export const SectionType = new GraphQLObjectType({
     instructorId: { type: GraphQLID },
     bannedStudentUserIds: { type: new GraphQLList(GraphQLID) },
     assignments: { type: new GraphQLList(SectionAssignmentType) },
+    assignmentOrder: {
+      type: new GraphQLList(GraphQLString),
+      resolve: (section: Section) => {
+        const activeAssignments = section.assignmentOrder.filter((aOrderId) =>
+          section.assignments.find((a) => a.assignmentId === aOrderId)
+        );
+        const assignmentsNotInOrder = section.assignments.filter(
+          (a) => !activeAssignments.includes(a.assignmentId)
+        );
+        return [
+          ...activeAssignments,
+          ...assignmentsNotInOrder.map((a) => a.assignmentId),
+        ];
+      },
+    },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
     deleted: { type: GraphQLBoolean },
   }),
@@ -75,6 +91,7 @@ export const SectionInputType = new GraphQLInputObjectType({
     description: { type: GraphQLString },
     bannedStudentUserIds: { type: new GraphQLList(GraphQLID) },
     assignments: { type: new GraphQLList(SectionAssignmentInputType) },
+    assignmentOrder: { type: new GraphQLList(GraphQLString) },
     numOptionalAssignmentsRequired: { type: GraphQLInt },
   }),
 });
@@ -112,6 +129,10 @@ export const SectionSchema = new Schema<Section>(
           return await validateIds("_id", assignmentIds, AssignmentModel);
         },
       },
+    },
+    assignmentOrder: {
+      type: [String],
+      default: [],
     },
     numOptionalAssignmentsRequired: {
       type: Number,

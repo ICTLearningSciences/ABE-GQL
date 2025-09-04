@@ -210,6 +210,7 @@ describe("add or update section", () => {
             sectionCode
             description
             instructorId
+            assignmentOrder
           }
         }`,
         variables: {
@@ -219,6 +220,7 @@ describe("add or update section", () => {
             title: "Updated Section",
             sectionCode: "UPD001",
             description: "Updated Description",
+            assignmentOrder: ["assignment1", "assignment2"],
           },
           action: "MODIFY",
         },
@@ -234,6 +236,10 @@ describe("add or update section", () => {
     const updatedSection = await SectionModel.findById(sectionId);
     expect(updatedSection?.title).to.equal("Updated Section");
     expect(updatedSection?.sectionCode).to.equal("UPD001");
+    expect(updatedSection?.assignmentOrder).to.deep.equal([
+      "assignment1",
+      "assignment2",
+    ]);
   });
 
   it("allows instructor to delete their own section", async () => {
