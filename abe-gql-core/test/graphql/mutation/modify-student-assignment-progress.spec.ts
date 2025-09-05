@@ -410,6 +410,128 @@ describe("modify student assignment progress", () => {
     expect(docs[0].docId).to.equal("googleDocId2");
   });
 
+  it("allows setting a default LLM for an activity", async () => {
+    const token = await getToken(studentUserId, UserRole.USER);
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!, $defaultLLM: AiModelServiceInputType) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action, defaultLLM: $defaultLLM) {
+            _id
+            userId
+            assignmentProgress {
+              assignmentId
+              activityCompletions {
+                activityId
+                complete
+                defaultLLM{
+                  serviceName
+                  model
+                }
+              }
+            }
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.DEFAULT_LLM_SET,
+          defaultLLM: {
+            serviceName: "OPEN_AI",
+            model: "gpt-4o",
+          },
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const progressData = response.body.data.modifyStudentAssignmentProgress;
+    const assignmentProgress = progressData.assignmentProgress.find(
+      (ap: any) => ap.assignmentId === assignmentId
+    );
+    expect(assignmentProgress.activityCompletions[0].defaultLLM).to.deep.equal({
+      serviceName: "OPEN_AI",
+      model: "gpt-4o",
+    });
+  });
+
+  it("updating an activitys completion does not clobber other activity completions", async () => {
+    // first update student data to have 2 activity completions, then update 1 of them
+
+    await StudentDataModel.findOneAndUpdate(
+      { userId: studentUserId },
+      {
+        $push: {
+          assignmentProgress: {
+            assignmentId: assignmentId,
+            activityCompletions: [
+              {
+                activityId: "activity1",
+                complete: true,
+              },
+              {
+                activityId: "activity2",
+                complete: true,
+              },
+            ],
+          },
+        },
+      }
+    );
+
+    const token = await getToken(studentUserId, UserRole.USER);
+    const response = await request(app)
+      .post("/graphql")
+      .set("Authorization", `bearer ${token}`)
+      .send({
+        query: `mutation ModifyStudentAssignmentProgress($targetUserId: ID!, $courseId: ID!, $sectionId: ID!, $assignmentId: ID!, $activityId: ID!, $action: String!, $defaultLLM: AiModelServiceInputType) {
+          modifyStudentAssignmentProgress(targetUserId: $targetUserId, courseId: $courseId, sectionId: $sectionId, assignmentId: $assignmentId, activityId: $activityId, action: $action, defaultLLM: $defaultLLM) {
+            _id
+            userId
+            assignmentProgress {
+              assignmentId
+              activityCompletions {
+                activityId
+                complete
+                defaultLLM{
+                  serviceName
+                  model
+                }
+              }
+            }
+          }
+        }`,
+        variables: {
+          targetUserId: studentUserId,
+          courseId: courseId,
+          sectionId: sectionId,
+          assignmentId: assignmentId,
+          activityId: "activity1",
+          action: ModifyStudentAssignmentProgressActions.DEFAULT_LLM_SET,
+          defaultLLM: {
+            serviceName: "OPEN_AI",
+            model: "gpt-4o",
+          },
+        },
+      });
+
+    expect(response.status).to.equal(200);
+    expect(response.body.errors).to.be.undefined;
+
+    const progressData = response.body.data.modifyStudentAssignmentProgress;
+    console.log(JSON.stringify(progressData, null, 2));
+    const assignmentProgress = progressData.assignmentProgress.find(
+      (ap: any) => ap.assignmentId === assignmentId
+    );
+    expect(assignmentProgress.activityCompletions[0].complete).to.be.true;
+    expect(assignmentProgress.activityCompletions[1].complete).to.be.true;
+  });
+
   it("throws error when non-authenticated user tries to modify progress", async () => {
     const response = await request(app)
       .post("/graphql")

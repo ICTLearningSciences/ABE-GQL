@@ -220,6 +220,11 @@ describe("add or update assignment", () => {
             title
             description
             instructorId
+            activityOrder
+            defaultLLM{
+              serviceName
+              model
+            }
           }
         }`,
         variables: {
@@ -228,6 +233,11 @@ describe("add or update assignment", () => {
             _id: assignmentId,
             title: "Updated Assignment",
             description: "Updated Description",
+            defaultLLM: {
+              serviceName: "OPEN_AI",
+              model: "gpt-4o",
+            },
+            activityOrder: ["activity1", "activity2"],
           },
           action: "MODIFY",
         },
@@ -239,10 +249,18 @@ describe("add or update assignment", () => {
     const assignmentData = response.body.data.addOrUpdateAssignment;
     expect(assignmentData.title).to.equal("Updated Assignment");
     expect(assignmentData.description).to.equal("Updated Description");
+    expect(assignmentData.defaultLLM).to.deep.equal({
+      serviceName: "OPEN_AI",
+      model: "gpt-4o",
+    });
 
     const updatedAssignment = await AssignmentModel.findById(assignmentId);
     expect(updatedAssignment?.title).to.equal("Updated Assignment");
     expect(updatedAssignment?.description).to.equal("Updated Description");
+    expect(updatedAssignment?.activityOrder).to.deep.equal([
+      "activity1",
+      "activity2",
+    ]);
   });
 
   it("allows instructor to delete their own assignment and removes it from sections", async () => {

@@ -16,13 +16,21 @@ import {
 import { validateIds } from "../../helpers";
 import InstructorDataModel from "./InstructorData";
 import UserModel from "./User";
+import {
+  AiModelService,
+  AiModelServiceInputType,
+  AiModelServiceSchema,
+  AiModelServiceType,
+} from "./Config";
 
 export interface Assignment {
   _id: string;
   title: string;
   description: string;
   activityIds: string[];
+  activityOrder: string[];
   instructorId: string;
+  defaultLLM: AiModelService;
   deleted: boolean;
 }
 
@@ -33,7 +41,20 @@ export const AssignmentType = new GraphQLObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
+    activityOrder: {
+      type: new GraphQLList(GraphQLID),
+      resolve: (assignment: Assignment) => {
+        const activeActivities = assignment.activityOrder.filter((aOrderId) =>
+          assignment.activityIds.includes(aOrderId)
+        );
+        const activitiesNotInOrder = assignment.activityIds.filter(
+          (aId) => !activeActivities.includes(aId)
+        );
+        return [...activeActivities, ...activitiesNotInOrder];
+      },
+    },
     instructorId: { type: GraphQLString },
+    defaultLLM: { type: AiModelServiceType },
     deleted: { type: GraphQLBoolean },
   }),
 });
@@ -45,6 +66,8 @@ export const AssignmentInputType = new GraphQLInputObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     activityIds: { type: new GraphQLList(GraphQLID) },
+    activityOrder: { type: new GraphQLList(GraphQLID) },
+    defaultLLM: { type: AiModelServiceInputType },
   }),
 });
 
@@ -53,6 +76,7 @@ export const AssignmentSchema = new Schema<Assignment>(
     title: { type: String, default: "" },
     description: { type: String, default: "" },
     activityIds: { type: [String], required: true },
+    activityOrder: { type: [String], default: [] },
     instructorId: {
       type: String,
       required: true,
@@ -68,6 +92,7 @@ export const AssignmentSchema = new Schema<Assignment>(
         },
       },
     },
+    defaultLLM: { type: AiModelServiceSchema },
     deleted: { type: Boolean, default: false },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }

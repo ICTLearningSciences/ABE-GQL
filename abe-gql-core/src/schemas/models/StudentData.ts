@@ -14,6 +14,11 @@ import {
   GraphQLInt,
 } from "graphql";
 import GoogleDocModel, { GoogleDocType } from "./GoogleDoc";
+import {
+  AiModelService,
+  AiModelServiceSchema,
+  AiModelServiceType,
+} from "./Config";
 
 export interface RelevantGoogleDoc {
   docId: string;
@@ -28,6 +33,7 @@ export interface InstructorGrade {
 export interface ActivityCompletion {
   activityId: string;
   complete: boolean;
+  defaultLLM?: AiModelService;
 }
 
 export interface AssignmentProgress {
@@ -65,6 +71,7 @@ export const ActivityCompletionType = new GraphQLObjectType({
   fields: () => ({
     activityId: { type: GraphQLID },
     complete: { type: GraphQLBoolean },
+    defaultLLM: { type: AiModelServiceType },
   }),
 });
 
@@ -119,6 +126,7 @@ export const ActivityCompletionSchema = new Schema<ActivityCompletion>(
   {
     activityId: { type: String, required: true },
     complete: { type: Boolean, required: true, default: false },
+    defaultLLM: { type: AiModelServiceSchema },
   },
   { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );
