@@ -220,6 +220,7 @@ describe("add or update assignment", () => {
             title
             description
             instructorId
+            activityOrder
             defaultLLM{
               serviceName
               model
@@ -236,6 +237,7 @@ describe("add or update assignment", () => {
               serviceName: "OPEN_AI",
               model: "gpt-4o",
             },
+            activityOrder: ["activity1", "activity2"],
           },
           action: "MODIFY",
         },
@@ -255,6 +257,10 @@ describe("add or update assignment", () => {
     const updatedAssignment = await AssignmentModel.findById(assignmentId);
     expect(updatedAssignment?.title).to.equal("Updated Assignment");
     expect(updatedAssignment?.description).to.equal("Updated Description");
+    expect(updatedAssignment?.activityOrder).to.deep.equal([
+      "activity1",
+      "activity2",
+    ]);
   });
 
   it("allows instructor to delete their own assignment and removes it from sections", async () => {
