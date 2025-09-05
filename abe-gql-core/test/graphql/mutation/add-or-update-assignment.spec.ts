@@ -220,6 +220,10 @@ describe("add or update assignment", () => {
             title
             description
             instructorId
+            defaultLLM{
+              serviceName
+              model
+            }
           }
         }`,
         variables: {
@@ -228,6 +232,10 @@ describe("add or update assignment", () => {
             _id: assignmentId,
             title: "Updated Assignment",
             description: "Updated Description",
+            defaultLLM: {
+              serviceName: "OPEN_AI",
+              model: "gpt-4o",
+            },
           },
           action: "MODIFY",
         },
@@ -239,6 +247,10 @@ describe("add or update assignment", () => {
     const assignmentData = response.body.data.addOrUpdateAssignment;
     expect(assignmentData.title).to.equal("Updated Assignment");
     expect(assignmentData.description).to.equal("Updated Description");
+    expect(assignmentData.defaultLLM).to.deep.equal({
+      serviceName: "OPEN_AI",
+      model: "gpt-4o",
+    });
 
     const updatedAssignment = await AssignmentModel.findById(assignmentId);
     expect(updatedAssignment?.title).to.equal("Updated Assignment");
