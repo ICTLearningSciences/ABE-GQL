@@ -1,9 +1,24 @@
 {
-  "name": "abe-gql-core",
+  "name": "abe-gql-core-2",
   "version": "1.0.1",
   "description": "serverless graphql for ABE",
-  "main": "dist/exported-functions.js",
-  "types": "dist/exported-functions.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/exported-functions.js",
+      "require": "./dist/exported-functions.js",
+      "types": "./dist/exported-functions.d.ts"
+    },
+    "built-activities": {
+      "import": "./dist/built-activities.js",
+      "require": "./dist/built-activities.js",
+      "types": "./dist/built-activities.d.ts",
+      "files": [
+        "./dist/schemas/models/BuiltActivity/BuiltActivity.js",
+        "./dist/schemas/models/BuiltActivity/BuiltActivity.d.ts",
+        "./dist/schemas/models/BuiltActivity/BuiltActivity.js.map"
+      ]
+    }
+  },
   "scripts": {
     "build": "tsc",
     "deps:update": "npx ncu -u",

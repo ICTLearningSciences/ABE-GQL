@@ -10,7 +10,7 @@ import BuiltActivityModel, {
   BuiltActivityType,
   BuiltActivityVisibility,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
-import { UserRole } from "../../schemas/models/User";
+import { UserRole } from "../../schemas/types/types";
 dotenv.config();
 
 export const fetchBuiltActivities = {

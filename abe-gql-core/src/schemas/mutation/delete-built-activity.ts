@@ -8,7 +8,7 @@ import { GraphQLNonNull, GraphQLString } from "graphql";
 import * as dotenv from "dotenv";
 
 import BuiltActivityModel from "../../schemas/models/BuiltActivity/BuiltActivity";
-import { UserRole } from "../../schemas/models/User";
+import { UserRole } from "../../schemas/types/types";
 dotenv.config();
 
 export const deleteBuiltActivity = {

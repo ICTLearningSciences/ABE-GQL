@@ -12,7 +12,7 @@ import request from "supertest";
 import { getToken } from "../../helpers";
 import OrganizationModel from "../../../src/schemas/models/Organization";
 import ConfigModel from "../../../src/schemas/models/Config";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 
 describe("config update by key", () => {
   let app: Express;

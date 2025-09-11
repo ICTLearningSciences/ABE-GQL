@@ -12,7 +12,8 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
-import { UserRole, EducationalRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
+import { EducationalRole } from "../../../src/schemas/models/User";
 import UserModel from "../../../src/schemas/models/User";
 import InstructorDataModel, {
   CourseOwnership,

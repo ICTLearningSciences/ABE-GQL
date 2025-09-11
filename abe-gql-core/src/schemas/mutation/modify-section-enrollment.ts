@@ -11,7 +11,7 @@ import {
   GraphQLEnumType,
   GraphQLString,
 } from "graphql";
-import { UserRole } from "../models/User";
+import { UserRole } from "../types/types";
 import StudentDataModel, {
   StudentData,
   StudentDataType,

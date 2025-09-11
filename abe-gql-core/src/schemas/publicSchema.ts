@@ -35,7 +35,7 @@ import fetchBuiltActivities from "./query/fetch-built-activities";
 import addOrUpdateBuiltActivity from "./mutation/add-or-update-built-activity";
 import fetchBuiltActivityVersions from "./query/fetch-built-activity-versions";
 import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
-import { UserRole } from "./models/User";
+import { UserRole } from "./types/types";
 import copyBuiltActivity from "./mutation/copy-built-activity";
 import deleteBuiltActivity from "./mutation/delete-built-activity";
 import loginMicrosoft from "./mutation/login-microsoft";

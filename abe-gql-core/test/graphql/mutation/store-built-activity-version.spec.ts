@@ -14,7 +14,7 @@ import request from "supertest";
 import { DisplayIcons } from "../../../src/constants";
 import { fetchActivityVersionsQueryData } from "../query/fetch-built-activity-versions.spec";
 import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 
 describe("store built activity version", () => {
   let app: Express;

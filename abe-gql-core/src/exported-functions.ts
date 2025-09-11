@@ -13,15 +13,25 @@ import { storeBuiltActivityVersion } from "./schemas/mutation/store-built-activi
 
 import { fetchBuiltActivities } from "./schemas/query/fetch-built-activities";
 import fetchBuiltActivityVersions from "./schemas/query/fetch-built-activity-versions";
+import {
+  BuiltActivityModel,
+  BuiltActivitySchema,
+  BuiltActivityType,
+} from "./schemas/models/BuiltActivity/BuiltActivity";
 
 export {
   createApp,
   appStart,
   appStop,
-  addOrUpdateBuiltActivity,
   copyBuiltActivity,
   deleteBuiltActivity,
   storeBuiltActivityVersion,
-  fetchBuiltActivities,
   fetchBuiltActivityVersions,
+
+  // Built Activity
+  addOrUpdateBuiltActivity,
+  fetchBuiltActivities,
+  BuiltActivityModel,
+  BuiltActivitySchema,
+  BuiltActivityType,
 };

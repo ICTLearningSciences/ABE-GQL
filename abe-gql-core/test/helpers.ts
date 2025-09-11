@@ -11,7 +11,7 @@ import path from "path";
 import request from "supertest";
 import requireEnv from "../src/utils/require-env";
 import RefreshTokenModel from "../src/schemas/models/RefreshToken";
-import { UserRole } from "../src/schemas/models/User";
+import { UserRole } from "../src/schemas/types/types";
 
 export function fixturePath(p: string): string {
   return path.join(__dirname, "fixtures", p);

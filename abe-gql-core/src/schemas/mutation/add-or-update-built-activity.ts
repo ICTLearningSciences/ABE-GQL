@@ -14,7 +14,7 @@ import BuiltActivityModel, {
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
 import { idOrNew } from "../../helpers";
-import { UserRole } from "../../schemas/models/User";
+import { UserRole } from "../../schemas/types/types";
 dotenv.config();
 
 export const addOrUpdateBuiltActivity = {

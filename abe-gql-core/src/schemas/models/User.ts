@@ -19,12 +19,7 @@ import {
   PaginateQuery,
   pluginPagination,
 } from "./Paginatation";
-
-export enum UserRole {
-  USER = "USER",
-  CONTENT_MANAGER = "CONTENT_MANAGER",
-  ADMIN = "ADMIN",
-}
+import { UserRole } from "../types/types";
 
 export enum EducationalRole {
   STUDENT = "STUDENT",

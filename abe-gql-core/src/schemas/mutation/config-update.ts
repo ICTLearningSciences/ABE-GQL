@@ -12,7 +12,7 @@ import {
   GraphQLString,
 } from "graphql";
 import ConfigModel, { Config, ConfigType } from "../models/Config";
-import { UserRole } from "../models/User";
+import { UserRole } from "../types/types";
 
 export const ConfigUpdateInputType = new GraphQLInputObjectType({
   name: "ConfigUpdateInputType",
