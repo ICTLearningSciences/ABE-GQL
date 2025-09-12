@@ -13,59 +13,65 @@ import BuiltActivityModel, {
   BuiltActivityVisibility,
 } from "../../schemas/models/BuiltActivity/BuiltActivity";
 import { ActivityBuilder } from "../../schemas/models/BuiltActivity/types";
-import { idOrNew } from "../../helpers";
-import { UserRole } from "../../schemas/types/types";
+import mongoose from "mongoose";
 dotenv.config();
 
-export const addOrUpdateBuiltActivity = {
-  type: BuiltActivityType,
-  args: {
-    activity: { type: GraphQLNonNull(BuiltActivityInputType) },
-  },
-  async resolve(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _: any,
+function isId(id: string): boolean {
+  return Boolean(id.match(/^[0-9a-fA-F]{24}$/));
+}
+
+function idOrNew(id: string): string {
+  if (!Boolean(id)) {
+    return `${new mongoose.Types.ObjectId()}`;
+  }
+  return isId(id) ? id : `${new mongoose.Types.ObjectId()}`;
+}
+
+export const addOrUpdateBuiltActivity = (
+  authFunction: (existingActivity: ActivityBuilder) => boolean
+) => {
+  return {
+    type: BuiltActivityType,
     args: {
-      activity: ActivityBuilder;
+      activity: { type: GraphQLNonNull(BuiltActivityInputType) },
     },
-    context: {
-      userRole?: string;
-      userId?: string;
-    }
-  ) {
-    if (!context.userRole) {
-      throw new Error("unauthorized");
-    }
-    try {
-      const id = idOrNew(args.activity._id);
-      const existingActivity = await BuiltActivityModel.findById(id);
-      if (existingActivity) {
-        if (
-          context.userRole !== UserRole.ADMIN &&
-          context.userId !== `${existingActivity.user}` &&
-          existingActivity.visibility !== BuiltActivityVisibility.EDITABLE
-        ) {
-          throw new Error("unauthorized");
-        }
+    async resolve(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      _: any,
+      args: {
+        activity: ActivityBuilder;
       }
-      delete args.activity._id;
-      const updatedActivity = await BuiltActivityModel.findOneAndUpdate(
-        {
-          _id: id,
-        },
-        {
-          ...args.activity,
-        },
-        {
-          new: true,
-          upsert: true,
+    ) {
+      try {
+        const id = idOrNew(args.activity._id);
+        const existingActivity = await BuiltActivityModel.findById(id);
+        if (existingActivity) {
+          if (
+            !authFunction(existingActivity) &&
+            existingActivity.visibility !== BuiltActivityVisibility.EDITABLE
+          ) {
+            throw new Error("unauthorized");
+          }
         }
-      );
-      return updatedActivity;
-    } catch (e) {
-      console.log(e);
-      throw new Error(String(e));
-    }
-  },
+        delete args.activity._id;
+        const updatedActivity = await BuiltActivityModel.findOneAndUpdate(
+          {
+            _id: id,
+          },
+          {
+            ...args.activity,
+          },
+          {
+            new: true,
+            upsert: true,
+          }
+        );
+        return updatedActivity;
+      } catch (e) {
+        console.log(e);
+        throw new Error(String(e));
+      }
+    },
+  };
 };
 export default addOrUpdateBuiltActivity;

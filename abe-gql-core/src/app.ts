@@ -155,7 +155,7 @@ export function createApp(): Express {
       const userId = jwtData ? jwtData.userId : undefined;
 
       return {
-        schema: getAuthenticatedSchema(userRole),
+        schema: getAuthenticatedSchema(userRole, userId),
         graphiql: true,
         context: {
           req: req,

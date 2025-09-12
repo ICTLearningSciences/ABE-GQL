@@ -282,7 +282,6 @@ describe("find instructors for course", () => {
           courseId: nonExistentCourseId,
         },
       });
-
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
