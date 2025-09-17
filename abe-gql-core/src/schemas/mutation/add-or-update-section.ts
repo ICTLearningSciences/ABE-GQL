@@ -10,7 +10,7 @@ import {
   GraphQLEnumType,
   GraphQLID,
 } from "graphql";
-import { UserRole } from "../models/User";
+import { UserRole } from "../types/types";
 import SectionModel, {
   Section,
   SectionType,

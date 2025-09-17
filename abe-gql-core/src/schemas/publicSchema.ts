@@ -35,7 +35,7 @@ import fetchBuiltActivities from "./query/fetch-built-activities";
 import addOrUpdateBuiltActivity from "./mutation/add-or-update-built-activity";
 import fetchBuiltActivityVersions from "./query/fetch-built-activity-versions";
 import storeBuiltActivityVersion from "./mutation/store-built-activity-version";
-import { UserRole } from "./models/User";
+import { UserRole } from "./types/types";
 import copyBuiltActivity from "./mutation/copy-built-activity";
 import deleteBuiltActivity from "./mutation/delete-built-activity";
 import loginMicrosoft from "./mutation/login-microsoft";
@@ -61,6 +61,7 @@ import modifyStudentBanInSection from "./mutation/ban-student-from-section";
 import findInstructorsForCourse from "./query/find-instructors-for-course";
 import findAllGoogleDocs from "./query/find-all-google-docs";
 import gradeStudentAssignment from "./mutation/grade-student-assignment";
+import { ActivityBuilder } from "./models/BuiltActivity/types";
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -117,30 +118,44 @@ const publicMutations = {
   gradeStudentAssignment,
 };
 
-const contentManagerMutations = {
-  ...publicMutations,
-  addOrUpdateActivity,
-  addOrUpdateBuiltActivity,
-  storeBuiltActivityVersion,
-  configUpdateByKey,
-  configUpdate,
-  copyBuiltActivity,
-  deleteBuiltActivity,
+const contentManagerMutations = (userRole: UserRole, userId: string) => {
+  return {
+    ...publicMutations,
+    addOrUpdateActivity,
+    addOrUpdateBuiltActivity: addOrUpdateBuiltActivity(
+      (existingActivity: ActivityBuilder) => {
+        if (!userId) {
+          throw new Error("unauthorized");
+        }
+        return existingActivity.user === userId || userRole === UserRole.ADMIN;
+      }
+    ),
+    storeBuiltActivityVersion,
+    configUpdateByKey,
+    configUpdate,
+    copyBuiltActivity,
+    deleteBuiltActivity,
+  };
 };
 
-const adminMutations = {
-  ...contentManagerMutations,
+const adminMutations = (userRole: UserRole, userId: string) => {
+  return {
+    ...contentManagerMutations(userRole, userId),
+  };
 };
 
-const getAuthenticatedMutations = (userRole: UserRole) => {
+const getAuthenticatedMutations = (userRole: UserRole, userId: string) => {
   return userRole === UserRole.ADMIN
-    ? adminMutations
+    ? adminMutations(userRole, userId)
     : userRole === UserRole.CONTENT_MANAGER
-    ? contentManagerMutations
+    ? contentManagerMutations(userRole, userId)
     : publicMutations;
 };
 
-export function getAuthenticatedSchema(userRole: UserRole): GraphQLSchema {
+export function getAuthenticatedSchema(
+  userRole: UserRole,
+  userId: string
+): GraphQLSchema {
   return new GraphQLSchema({
     query: new GraphQLObjectType({
       name: "AuthenticatedQuery",
@@ -148,7 +163,7 @@ export function getAuthenticatedSchema(userRole: UserRole): GraphQLSchema {
     }),
     mutation: new GraphQLObjectType({
       name: "AuthenticatedMutation",
-      fields: getAuthenticatedMutations(userRole),
+      fields: getAuthenticatedMutations(userRole, userId),
     }),
   });
 }

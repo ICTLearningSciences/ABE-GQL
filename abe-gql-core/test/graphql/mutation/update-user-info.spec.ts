@@ -12,10 +12,10 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
+import { UserRole } from "../../../src/schemas/types/types";
 import {
   ClassroomCode,
   EducationalRole,
-  UserRole,
 } from "../../../src/schemas/models/User";
 
 export const fullUserQueryData = `

@@ -10,7 +10,7 @@ import {
   GraphQLID,
   GraphQLList,
 } from "graphql";
-import { UserRole } from "../models/User";
+import { UserRole } from "../types/types";
 import InstructorDataModel from "../models/InstructorData";
 import StudentDataModel, { StudentDataType } from "../models/StudentData";
 import SectionModel from "../models/Section";

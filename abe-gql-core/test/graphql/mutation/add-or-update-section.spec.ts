@@ -12,7 +12,7 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 import SectionModel from "../../../src/schemas/models/Section";
 import CourseModel from "../../../src/schemas/models/Course";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";

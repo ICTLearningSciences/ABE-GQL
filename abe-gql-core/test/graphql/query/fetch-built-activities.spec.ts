@@ -11,7 +11,7 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 import { getToken } from "../../helpers";
 import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
 

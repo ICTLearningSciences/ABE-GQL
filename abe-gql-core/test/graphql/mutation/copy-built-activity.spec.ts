@@ -14,7 +14,7 @@ import request from "supertest";
 import { ActivityBuilder } from "../../../src/schemas/models/BuiltActivity/types";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 
 describe("copy built activity", () => {
