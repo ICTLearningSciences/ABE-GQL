@@ -10,7 +10,7 @@ import {
   GraphQLID,
   GraphQLEnumType,
 } from "graphql";
-import { UserRole } from "../models/User";
+import { UserRole } from "../types/types";
 import CourseModel from "../models/Course";
 import InstructorDataModel, {
   CourseOwnership,

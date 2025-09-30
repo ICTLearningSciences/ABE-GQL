@@ -104,6 +104,7 @@ export const RequestUserInputActivityStepType = new GraphQLObjectType({
     message: { type: GraphQLString },
     saveAsIntention: { type: GraphQLBoolean },
     saveResponseVariableName: { type: GraphQLString },
+    specialType: { type: GraphQLString },
     disableFreeInput: { type: GraphQLBoolean },
     predefinedResponses: { type: GraphQLList(PredefinedResponseType) },
     setStudentActivityComplete: { type: GraphQLBoolean },
@@ -123,6 +124,7 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
       message: { type: GraphQLString },
       saveAsIntention: { type: GraphQLBoolean },
       saveResponseVariableName: { type: GraphQLString },
+      specialType: { type: GraphQLString },
       disableFreeInput: { type: GraphQLBoolean },
       predefinedResponses: { type: GraphQLList(PredefinedResponseTypeInput) },
       setStudentActivityComplete: { type: GraphQLBoolean },
@@ -260,6 +262,7 @@ export const RequestUserInputActivityStepSchema = new Schema({
   message: { type: String },
   saveAsIntention: { type: Boolean },
   saveResponseVariableName: { type: String },
+  specialType: { type: String },
   disableFreeInput: { type: Boolean },
   predefinedResponses: [PredefinedResponseSchema],
 });

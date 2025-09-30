@@ -17,7 +17,7 @@ import {
 } from "../../../src/schemas/models/BuiltActivity/types";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 
 export const fullBuiltActivityQueryData = `
                       _id
@@ -194,6 +194,7 @@ describe("update built activity", () => {
           {
             stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
             message: "message 2",
+            specialType: "special type 1",
           },
           {
             stepType: ActivityBuilderStepType.PROMPT,
@@ -232,6 +233,7 @@ describe("update built activity", () => {
                             ... on RequestUserInputActivityStepType {
                                 stepType
                                 message
+                                specialType
                             }
 
                             ... on PromptActivityStepType{

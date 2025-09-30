@@ -12,7 +12,7 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 describe("update built activity", () => {

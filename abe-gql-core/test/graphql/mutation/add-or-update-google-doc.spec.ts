@@ -11,7 +11,7 @@ import { Express } from "express";
 import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
-import { UserRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
 import { getToken } from "../../helpers";
 import GoogleDocModel from "../../../src/schemas/models/GoogleDoc";
 

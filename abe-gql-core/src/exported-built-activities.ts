@@ -4,33 +4,19 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import createApp, { appStart, appStop } from "./app";
-
 import { addOrUpdateBuiltActivity } from "./schemas/mutation/add-or-update-built-activity";
-import { copyBuiltActivity } from "./schemas/mutation/copy-built-activity";
-import { deleteBuiltActivity } from "./schemas/mutation/delete-built-activity";
-import { storeBuiltActivityVersion } from "./schemas/mutation/store-built-activity-version";
-
 import { fetchBuiltActivities } from "./schemas/query/fetch-built-activities";
-import fetchBuiltActivityVersions from "./schemas/query/fetch-built-activity-versions";
-import {
+import ActivityModel, {
   BuiltActivityModel,
   BuiltActivitySchema,
   BuiltActivityType,
 } from "./schemas/models/BuiltActivity/BuiltActivity";
 
 export {
-  createApp,
-  appStart,
-  appStop,
-  copyBuiltActivity,
-  deleteBuiltActivity,
-  storeBuiltActivityVersion,
-  fetchBuiltActivityVersions,
-
   // Built Activity
   addOrUpdateBuiltActivity,
   fetchBuiltActivities,
+  ActivityModel,
   BuiltActivityModel,
   BuiltActivitySchema,
   BuiltActivityType,

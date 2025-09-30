@@ -11,7 +11,7 @@ import ActivityModel, {
   ActivityInputType,
   ActivityType,
 } from "../models/Activity";
-import { UserRole } from "../models/User";
+import { UserRole } from "../types/types";
 dotenv.config();
 
 export const addOrUpdateActivity = {

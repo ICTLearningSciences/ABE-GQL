@@ -12,7 +12,8 @@ import { describe } from "mocha";
 import mongoUnit from "mongo-unit";
 import request from "supertest";
 import { getToken } from "../../helpers";
-import { UserRole, EducationalRole } from "../../../src/schemas/models/User";
+import { UserRole } from "../../../src/schemas/types/types";
+import { EducationalRole } from "../../../src/schemas/models/User";
 import UserModel from "../../../src/schemas/models/User";
 import InstructorDataModel from "../../../src/schemas/models/InstructorData";
 import StudentDataModel from "../../../src/schemas/models/StudentData";
@@ -281,7 +282,6 @@ describe("find instructors for course", () => {
           courseId: nonExistentCourseId,
         },
       });
-
     expect(response.status).to.equal(200);
     expect(
       response.body.errors.find((e: any) =>
