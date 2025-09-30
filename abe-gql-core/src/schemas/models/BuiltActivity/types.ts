@@ -99,6 +99,7 @@ export interface RequestUserInputActivityStep extends ActivityBuilderStep {
   message: string;
   saveAsIntention: boolean;
   saveResponseVariableName: string;
+  specialType: string;
   disableFreeInput: boolean;
   predefinedResponses: PredefinedResponse[];
 }
