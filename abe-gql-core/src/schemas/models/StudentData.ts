@@ -117,7 +117,7 @@ export const RelevantGoogleDocSchema = new Schema<RelevantGoogleDoc>(
 export const InstructorGradeSchema = new Schema<InstructorGrade>(
   {
     grade: { type: Number, required: true },
-    comment: { type: String, required: true },
+    comment: { type: String, default: "" },
   },
   { timestamps: false, _id: false, collation: { locale: "en", strength: 2 } }
 );

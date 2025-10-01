@@ -65,7 +65,7 @@ export const gradeStudentAssignment = {
         if (assignment.assignmentId === assignmentId) {
           assignment.instructorGrade = {
             grade: grade,
-            comment: comment,
+            comment: comment || "",
           };
         }
       });
