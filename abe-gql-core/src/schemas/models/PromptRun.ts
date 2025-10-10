@@ -34,12 +34,21 @@ export interface PromptConfiguration {
   promptRole: PromptRoles;
 }
 
+export enum NumChatMessagesIncluded {
+  ALL = "all",
+  LAST_1 = "last_1",
+  LAST_3 = "last_3",
+  LAST_5 = "last_5",
+  LAST_10 = "last_10",
+}
+
 export interface AiPromptStep {
   prompts: PromptConfiguration[];
   outputDataType: PromptOutputDataType;
   targetAiServiceModel: AiModelService;
   systemRole?: string;
   includeChatLogContext?: boolean;
+  numChatMessagesIncluded?: NumChatMessagesIncluded;
   jsonValidation?: string;
   responseFormat?: string;
   webSearch?: boolean;
@@ -98,6 +107,7 @@ export const AiPromptStepType = new GraphQLObjectType({
     systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
+    numChatMessagesIncluded: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
@@ -113,6 +123,7 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
     systemRole: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
+    numChatMessagesIncluded: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
@@ -157,6 +168,12 @@ export const AiPromptStepSchema = new Schema({
     default: false,
   },
   jsonValidation: { type: String, required: false, default: "" },
+  numChatMessagesIncluded: {
+    type: String,
+    enum: NumChatMessagesIncluded,
+    required: false,
+    default: NumChatMessagesIncluded.ALL,
+  },
   responseFormat: { type: String, required: false, default: "" },
   webSearch: { type: Boolean, required: false, default: false },
   editDoc: { type: Boolean, required: false, default: false },

@@ -199,6 +199,7 @@ describe("update built activity", () => {
           {
             stepType: ActivityBuilderStepType.PROMPT,
             promptText: "prompt 1",
+            numChatMessagesIncluded: "LAST_1",
           },
           {
             stepType: ActivityBuilderStepType.CONDITIONAL,
@@ -239,6 +240,7 @@ describe("update built activity", () => {
                             ... on PromptActivityStepType{
                                 stepType
                                 promptText
+                                numChatMessagesIncluded
                             }
 
                             ... on ConditionalActivityStepType {
