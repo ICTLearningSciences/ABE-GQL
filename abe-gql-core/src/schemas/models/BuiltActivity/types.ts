@@ -116,6 +116,7 @@ export interface PromptActivityStep extends ActivityBuilderStep {
   promptText: string;
   responseFormat: string;
   includeChatLogContext: boolean;
+  numChatMessagesIncluded: string;
   includeEssay: boolean;
   outputDataType: string;
   jsonResponseData?: string;
