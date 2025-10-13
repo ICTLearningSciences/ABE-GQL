@@ -118,4 +118,25 @@ describe("fetch most recent version", () => {
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchMostRecentVersion).to.be.null;
   });
+
+  it("can fetch most recent version for delta docs", async () => {
+    const response = await request(app)
+      .post("/graphql")
+      .send({
+        query: `query FetchMostRecentVersion($googleDocId: String!) {
+          fetchMostRecentVersion(googleDocId: $googleDocId) {
+            docId
+            plainText
+            }
+          }`,
+        variables: {
+          googleDocId: "test_delta_google_doc_id",
+        },
+      });
+    expect(response.status).to.equal(200);
+    expect(response.body.data.fetchMostRecentVersion).to.deep.equal({
+      docId: "test_delta_google_doc_id",
+      plainText: "I love coffee",
+    });
+  });
 });

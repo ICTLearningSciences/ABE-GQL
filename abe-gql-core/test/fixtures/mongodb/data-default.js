@@ -406,6 +406,15 @@ module.exports = {
       admin: true,
       archived: true,
     },
+    {
+      _id: new ObjectId("5ffdf1231ee2c62320b49da8"),
+      googleDocId: "test_delta_google_doc_id",
+      user: new ObjectId("5ffdf1231ee2c62320b49e99"),
+      title: "Test Delta Document",
+      createdAt: "2021-01-13T00:00:00.000+00:00",
+      admin: false,
+      archived: false,
+    },
   ],
   refreshtokens: [
     {
@@ -581,6 +590,134 @@ module.exports = {
       versionType: VersionType.SNAPSHOT,
       modifiedTime: new Date("2000-10-12T20:49:41.599+00:00"),
       createdAt: new Date("2000-10-12T20:49:41.599+00:00"),
+    },
+
+    // TODO:
+    {
+      _id: new ObjectId("68ed81e47e53d92e942427bc"),
+      docId: "test_delta_google_doc_id",
+      plainText: "I love chocolate",
+      markdownText: "I love chocolate\n\n",
+      lastChangedId: "",
+      sessionId: "0266e213-a358-4a76-8068-cf23fb8a6356",
+      courseAssignmentId: "",
+      chatLog: [
+        {
+          sender: "SYSTEM",
+          message: "Feel free to ask me any questions about your essay.",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81e47e53d92e942427bd"),
+        },
+      ],
+      activity: "",
+      intent: "",
+      title: "",
+      lastModifyingUser: "ashiel409@gmail.com",
+      modifiedTime: new Date("2025-10-13T22:49:07.833Z"),
+
+      versionType: "SNAPSHOT",
+      createdAt: new Date("2025-10-13T22:49:08.061Z"),
+      updatedAt: new Date("2025-10-13T22:49:08.061Z"),
+    },
+    {
+      _id: new ObjectId("68ed81e97e53d92e942427c8"),
+      docId: "test_delta_google_doc_id",
+      plainTextDelta: "[[0,16]]",
+      markdownTextDelta: "[[0,18]]",
+      sessionId: "0266e213-a358-4a76-8068-cf23fb8a6356",
+      courseAssignmentId: "",
+      chatLog: [
+        {
+          sender: "SYSTEM",
+          message: "Feel free to ask me any questions about your essay.",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81e97e53d92e942427c9"),
+        },
+        {
+          sender: "USER",
+          message: "what do you tgink about my essay",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81e97e53d92e942427ca"),
+        },
+      ],
+      versionType: "DELTA",
+      createdAt: new Date("2025-10-13T22:49:13.054Z"),
+      updatedAt: new Date("2025-10-13T22:49:13.054Z"),
+    },
+
+    {
+      _id: new ObjectId("68ed81ee7e53d92e942427d9"),
+      docId: "test_delta_google_doc_id",
+      plainTextDelta: "[[0,16]]",
+      markdownTextDelta: "[[0,18]]",
+      sessionId: "0266e213-a358-4a76-8068-cf23fb8a6356",
+      courseAssignmentId: "",
+      chatLog: [
+        {
+          sender: "SYSTEM",
+          message: "Feel free to ask me any questions about your essay.",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81ee7e53d92e942427da"),
+        },
+        {
+          sender: "USER",
+          message: "what do you tgink about my essay",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81ee7e53d92e942427db"),
+        },
+        {
+          sender: "SYSTEM",
+          message:
+            "Your essay expresses a strong sentiment about chocolate, which is a great starting point! However, to make it more engaging and informative, consider expanding on why you love chocolate. You could include details such as:\n\n1. **Personal experiences:** Do you have a favorite chocolate that brings back special memories?\n2. **Types of chocolate:** Discuss different varieties (dark, milk, white) and their unique flavors.\n3. **Health benefits:** Mention any positive aspects of chocolate, like its antioxidants.\n4. **Cultural significance:** Explore how chocolate is celebrated in various cultures.\n\nAdding these elements can make your essay more captivating and provide a richer perspective. Would you like help brainstorming ideas or structuring it further?",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81ee7e53d92e942427dc"),
+        },
+      ],
+      versionType: "DELTA",
+      createdAt: new Date("2025-10-13T22:49:18.051Z"),
+      updatedAt: new Date("2025-10-13T22:49:18.051Z"),
+    },
+
+    {
+      _id: new ObjectId("68ed81f37e53d92e942427e6"),
+      docId: "test_delta_google_doc_id",
+      plainTextDelta: '[[0,8],[-1,1],[0,1],[-1,5],[1,"ffe"],[0,1]]',
+      markdownTextDelta: '[[0,8],[-1,1],[0,1],[-1,5],[1,"ffe"],[0,3]]',
+      sessionId: "0266e213-a358-4a76-8068-cf23fb8a6356",
+      courseAssignmentId: "",
+      chatLog: [
+        {
+          sender: "SYSTEM",
+          message: "Feel free to ask me any questions about your essay.",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81f37e53d92e942427e7"),
+        },
+        {
+          sender: "USER",
+          message: "what do you tgink about my essay",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81f37e53d92e942427e8"),
+        },
+        {
+          sender: "SYSTEM",
+          message:
+            "Your essay expresses a strong sentiment about chocolate, which is a great starting point! However, to make it more engaging and informative, consider expanding on why you love chocolate. You could include details such as:\n\n1. **Personal experiences:** Do you have a favorite chocolate that brings back special memories?\n2. **Types of chocolate:** Discuss different varieties (dark, milk, white) and their unique flavors.\n3. **Health benefits:** Mention any positive aspects of chocolate, like its antioxidants.\n4. **Cultural significance:** Explore how chocolate is celebrated in various cultures.\n\nAdding these elements can make your essay more captivating and provide a richer perspective. Would you like help brainstorming ideas or structuring it further?",
+          displayType: "TEXT",
+          bulletPoints: [],
+          _id: new ObjectId("68ed81f37e53d92e942427e9"),
+        },
+      ],
+      versionType: "DELTA",
+      createdAt: new Date("2025-10-13T22:49:23.129Z"),
+      updatedAt: new Date("2025-10-13T22:49:23.129Z"),
     },
   ],
   users: [
