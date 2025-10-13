@@ -27,24 +27,32 @@ export const submitGoogleDocVersion = {
     }
   ) {
     try {
-      const currentState = await DocVersionCurrentStateModel.findOne({
+      const currentSessionState = await DocVersionCurrentStateModel.findOne({
         sessionId: args.googleDocData.sessionId,
       });
-      const shouldStoreSnapshot = !currentState;
-      if (shouldStoreSnapshot) {
+      if (!currentSessionState) {
         args.googleDocData.versionType = VersionType.SNAPSHOT;
         const doc = await GDocVersionModel.create({ ...args.googleDocData });
-        await DocVersionCurrentStateModel.create({
-          ...args.googleDocData,
-          versionType: VersionType.SNAPSHOT,
-        });
+        await DocVersionCurrentStateModel.findOneAndUpdate(
+          {
+            sessionId: args.googleDocData.sessionId,
+          },
+          {
+            ...args.googleDocData,
+            versionType: VersionType.SNAPSHOT,
+          },
+          {
+            upsert: true,
+            new: true,
+          }
+        );
         return doc;
       } else {
         args.googleDocData.versionType = VersionType.DELTA;
-        const deltaDoc = getDeltaDoc(currentState, args.googleDocData);
+        const deltaDoc = getDeltaDoc(currentSessionState, args.googleDocData);
         const doc = await GDocVersionModel.create({ ...deltaDoc });
         await DocVersionCurrentStateModel.updateOne(
-          { _id: currentState._id },
+          { _id: currentSessionState._id },
           { $set: { ...args.googleDocData, versionType: VersionType.SNAPSHOT } }
         );
         return doc;
