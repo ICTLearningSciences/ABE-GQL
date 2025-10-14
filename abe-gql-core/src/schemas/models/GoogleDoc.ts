@@ -69,12 +69,15 @@ export const GoogleDocType = new GraphQLObjectType({
     title: {
       type: GraphQLString,
       resolve: async (doc: GoogleDoc) => {
-        const mostRecentVersion = await GoogleDocVersionsModel.findOne(
-          { docId: doc.googleDocId },
+        const mostRecentVersionWithTitle = await GoogleDocVersionsModel.findOne(
+          {
+            docId: doc.googleDocId,
+            title: { $exists: true, $ne: "" },
+          },
           {},
           { sort: { createdAt: -1 } }
         );
-        return mostRecentVersion?.title || doc.title || "";
+        return mostRecentVersionWithTitle?.title || doc.title || "";
       },
     },
     createdAt: { type: DateType },
