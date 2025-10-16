@@ -7,23 +7,50 @@ The full terms of this copyright and license should always be found in the root 
 import GDocVersionModel, {
   GDocVersionObjectType,
 } from "../models/GoogleDocVersion";
-import { GraphQLString, GraphQLNonNull, GraphQLList } from "graphql";
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLBoolean,
+} from "graphql";
 import * as dotenv from "dotenv";
-import { hydrateDocVersions } from "../../helpers";
+import {
+  getObjectSizeInMB,
+  getTimelineSlicesFinalVersions,
+  hydrateDocVersions,
+} from "../../helpers";
+import logger from "utils/logging";
 dotenv.config();
 
 export const fetchGoogleDocVersions = {
   type: GraphQLList(GDocVersionObjectType),
   args: {
     googleDocId: { type: GraphQLNonNull(GraphQLString) },
+    timelinePointsOnly: { type: GraphQLBoolean },
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async resolve(_: any, args: any) {
+  async resolve(
+    _: any,
+    args: {
+      googleDocId: string;
+      timelinePointsOnly: boolean;
+    }
+  ) {
     try {
       const versions = await GDocVersionModel.find({
         docId: args.googleDocId,
       }).lean();
       const hydratedVersions = await hydrateDocVersions(versions);
+      const sizeInMB = getObjectSizeInMB(hydratedVersions);
+      logger.info(`Hydrated version size: ${sizeInMB} MB`);
+
+      if (args.timelinePointsOnly) {
+        const finalVersions = await getTimelineSlicesFinalVersions(
+          hydratedVersions
+        );
+        return finalVersions;
+      }
+
       return hydratedVersions;
     } catch (e) {
       console.log(e);
