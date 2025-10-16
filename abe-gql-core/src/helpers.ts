@@ -9,6 +9,7 @@ const ajv = new Ajv();
 import * as dotenv from "dotenv";
 import mongoose, { Model } from "mongoose";
 import GDocVersionModel, {
+  TimelineSlice,
   VersionType,
 } from "./schemas/models/GoogleDocVersion";
 import { IGDocVersion } from "./schemas/models/GoogleDocVersion";
@@ -16,6 +17,7 @@ import TextDiffCreate, { Change } from "textdiff-create";
 import TextDiffPatch from "textdiff-patch";
 import StudentDataModel, { StudentData } from "./schemas/models/StudentData";
 import CourseModel, { Course } from "./schemas/models/Course";
+import { TimelinePointType } from "./schemas/models/DocTimeline";
 dotenv.config();
 
 const queryPayloadSchema = {
@@ -230,6 +232,18 @@ export async function validateIds<T extends Model<any>>(
   return documents.length === ids.length;
 }
 
+/**
+ * Returns the approximate size of a JS object in megabytes (MB).
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getObjectSizeInMB(obj: any): number {
+  const str = JSON.stringify(obj);
+  // Each character in a JS string is 2 bytes (UTF-16)
+  const bytes = new TextEncoder().encode(str).length;
+  const mb = bytes / (1024 * 1024);
+  return mb;
+}
+
 const hasCommonString = (arr1: string[], arr2: string[]): boolean => {
   return arr1.some((item) => arr2.includes(item));
 };
@@ -295,3 +309,69 @@ export const removeSectionFromAllStudentsAndCourse = async (
     { $pull: { enrolledCourses: course._id } }
   );
 };
+
+export function nextVersionIsNewTimelinePoint(
+  lastTimelinePoint: IGDocVersion,
+  nextVersion: IGDocVersion
+): TimelinePointType {
+  if (
+    nextVersion.activity !== lastTimelinePoint.activity ||
+    nextVersion.sessionId !== lastTimelinePoint.sessionId
+  ) {
+    return TimelinePointType.NEW_ACTIVITY;
+  }
+  const hasEightHoursPassed =
+    new Date(nextVersion.createdAt).getTime() -
+      new Date(lastTimelinePoint.createdAt).getTime() >
+    8 * 60 * 60 * 1000;
+  if (hasEightHoursPassed) {
+    return TimelinePointType.TIME_DIFFERENCE;
+  }
+  return TimelinePointType.NONE;
+}
+
+export async function getTimelineSlicesFinalVersions(
+  versions: IGDocVersion[]
+): Promise<IGDocVersion[]> {
+  const slices: TimelineSlice[] = [];
+  let currentSlice: IGDocVersion[] = [];
+  let lastStartSliceReason = TimelinePointType.START;
+  // iterate through versions and create slices with isNextTimelinePoint as a boundary
+  for (let i = 0; i < versions.length; i++) {
+    const currentVersion = versions[i];
+    const previousVersion = versions[i - 1];
+    if (!previousVersion) {
+      currentSlice.push(currentVersion);
+      continue;
+    }
+
+    const nextTimelinePointType = nextVersionIsNewTimelinePoint(
+      previousVersion,
+      currentVersion
+    );
+    if (nextTimelinePointType) {
+      if (currentSlice.length > 0) {
+        slices.push({
+          startReason: lastStartSliceReason,
+          versions: currentSlice,
+        });
+        lastStartSliceReason = nextTimelinePointType;
+      }
+      currentSlice = [currentVersion];
+    } else {
+      currentSlice.push(currentVersion);
+    }
+  }
+
+  if (currentSlice.length > 0) {
+    slices.push({
+      startReason: lastStartSliceReason,
+      versions: currentSlice,
+    });
+  }
+
+  const finalVersions = slices.map(
+    (slice) => slice.versions[slice.versions.length - 1]
+  );
+  return finalVersions;
+}

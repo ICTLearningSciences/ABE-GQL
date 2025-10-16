@@ -20,6 +20,7 @@ import {
   PaginatedResolveResult,
   pluginPagination,
 } from "./Paginatation";
+import { TimelinePointType } from "./DocTimeline";
 const Schema = mongoose.Schema;
 
 export enum Sender {
@@ -128,6 +129,11 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     updatedAt: { type: DateType },
   }),
 });
+
+export interface TimelineSlice {
+  startReason: TimelinePointType;
+  versions: IGDocVersion[];
+}
 
 export interface IGDocVersion {
   _id: string;
