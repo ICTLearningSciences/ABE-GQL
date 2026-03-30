@@ -44,6 +44,7 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
       value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
     },
     message: { type: GraphQLString },
+    systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
@@ -58,6 +59,7 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
       value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
     },
     message: { type: GraphQLString },
+    systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
@@ -103,6 +105,7 @@ export const RequestUserInputActivityStepType = new GraphQLObjectType({
     },
     message: { type: GraphQLString },
     saveAsIntention: { type: GraphQLBoolean },
+    systemCustomName: { type: GraphQLString },
     saveResponseVariableName: { type: GraphQLString },
     specialType: { type: GraphQLString },
     disableFreeInput: { type: GraphQLBoolean },
@@ -123,6 +126,7 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
       },
       message: { type: GraphQLString },
       saveAsIntention: { type: GraphQLBoolean },
+      systemCustomName: { type: GraphQLString },
       saveResponseVariableName: { type: GraphQLString },
       specialType: { type: GraphQLString },
       disableFreeInput: { type: GraphQLBoolean },
@@ -272,6 +276,7 @@ export const SystemMessageActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
   stepType: { type: String, default: _ActivityBuilderStepType.SYSTEM_MESSAGE },
   message: { type: String },
+  systemCustomName: { type: String },
   setStudentActivityComplete: { type: Boolean },
 });
 
@@ -283,6 +288,7 @@ export const RequestUserInputActivityStepSchema = new Schema({
   },
   message: { type: String },
   saveAsIntention: { type: Boolean },
+  systemCustomName: { type: String },
   saveResponseVariableName: { type: String },
   specialType: { type: String },
   disableFreeInput: { type: Boolean },

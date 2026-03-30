@@ -132,6 +132,7 @@ module.exports = {
               message: "What is your name?",
               saveAsIntention: false,
               saveResponseVariableName: "name",
+              systemCustomName: "Ben",
               disableFreeInput: false,
               predefinedResponses: [],
             },

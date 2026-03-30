@@ -39,6 +39,7 @@ export const fullBuiltActivityQueryData = `
                               stepType
                               jumpToStepId
                               message
+                              systemCustomName
                               setStudentActivityComplete
                           }
 
@@ -49,6 +50,7 @@ export const fullBuiltActivityQueryData = `
                               message
                               saveAsIntention
                               saveResponseVariableName
+                              systemCustomName
                               disableFreeInput
                               predefinedResponses{
                                   clientId
@@ -295,6 +297,7 @@ describe("update built activity", () => {
             jumpToStepId: "456",
             stepId: "123",
             setStudentActivityComplete: true,
+            systemCustomName: "Ben",
           },
         ],
       },
@@ -413,6 +416,7 @@ describe("update built activity", () => {
             jumpToStepId: "456",
             stepId: "123",
             setStudentActivityComplete: true,
+            systemCustomName: "Ben",
           },
         ],
       },
@@ -453,6 +457,7 @@ describe("update built activity", () => {
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
             setStudentActivityComplete: true,
+            systemCustomName: "Ben",
           },
           {
             stepId: "456",
@@ -461,6 +466,7 @@ describe("update built activity", () => {
             message: "message 2",
             saveAsIntention: true,
             saveResponseVariableName: "save response variable name 1",
+            systemCustomName: "Ben",
             disableFreeInput: true,
             predefinedResponses: [
               {
