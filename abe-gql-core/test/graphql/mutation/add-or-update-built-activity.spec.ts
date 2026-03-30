@@ -64,16 +64,18 @@ export const fullBuiltActivityQueryData = `
                               stepId
                               stepType
                               jumpToStepId
-                              promptText
-                              responseFormat
-                              editDoc
-                              includeChatLogContext
-                              includeEssay
-                              outputDataType
-                              jsonResponseData
-                              customSystemRole
-                              webSearch
                               setStudentActivityComplete
+                              promptConfigurations{
+                                promptText
+                                responseFormat
+                                editDoc
+                                includeChatLogContext
+                                includeEssay
+                                outputDataType
+                                jsonResponseData
+                                customSystemRole
+                                webSearch
+                              }
                           }
 
                           ... on ConditionalActivityStepType {
@@ -198,8 +200,12 @@ describe("update built activity", () => {
           },
           {
             stepType: ActivityBuilderStepType.PROMPT,
-            promptText: "prompt 1",
-            numChatMessagesIncluded: "LAST_1",
+            promptConfigurations: [
+              {
+                promptText: "prompt 1",
+                numChatMessagesIncluded: "LAST_1",
+              },
+            ],
           },
           {
             stepType: ActivityBuilderStepType.CONDITIONAL,
@@ -239,8 +245,10 @@ describe("update built activity", () => {
 
                             ... on PromptActivityStepType{
                                 stepType
-                                promptText
-                                numChatMessagesIncluded
+                                promptConfigurations{
+                                  promptText
+                                  numChatMessagesIncluded
+                                }
                             }
 
                             ... on ConditionalActivityStepType {
@@ -467,17 +475,21 @@ describe("update built activity", () => {
           {
             stepId: "789",
             stepType: ActivityBuilderStepType.PROMPT,
-            promptText: "prompt 1",
             jumpToStepId: "123",
-            jsonResponseData: "stringified_json_response_data",
-            responseFormat: "response format 1",
-            editDoc: true,
-            includeChatLogContext: true,
-            includeEssay: true,
-            outputDataType: "JSON",
-            customSystemRole: "custom system role 1",
-            webSearch: true,
             setStudentActivityComplete: true,
+            promptConfigurations: [
+              {
+                jsonResponseData: "stringified_json_response_data",
+                responseFormat: "response format 1",
+                promptText: "prompt 1",
+                editDoc: true,
+                includeChatLogContext: true,
+                includeEssay: true,
+                outputDataType: "JSON",
+                customSystemRole: "custom system role 1",
+                webSearch: true,
+              },
+            ],
           },
           {
             stepId: "101112",
@@ -522,6 +534,7 @@ describe("update built activity", () => {
           activity,
         },
       });
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
     expect(builtActivitesPost.length).to.equal(7);

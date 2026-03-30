@@ -143,15 +143,19 @@ module.exports = {
             {
               stepId: "4",
               stepType: ActivityBuilderStepType.PROMPT,
-              promptText: "Please generate a nickname for {{name}}",
-              responseFormat: "",
-              editDoc: true,
-              jsonResponseData: "stringified_json_response_data",
-              includeChatLogContext: true,
-              includeEssay: false,
-              outputDataType: "JSON",
-              webSearch: true,
-              customSystemRole: "user",
+              promptConfigurations: [
+                {
+                  promptText: "Please generate a nickname for {{name}}",
+                  responseFormat: "",
+                  editDoc: true,
+                  jsonResponseData: "stringified_json_response_data",
+                  includeChatLogContext: true,
+                  includeEssay: false,
+                  outputDataType: "JSON",
+                  webSearch: true,
+                  customSystemRole: "user",
+                },
+              ],
             },
             {
               stepId: "5",

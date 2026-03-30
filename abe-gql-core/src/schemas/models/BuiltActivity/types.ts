@@ -111,8 +111,7 @@ export enum JsonResponseDataType {
   ARRAY = "array",
 }
 
-export interface PromptActivityStep extends ActivityBuilderStep {
-  stepType: ActivityBuilderStepType.PROMPT;
+export interface PromptConfiguration {
   promptText: string;
   responseFormat: string;
   includeChatLogContext: boolean;
@@ -123,4 +122,9 @@ export interface PromptActivityStep extends ActivityBuilderStep {
   customSystemRole: string;
   webSearch: boolean;
   editDoc: boolean;
+}
+
+export interface PromptActivityStep extends ActivityBuilderStep {
+  stepType: ActivityBuilderStepType.PROMPT;
+  promptConfigurations: PromptConfiguration[];
 }
