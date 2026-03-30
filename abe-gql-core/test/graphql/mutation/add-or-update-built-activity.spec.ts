@@ -70,6 +70,7 @@ export const fullBuiltActivityQueryData = `
                                 responseFormat
                                 editDoc
                                 includeChatLogContext
+                                systemCustomName
                                 includeEssay
                                 outputDataType
                                 jsonResponseData
@@ -484,6 +485,7 @@ describe("update built activity", () => {
                 promptText: "prompt 1",
                 editDoc: true,
                 includeChatLogContext: true,
+                systemCustomName: "Ben",
                 includeEssay: true,
                 outputDataType: "JSON",
                 customSystemRole: "custom system role 1",

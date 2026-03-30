@@ -138,6 +138,9 @@ export const SinglePromptConfigurationType = new GraphQLObjectType({
     promptText: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
+
+    systemCustomName: { type: GraphQLString },
+
     numChatMessagesIncluded: { type: GraphQLString },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
@@ -215,6 +218,7 @@ export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
     numChatMessagesIncluded: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
+    systemCustomName: { type: GraphQLString },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
@@ -289,6 +293,7 @@ export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
   responseFormat: { type: String },
   includeChatLogContext: { type: Boolean },
+  systemCustomName: { type: String },
   numChatMessagesIncluded: { type: String },
   includeEssay: { type: Boolean },
   outputDataType: { type: String },

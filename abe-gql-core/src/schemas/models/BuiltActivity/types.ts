@@ -115,6 +115,7 @@ export interface PromptConfiguration {
   promptText: string;
   responseFormat: string;
   includeChatLogContext: boolean;
+  systemCustomName: string;
   numChatMessagesIncluded: string;
   includeEssay: boolean;
   outputDataType: string;

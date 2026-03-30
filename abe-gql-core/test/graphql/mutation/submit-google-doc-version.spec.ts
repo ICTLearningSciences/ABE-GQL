@@ -45,6 +45,7 @@ describe("submit google doc version", () => {
                         sender
                         message
                         displayType
+                        systemCustomName
                         bulletPoints
                       }
                       activity

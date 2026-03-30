@@ -39,6 +39,7 @@ export const ChatItemInputType = new GraphQLInputObjectType({
     sender: { type: GraphQLString },
     message: { type: GraphQLString },
     displayType: { type: GraphQLString },
+    systemCustomName: { type: GraphQLString },
     bulletPoints: { type: GraphQLList(GraphQLString) },
   }),
 });
@@ -49,6 +50,7 @@ export const ChatItemObjectType = new GraphQLObjectType({
     sender: { type: GraphQLString },
     message: { type: GraphQLString },
     displayType: { type: GraphQLString },
+    systemCustomName: { type: GraphQLString },
     bulletPoints: { type: GraphQLList(GraphQLString) },
   }),
 });
@@ -189,6 +191,7 @@ export const GDocVersionSchema = new Schema(
         sender: String,
         message: String,
         displayType: String,
+        systemCustomName: String,
         bulletPoints: [String],
       },
     ],
