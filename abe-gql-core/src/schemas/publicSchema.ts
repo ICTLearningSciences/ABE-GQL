@@ -17,8 +17,6 @@ import fetchAdminGoogleDocs from "./query/fetch-admin-google-docs";
 import storePromptRun from "./mutation/store-prompt-run";
 import fetchPromptRuns from "./query/fetch-prompt-runs";
 import fetchPrompts from "./query/fetch-prompts";
-import storePrompt from "./mutation/store-prompt";
-import storePrompts from "./mutation/store-prompts";
 import configUpdate from "./mutation/config-update";
 import fetchConfig from "./query/fetch-config";
 import configUpdateByKey from "./mutation/config-update-key";
@@ -96,8 +94,6 @@ const publicMutations = {
   refreshAccessToken,
   storeGoogleDoc,
   storePromptRun,
-  storePrompt,
-  storePrompts,
   updateUserActivityState,
   storeDocTimeline,
   deleteGoogleDoc,

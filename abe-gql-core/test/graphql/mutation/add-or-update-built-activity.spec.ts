@@ -39,6 +39,7 @@ export const fullBuiltActivityQueryData = `
                               stepType
                               jumpToStepId
                               message
+                              systemCustomName
                               setStudentActivityComplete
                           }
 
@@ -49,6 +50,7 @@ export const fullBuiltActivityQueryData = `
                               message
                               saveAsIntention
                               saveResponseVariableName
+                              systemCustomName
                               disableFreeInput
                               predefinedResponses{
                                   clientId
@@ -64,16 +66,19 @@ export const fullBuiltActivityQueryData = `
                               stepId
                               stepType
                               jumpToStepId
-                              promptText
-                              responseFormat
-                              editDoc
-                              includeChatLogContext
-                              includeEssay
-                              outputDataType
-                              jsonResponseData
-                              customSystemRole
-                              webSearch
                               setStudentActivityComplete
+                              promptConfigurations{
+                                promptText
+                                responseFormat
+                                editDoc
+                                includeChatLogContext
+                                systemCustomName
+                                includeEssay
+                                outputDataType
+                                jsonResponseData
+                                customSystemRole
+                                webSearch
+                              }
                           }
 
                           ... on ConditionalActivityStepType {
@@ -198,8 +203,12 @@ describe("update built activity", () => {
           },
           {
             stepType: ActivityBuilderStepType.PROMPT,
-            promptText: "prompt 1",
-            numChatMessagesIncluded: "LAST_1",
+            promptConfigurations: [
+              {
+                promptText: "prompt 1",
+                numChatMessagesIncluded: "LAST_1",
+              },
+            ],
           },
           {
             stepType: ActivityBuilderStepType.CONDITIONAL,
@@ -239,8 +248,10 @@ describe("update built activity", () => {
 
                             ... on PromptActivityStepType{
                                 stepType
-                                promptText
-                                numChatMessagesIncluded
+                                promptConfigurations{
+                                  promptText
+                                  numChatMessagesIncluded
+                                }
                             }
 
                             ... on ConditionalActivityStepType {
@@ -286,6 +297,7 @@ describe("update built activity", () => {
             jumpToStepId: "456",
             stepId: "123",
             setStudentActivityComplete: true,
+            systemCustomName: "Ben",
           },
         ],
       },
@@ -404,6 +416,7 @@ describe("update built activity", () => {
             jumpToStepId: "456",
             stepId: "123",
             setStudentActivityComplete: true,
+            systemCustomName: "Ben",
           },
         ],
       },
@@ -444,6 +457,7 @@ describe("update built activity", () => {
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
             setStudentActivityComplete: true,
+            systemCustomName: "Ben",
           },
           {
             stepId: "456",
@@ -452,6 +466,7 @@ describe("update built activity", () => {
             message: "message 2",
             saveAsIntention: true,
             saveResponseVariableName: "save response variable name 1",
+            systemCustomName: "Ben",
             disableFreeInput: true,
             predefinedResponses: [
               {
@@ -467,17 +482,22 @@ describe("update built activity", () => {
           {
             stepId: "789",
             stepType: ActivityBuilderStepType.PROMPT,
-            promptText: "prompt 1",
             jumpToStepId: "123",
-            jsonResponseData: "stringified_json_response_data",
-            responseFormat: "response format 1",
-            editDoc: true,
-            includeChatLogContext: true,
-            includeEssay: true,
-            outputDataType: "JSON",
-            customSystemRole: "custom system role 1",
-            webSearch: true,
             setStudentActivityComplete: true,
+            promptConfigurations: [
+              {
+                jsonResponseData: "stringified_json_response_data",
+                responseFormat: "response format 1",
+                promptText: "prompt 1",
+                editDoc: true,
+                includeChatLogContext: true,
+                systemCustomName: "Ben",
+                includeEssay: true,
+                outputDataType: "JSON",
+                customSystemRole: "custom system role 1",
+                webSearch: true,
+              },
+            ],
           },
           {
             stepId: "101112",
@@ -522,6 +542,7 @@ describe("update built activity", () => {
           activity,
         },
       });
+    console.log(JSON.stringify(response.body, null, 2));
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
     expect(builtActivitesPost.length).to.equal(7);
