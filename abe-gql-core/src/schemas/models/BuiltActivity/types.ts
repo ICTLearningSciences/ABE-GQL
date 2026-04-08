@@ -52,6 +52,7 @@ export interface ActivityBuilderStep {
 export interface SystemMessageActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.SYSTEM_MESSAGE;
   message: string;
+  systemCustomName: string;
 }
 
 export enum NumericOperations {
@@ -98,6 +99,7 @@ export interface RequestUserInputActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.REQUEST_USER_INPUT;
   message: string;
   saveAsIntention: boolean;
+  systemCustomName: string;
   saveResponseVariableName: string;
   specialType: string;
   disableFreeInput: boolean;
@@ -111,11 +113,11 @@ export enum JsonResponseDataType {
   ARRAY = "array",
 }
 
-export interface PromptActivityStep extends ActivityBuilderStep {
-  stepType: ActivityBuilderStepType.PROMPT;
+export interface PromptConfiguration {
   promptText: string;
   responseFormat: string;
   includeChatLogContext: boolean;
+  systemCustomName: string;
   numChatMessagesIncluded: string;
   includeEssay: boolean;
   outputDataType: string;
@@ -123,4 +125,9 @@ export interface PromptActivityStep extends ActivityBuilderStep {
   customSystemRole: string;
   webSearch: boolean;
   editDoc: boolean;
+}
+
+export interface PromptActivityStep extends ActivityBuilderStep {
+  stepType: ActivityBuilderStepType.PROMPT;
+  promptConfigurations: PromptConfiguration[];
 }

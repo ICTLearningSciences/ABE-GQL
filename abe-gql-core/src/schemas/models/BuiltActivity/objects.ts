@@ -44,6 +44,7 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
       value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
     },
     message: { type: GraphQLString },
+    systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
@@ -58,6 +59,7 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
       value: _ActivityBuilderStepType.SYSTEM_MESSAGE,
     },
     message: { type: GraphQLString },
+    systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
   }),
 });
@@ -103,6 +105,7 @@ export const RequestUserInputActivityStepType = new GraphQLObjectType({
     },
     message: { type: GraphQLString },
     saveAsIntention: { type: GraphQLBoolean },
+    systemCustomName: { type: GraphQLString },
     saveResponseVariableName: { type: GraphQLString },
     specialType: { type: GraphQLString },
     disableFreeInput: { type: GraphQLBoolean },
@@ -123,6 +126,7 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
       },
       message: { type: GraphQLString },
       saveAsIntention: { type: GraphQLBoolean },
+      systemCustomName: { type: GraphQLString },
       saveResponseVariableName: { type: GraphQLString },
       specialType: { type: GraphQLString },
       disableFreeInput: { type: GraphQLBoolean },
@@ -132,16 +136,15 @@ export const RequestUserInputActivityStepTypeInput = new GraphQLInputObjectType(
   }
 );
 
-export const PromptActivityStepType = new GraphQLObjectType({
-  name: "PromptActivityStepType",
+export const SinglePromptConfigurationType = new GraphQLObjectType({
+  name: "SinglePromptConfigurationType",
   fields: () => ({
-    stepId: { type: GraphQLString },
-    jumpToStepId: { type: GraphQLString },
-    setStudentActivityComplete: { type: GraphQLBoolean },
-    stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
     promptText: { type: GraphQLString },
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
+
+    systemCustomName: { type: GraphQLString },
+
     numChatMessagesIncluded: { type: GraphQLString },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
@@ -149,6 +152,17 @@ export const PromptActivityStepType = new GraphQLObjectType({
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
+  }),
+});
+
+export const PromptActivityStepType = new GraphQLObjectType({
+  name: "PromptActivityStepType",
+  fields: () => ({
+    stepId: { type: GraphQLString },
+    jumpToStepId: { type: GraphQLString },
+    setStudentActivityComplete: { type: GraphQLBoolean },
+    stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
+    promptConfigurations: { type: GraphQLList(SinglePromptConfigurationType) },
   }),
 });
 
@@ -201,6 +215,23 @@ export const ConditionalActivityStepTypeInput = new GraphQLInputObjectType({
   }),
 });
 
+export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
+  name: "SinglePromptConfigurationTypeInput",
+  fields: () => ({
+    promptText: { type: GraphQLString },
+    numChatMessagesIncluded: { type: GraphQLString },
+    responseFormat: { type: GraphQLString },
+    includeChatLogContext: { type: GraphQLBoolean },
+    systemCustomName: { type: GraphQLString },
+    includeEssay: { type: GraphQLBoolean },
+    outputDataType: { type: GraphQLString },
+    jsonResponseData: { type: GraphQLString },
+    customSystemRole: { type: GraphQLString },
+    webSearch: { type: GraphQLBoolean },
+    editDoc: { type: GraphQLBoolean },
+  }),
+});
+
 export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
   name: "PromptActivityStepTypeInput",
   fields: () => ({
@@ -208,16 +239,9 @@ export const PromptActivityStepTypeInput = new GraphQLInputObjectType({
     jumpToStepId: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
     stepType: { type: GraphQLString, value: _ActivityBuilderStepType.PROMPT },
-    promptText: { type: GraphQLString },
-    numChatMessagesIncluded: { type: GraphQLString },
-    responseFormat: { type: GraphQLString },
-    includeChatLogContext: { type: GraphQLBoolean },
-    includeEssay: { type: GraphQLBoolean },
-    outputDataType: { type: GraphQLString },
-    jsonResponseData: { type: GraphQLString },
-    customSystemRole: { type: GraphQLString },
-    webSearch: { type: GraphQLBoolean },
-    editDoc: { type: GraphQLBoolean },
+    promptConfigurations: {
+      type: GraphQLList(SinglePromptConfigurationTypeInput),
+    },
   }),
 });
 
@@ -252,6 +276,7 @@ export const SystemMessageActivityStepSchema = new Schema({
   ...ActivityBuilderStepSchema.obj,
   stepType: { type: String, default: _ActivityBuilderStepType.SYSTEM_MESSAGE },
   message: { type: String },
+  systemCustomName: { type: String },
   setStudentActivityComplete: { type: Boolean },
 });
 
@@ -263,18 +288,18 @@ export const RequestUserInputActivityStepSchema = new Schema({
   },
   message: { type: String },
   saveAsIntention: { type: Boolean },
+  systemCustomName: { type: String },
   saveResponseVariableName: { type: String },
   specialType: { type: String },
   disableFreeInput: { type: Boolean },
   predefinedResponses: [PredefinedResponseSchema],
 });
 
-export const PromptActivityStepSchema = new Schema({
-  ...ActivityBuilderStepSchema.obj,
-  stepType: { type: String, default: _ActivityBuilderStepType.PROMPT },
+export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
   responseFormat: { type: String },
   includeChatLogContext: { type: Boolean },
+  systemCustomName: { type: String },
   numChatMessagesIncluded: { type: String },
   includeEssay: { type: Boolean },
   outputDataType: { type: String },
@@ -282,6 +307,12 @@ export const PromptActivityStepSchema = new Schema({
   customSystemRole: { type: String },
   webSearch: { type: Boolean },
   editDoc: { type: Boolean },
+});
+
+export const PromptActivityStepSchema = new Schema({
+  ...ActivityBuilderStepSchema.obj,
+  stepType: { type: String, default: _ActivityBuilderStepType.PROMPT },
+  promptConfigurations: [PromptConfigurationSchema],
 });
 
 // union the 3 step schemas
