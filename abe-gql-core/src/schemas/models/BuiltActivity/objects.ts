@@ -10,9 +10,29 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLInputObjectType,
+  GraphQLInt,
 } from "graphql";
 import { Schema } from "mongoose";
 import { ActivityBuilderStepType as _ActivityBuilderStepType } from "./types";
+import { ObjectType } from "../../types/object";
+
+export const RagStoreConfigurationType = new GraphQLObjectType({
+  name: "RagStoreConfigurationType",
+  fields: () => ({
+    ragQuery: { type: GraphQLString },
+    topN: { type: GraphQLInt },
+    filters: { type: ObjectType },
+  }),
+});
+
+export const RagStoreConfigurationInputType = new GraphQLInputObjectType({
+  name: "RagStoreConfigurationInputType",
+  fields: () => ({
+    ragQuery: { type: GraphQLString },
+    topN: { type: GraphQLInt },
+    filters: { type: ObjectType },
+  }),
+});
 
 export const ActivityBuilderStepType = new GraphQLObjectType({
   name: "ActivityBuilderStepType",
@@ -152,6 +172,7 @@ export const SinglePromptConfigurationType = new GraphQLObjectType({
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
+    ragConfiguration: { type: RagStoreConfigurationType },
   }),
 });
 
@@ -229,6 +250,7 @@ export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
+    ragConfiguration: { type: RagStoreConfigurationInputType },
   }),
 });
 
@@ -295,6 +317,12 @@ export const RequestUserInputActivityStepSchema = new Schema({
   predefinedResponses: [PredefinedResponseSchema],
 });
 
+export const RagStoreConfigurationSchema = new Schema({
+  ragQuery: { type: String, required: true },
+  topN: { type: Number, required: true },
+  filters: { type: Object, required: false },
+});
+
 export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
   responseFormat: { type: String },
@@ -307,6 +335,7 @@ export const PromptConfigurationSchema = new Schema({
   customSystemRole: { type: String },
   webSearch: { type: Boolean },
   editDoc: { type: Boolean },
+  ragConfiguration: { type: RagStoreConfigurationSchema },
 });
 
 export const PromptActivityStepSchema = new Schema({

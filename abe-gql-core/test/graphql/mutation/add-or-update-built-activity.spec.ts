@@ -78,6 +78,11 @@ export const fullBuiltActivityQueryData = `
                                 jsonResponseData
                                 customSystemRole
                                 webSearch
+                                ragConfiguration {
+                                  ragQuery
+                                  topN
+                                  filters
+                                }
                               }
                           }
 
@@ -496,6 +501,13 @@ describe("update built activity", () => {
                 outputDataType: "JSON",
                 customSystemRole: "custom system role 1",
                 webSearch: true,
+                ragConfiguration: {
+                  ragQuery: "rag query 1",
+                  topN: 10,
+                  filters: {
+                    rag_filter_1: "rag filter 1",
+                  },
+                },
               },
             ],
           },
@@ -542,7 +554,6 @@ describe("update built activity", () => {
           activity,
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
     expect(builtActivitesPost.length).to.equal(7);
