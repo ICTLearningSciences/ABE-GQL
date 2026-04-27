@@ -208,6 +208,8 @@ export const GDocVersionSchema = new Schema(
 pluginPagination(GDocVersionSchema);
 
 GDocVersionSchema.index({ createdAt: -1, _id: -1 });
+// Compound index for efficient DataLoader queries
+GDocVersionSchema.index({ docId: 1, createdAt: -1 });
 
 export default mongoose.model<IGDocVersion, GDocVersionModel>(
   "GoogleDocVersion",

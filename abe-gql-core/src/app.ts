@@ -25,6 +25,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 import mongoose from "mongoose";
 import privateSchema from "./schemas/privateSchema";
 import { UserRole } from "./schemas/types/types";
+import { createGoogleDocVersionLoader } from "./dataloaders/googleDocVersionLoader";
 
 // eslint-disable-next-line   @typescript-eslint/no-explicit-any
 const authorization = (req: any, res: any, next: any) => {
@@ -163,6 +164,7 @@ export function createApp(): Express {
           subdomain: getSubdomainFromRequest(req),
           userRole,
           userId,
+          googleDocVersionLoader: createGoogleDocVersionLoader(),
         },
       };
     })
