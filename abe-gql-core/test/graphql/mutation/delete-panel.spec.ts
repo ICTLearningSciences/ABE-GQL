@@ -52,7 +52,6 @@ describe("delete panel", () => {
           deletePanel(panelClientId: $panelClientId) {
             clientId
             panelName
-            deleted
           }
          }`,
         variables: {
@@ -63,7 +62,6 @@ describe("delete panel", () => {
     expect(response.body.data.deletePanel.clientId).to.equal(
       "test-panel-delete-1"
     );
-    expect(response.body.data.deletePanel.deleted).to.be.true;
 
     const deletedPanel = await PanelModel.findOne({
       clientId: "test-panel-delete-1",

@@ -51,6 +51,7 @@ describe("store built activity version", () => {
             description: "",
             displayIcon: DisplayIcons.DEFAULT,
             flowsList: [],
+            attachedPanel: null,
           },
         },
       });
@@ -64,6 +65,7 @@ describe("store built activity version", () => {
         user: "5ffdf1231ee2c62320b49e99",
         visibility: "private",
         description: "",
+        attachedPanel: null,
         displayIcon: DisplayIcons.DEFAULT,
         disabled: false,
         newDocRecommend: false,

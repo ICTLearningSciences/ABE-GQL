@@ -26,6 +26,7 @@ export const fullBuiltActivityQueryData = `
                       user
                       visibility
                       activityType
+                      attachedPanel
                       description
                       displayIcon
                       disabled
@@ -532,6 +533,7 @@ describe("update built activity", () => {
       _id: "5ffdf1231ee2c62320b49e5f",
       clientId: "123",
       activityType: "builder",
+      attachedPanel: "panel 1",
       title: "title 1",
       user: "5ffdf1231ee2c62320b49a99",
       visibility: "editable",

@@ -118,6 +118,7 @@ export const BuiltActivityType = new GraphQLObjectType({
     newDocRecommend: { type: GraphQLBoolean },
     disabled: { type: GraphQLBoolean },
     flowsList: { type: GraphQLList(StepsFlowType) },
+    attachedPanel: { type: GraphQLString },
   }),
 });
 
@@ -137,6 +138,7 @@ export const BuiltActivityInputType = new GraphQLInputObjectType({
     disabled: { type: GraphQLBoolean },
     // TODO: ensure that this allows for the other subtypes of ActivityBuilderStepType
     flowsList: { type: GraphQLList(StepsFlowInputType) },
+    attachedPanel: { type: GraphQLString },
   }),
 });
 
@@ -156,6 +158,7 @@ export const BuiltActivitySchema = new Schema(
     disabled: { type: Boolean, default: false },
     newDocRecommend: { type: Boolean, default: false },
     flowsList: [StepsFlowSchema],
+    attachedPanel: { type: String },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

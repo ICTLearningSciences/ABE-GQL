@@ -34,6 +34,7 @@ export interface ActivityBuilder extends IActivity {
   newDocRecommend?: boolean;
   disabled?: boolean;
   flowsList: FlowItem[];
+  attachedPanel: string;
 }
 
 export enum ActivityBuilderStepType {

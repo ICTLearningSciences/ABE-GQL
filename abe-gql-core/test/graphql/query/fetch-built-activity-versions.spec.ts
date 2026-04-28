@@ -71,6 +71,7 @@ describe("fetch built activity Versiopns", () => {
             user: "5ffdf1231ee2c62320b49e99",
             visibility: "private",
             activityType: "builder",
+            attachedPanel: null,
             description: "",
             displayIcon: "DEFAULT",
             disabled: null,
