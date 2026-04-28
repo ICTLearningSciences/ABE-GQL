@@ -32,8 +32,9 @@ query FetchPanelists($limit: Int, $filter: String, $filterObject: Object, $sortA
         profilePicture
         introductionMessage
         ragConfig {
-          includeRag
-          ragMetadataFilter
+          ragQuery
+          topN
+          filters
         }
       }
     }
@@ -56,8 +57,9 @@ describe("fetch panelists", () => {
       promptSegment: "Expert prompt 1",
       roleSegment: "Expert",
       ragConfig: {
-        includeRag: true,
-        ragMetadataFilter: { topic: "science" },
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
       },
     });
 
@@ -67,6 +69,11 @@ describe("fetch panelists", () => {
       panelistDescription: "Second expert",
       promptSegment: "Expert prompt 2",
       roleSegment: "Consultant",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
   });
 
@@ -103,8 +110,15 @@ describe("fetch panelists", () => {
     expect(
       response.body.data.fetchPanelists.edges[0].node.panelistName
     ).to.equal("Expert 1");
-    expect(response.body.data.fetchPanelists.edges[0].node.ragConfig.includeRag)
-      .to.be.true;
+    expect(
+      response.body.data.fetchPanelists.edges[0].node.ragConfig.ragQuery
+    ).to.equal("What is the capital of France?");
+    expect(
+      response.body.data.fetchPanelists.edges[0].node.ragConfig.topN
+    ).to.equal(1);
+    expect(
+      response.body.data.fetchPanelists.edges[0].node.ragConfig.filters.topic
+    ).to.equal("science");
   });
 
   it("does not return deleted panelists", async () => {
@@ -112,6 +126,11 @@ describe("fetch panelists", () => {
       clientId: "test-panelist-deleted",
       panelistName: "Deleted Expert",
       deleted: true,
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
 
     const response = await request(app)

@@ -9,10 +9,8 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLList,
-  GraphQLBoolean,
   GraphQLInputObjectType,
 } from "graphql";
-import { ObjectType } from "../types/object";
 import {
   PaginateOptions,
   PaginateQuery,
@@ -20,35 +18,13 @@ import {
   pluginPagination,
 } from "./Paginatation";
 
-export interface RagConfig {
-  includeRag: boolean;
-  ragMetadataFilter: Record<string, string | string[]>;
-}
-
 export interface Panel {
   clientId: string;
   panelName: string;
   panelDescription: string;
   panelists: string[];
-  ragConfig: RagConfig;
   deleted: boolean;
 }
-
-const RagConfigObjectType = new GraphQLObjectType({
-  name: "PanelRagConfigType",
-  fields: () => ({
-    includeRag: { type: GraphQLBoolean },
-    ragMetadataFilter: { type: ObjectType },
-  }),
-});
-
-const RagConfigInputType = new GraphQLInputObjectType({
-  name: "PanelRagConfigInputType",
-  fields: () => ({
-    includeRag: { type: GraphQLBoolean },
-    ragMetadataFilter: { type: ObjectType },
-  }),
-});
 
 export const PanelType = new GraphQLObjectType({
   name: "PanelType",
@@ -57,7 +33,6 @@ export const PanelType = new GraphQLObjectType({
     panelName: { type: GraphQLString },
     panelDescription: { type: GraphQLString },
     panelists: { type: new GraphQLList(GraphQLString) },
-    ragConfig: { type: RagConfigObjectType },
   }),
 });
 
@@ -68,17 +43,8 @@ export const PanelInputType = new GraphQLInputObjectType({
     panelName: { type: GraphQLString },
     panelDescription: { type: GraphQLString },
     panelists: { type: new GraphQLList(GraphQLString) },
-    ragConfig: { type: RagConfigInputType },
   }),
 });
-
-const RagConfigSchema = new Schema(
-  {
-    includeRag: { type: Boolean, default: false },
-    ragMetadataFilter: { type: Schema.Types.Mixed, default: {} },
-  },
-  { _id: false }
-);
 
 export const PanelSchema = new Schema(
   {
@@ -86,7 +52,6 @@ export const PanelSchema = new Schema(
     panelName: { type: String },
     panelDescription: { type: String },
     panelists: [{ type: String }],
-    ragConfig: { type: RagConfigSchema, default: () => ({}) },
     deleted: { type: Boolean, default: false },
   },
   {
@@ -105,5 +70,10 @@ export interface PanelModel extends Model<Panel> {
 }
 
 pluginPagination(PanelSchema);
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+PanelSchema.pre(/^find/, function (this: any) {
+  this.where({ deleted: { $ne: true } });
+});
 
 export default mongoose.model<Panel, PanelModel>("Panel", PanelSchema);

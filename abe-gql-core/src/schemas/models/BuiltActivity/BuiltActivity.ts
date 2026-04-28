@@ -158,7 +158,7 @@ export const BuiltActivitySchema = new Schema(
     disabled: { type: Boolean, default: false },
     newDocRecommend: { type: Boolean, default: false },
     flowsList: [StepsFlowSchema],
-    attachedPanel: { type: String },
+    attachedPanel: { type: String, default: "" },
   },
   { timestamps: true, collation: { locale: "en", strength: 2 } }
 );

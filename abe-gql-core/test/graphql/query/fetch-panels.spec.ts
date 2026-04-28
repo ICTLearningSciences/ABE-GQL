@@ -29,10 +29,6 @@ query FetchPanels($limit: Int, $filter: String, $filterObject: Object, $sortAsce
         panelName
         panelDescription
         panelists
-        ragConfig {
-          includeRag
-          ragMetadataFilter
-        }
       }
     }
   }
@@ -50,11 +46,21 @@ describe("fetch panels", () => {
     const panelist1 = await PanelistModel.create({
       clientId: "panelist-for-panel-1",
       panelistName: "Expert A",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
 
     const panelist2 = await PanelistModel.create({
       clientId: "panelist-for-panel-2",
       panelistName: "Expert B",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
 
     await PanelModel.create({
@@ -62,10 +68,6 @@ describe("fetch panels", () => {
       panelName: "Panel 1",
       panelDescription: "First panel",
       panelists: [panelist1._id],
-      ragConfig: {
-        includeRag: true,
-        ragMetadataFilter: { topic: "AI" },
-      },
     });
 
     await PanelModel.create({
@@ -109,8 +111,6 @@ describe("fetch panels", () => {
     expect(response.body.data.fetchPanels.edges[0].node.panelName).to.equal(
       "Panel 1"
     );
-    expect(response.body.data.fetchPanels.edges[0].node.ragConfig.includeRag).to
-      .be.true;
     expect(
       response.body.data.fetchPanels.edges[0].node.panelists.length
     ).to.equal(1);

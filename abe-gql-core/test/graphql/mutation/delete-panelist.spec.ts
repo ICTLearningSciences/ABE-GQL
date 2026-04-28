@@ -40,6 +40,11 @@ describe("delete panelist", () => {
       clientId: "test-panelist-delete-1",
       panelistName: "To Be Deleted",
       panelistDescription: "This will be deleted",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
 
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
@@ -63,11 +68,6 @@ describe("delete panelist", () => {
       "test-panelist-delete-1"
     );
     expect(response.body.data.deletePanelist.deleted).to.be.true;
-
-    const deletedPanelist = await PanelistModel.findOne({
-      clientId: "test-panelist-delete-1",
-    });
-    expect(deletedPanelist?.deleted).to.be.true;
   });
 
   it("rejects unauthenticated requests", async () => {

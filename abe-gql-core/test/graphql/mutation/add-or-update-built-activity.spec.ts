@@ -42,6 +42,7 @@ export const fullBuiltActivityQueryData = `
                               message
                               systemCustomName
                               setStudentActivityComplete
+                              sendFromPanelists
                           }
 
                           ... on RequestUserInputActivityStepType {
@@ -201,6 +202,7 @@ describe("update built activity", () => {
           {
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
+            sendFromPanelists: true,
           },
           {
             stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
@@ -213,6 +215,7 @@ describe("update built activity", () => {
               {
                 promptText: "prompt 1",
                 numChatMessagesIncluded: "LAST_1",
+                runForPanelists: true,
               },
             ],
           },
@@ -244,6 +247,7 @@ describe("update built activity", () => {
                             ... on SystemMessageActivityStepType {
                                 stepType
                                 message
+                                sendFromPanelists
                             }
 
                             ... on RequestUserInputActivityStepType {
@@ -257,6 +261,7 @@ describe("update built activity", () => {
                                 promptConfigurations{
                                   promptText
                                   numChatMessagesIncluded
+                                  runForPanelists
                                 }
                             }
 
@@ -304,6 +309,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelists: true,
           },
         ],
       },
@@ -423,6 +429,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelists: true,
           },
         ],
       },
@@ -464,6 +471,7 @@ describe("update built activity", () => {
             message: "message 1",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelists: true,
           },
           {
             stepId: "456",

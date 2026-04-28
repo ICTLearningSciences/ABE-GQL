@@ -51,8 +51,9 @@ describe("add or update panelist", () => {
             profilePicture
             introductionMessage
             ragConfig {
-              includeRag
-              ragMetadataFilter
+              ragQuery
+              topN
+              filters
             }
           }
          }`,
@@ -66,8 +67,9 @@ describe("add or update panelist", () => {
             profilePicture: "https://example.com/pic.jpg",
             introductionMessage: "Hello, I'm an expert",
             ragConfig: {
-              includeRag: true,
-              ragMetadataFilter: { topic: "science" },
+              ragQuery: "What is the capital of France?",
+              topN: 1,
+              filters: { topic: "science" },
             },
           },
         },
@@ -79,8 +81,13 @@ describe("add or update panelist", () => {
     expect(response.body.data.addOrUpdatePanelist.panelistName).to.equal(
       "Expert Panelist"
     );
-    expect(response.body.data.addOrUpdatePanelist.ragConfig.includeRag).to.be
-      .true;
+    expect(response.body.data.addOrUpdatePanelist.ragConfig.ragQuery).to.equal(
+      "What is the capital of France?"
+    );
+    expect(response.body.data.addOrUpdatePanelist.ragConfig.topN).to.equal(1);
+    expect(
+      response.body.data.addOrUpdatePanelist.ragConfig.filters.topic
+    ).to.equal("science");
   });
 
   it("can update an existing panelist", async () => {
@@ -90,6 +97,11 @@ describe("add or update panelist", () => {
       clientId: "test-panelist-2",
       panelistName: "Original Name",
       panelistDescription: "Original Description",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
 
     const response = await request(app)
@@ -107,6 +119,11 @@ describe("add or update panelist", () => {
           panelist: {
             clientId: "test-panelist-2",
             panelistName: "Updated Name",
+            ragConfig: {
+              ragQuery: "What is the capital of France?",
+              topN: 1,
+              filters: { topic: "science" },
+            },
           },
         },
       });

@@ -40,10 +40,20 @@ describe("add or update panel", () => {
     const panelist1 = await PanelistModel.create({
       clientId: "panelist-1",
       panelistName: "Expert 1",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
     const panelist2 = await PanelistModel.create({
       clientId: "panelist-2",
       panelistName: "Expert 2",
+      ragConfig: {
+        ragQuery: "What is the capital of France?",
+        topN: 1,
+        filters: { topic: "science" },
+      },
     });
 
     const token = await getToken("5ffdf1231ee2c62320b49e99", UserRole.USER);
@@ -57,10 +67,6 @@ describe("add or update panel", () => {
             panelName
             panelDescription
             panelists
-            ragConfig {
-              includeRag
-              ragMetadataFilter
-            }
           }
          }`,
         variables: {
@@ -69,10 +75,6 @@ describe("add or update panel", () => {
             panelName: "Expert Panel",
             panelDescription: "A panel of experts",
             panelists: [panelist1._id.toString(), panelist2._id.toString()],
-            ragConfig: {
-              includeRag: true,
-              ragMetadataFilter: { category: "technology" },
-            },
           },
         },
       });
@@ -84,7 +86,6 @@ describe("add or update panel", () => {
       "Expert Panel"
     );
     expect(response.body.data.addOrUpdatePanel.panelists.length).to.equal(2);
-    expect(response.body.data.addOrUpdatePanel.ragConfig.includeRag).to.be.true;
   });
 
   it("can update an existing panel", async () => {

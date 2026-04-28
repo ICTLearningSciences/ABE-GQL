@@ -11,11 +11,18 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import findAll from "./find-all";
-import PanelModel, { PanelType } from "../models/Panel";
+import PanelModel, { Panel, PanelType } from "../models/Panel";
+import { PaginatedResolveResult } from "schemas/models/Paginatation";
 
 export const fetchPanels = findAll({
   nodeType: PanelType,
   model: PanelModel,
+  filterInvalid: async (result: PaginatedResolveResult<Panel>) => {
+    return {
+      ...result,
+      results: result.results.filter((panel) => !panel.deleted),
+    };
+  },
 });
 
 export default fetchPanels;

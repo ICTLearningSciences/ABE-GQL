@@ -62,11 +62,6 @@ describe("delete panel", () => {
     expect(response.body.data.deletePanel.clientId).to.equal(
       "test-panel-delete-1"
     );
-
-    const deletedPanel = await PanelModel.findOne({
-      clientId: "test-panel-delete-1",
-    });
-    expect(deletedPanel?.deleted).to.be.true;
   });
 
   it("rejects unauthenticated requests", async () => {

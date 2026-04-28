@@ -66,6 +66,7 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
     message: { type: GraphQLString },
     systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
+    sendFromPanelists: { type: GraphQLBoolean },
   }),
 });
 
@@ -81,6 +82,7 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
     message: { type: GraphQLString },
     systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
+    sendFromPanelists: { type: GraphQLBoolean },
   }),
 });
 
@@ -166,6 +168,7 @@ export const SinglePromptConfigurationType = new GraphQLObjectType({
     systemCustomName: { type: GraphQLString },
 
     numChatMessagesIncluded: { type: GraphQLString },
+    runForPanelists: { type: GraphQLBoolean },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
@@ -244,6 +247,7 @@ export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     systemCustomName: { type: GraphQLString },
+    runForPanelists: { type: GraphQLBoolean },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
@@ -300,6 +304,7 @@ export const SystemMessageActivityStepSchema = new Schema({
   message: { type: String },
   systemCustomName: { type: String },
   setStudentActivityComplete: { type: Boolean },
+  sendFromPanelists: { type: Boolean, default: false },
 });
 
 export const RequestUserInputActivityStepSchema = new Schema({
@@ -325,6 +330,7 @@ export const RagStoreConfigurationSchema = new Schema({
 
 export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
+  runForPanelists: { type: Boolean },
   responseFormat: { type: String },
   includeChatLogContext: { type: Boolean },
   systemCustomName: { type: String },

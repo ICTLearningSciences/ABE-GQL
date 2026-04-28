@@ -18,11 +18,12 @@ import {
   PaginatedResolveResult,
   pluginPagination,
 } from "./Paginatation";
-
-export interface RagConfig {
-  includeRag: boolean;
-  ragMetadataFilter: Record<string, string | string[]>;
-}
+import { RagStoreConfiguration } from "./BuiltActivity/types";
+import {
+  RagStoreConfigurationInputType,
+  RagStoreConfigurationSchema,
+  RagStoreConfigurationType,
+} from "./BuiltActivity/objects";
 
 export interface Panelist {
   clientId: string;
@@ -32,25 +33,9 @@ export interface Panelist {
   panelistName: string;
   panelistDescription: string;
   introductionMessage: string;
-  ragConfig: RagConfig;
+  ragConfig: RagStoreConfiguration;
   deleted: boolean;
 }
-
-const RagConfigObjectType = new GraphQLObjectType({
-  name: "RagConfigType",
-  fields: () => ({
-    includeRag: { type: GraphQLBoolean },
-    ragMetadataFilter: { type: ObjectType },
-  }),
-});
-
-const RagConfigInputType = new GraphQLInputObjectType({
-  name: "RagConfigInputType",
-  fields: () => ({
-    includeRag: { type: GraphQLBoolean },
-    ragMetadataFilter: { type: ObjectType },
-  }),
-});
 
 export const PanelistType = new GraphQLObjectType({
   name: "PanelistType",
@@ -62,7 +47,7 @@ export const PanelistType = new GraphQLObjectType({
     panelistName: { type: GraphQLString },
     panelistDescription: { type: GraphQLString },
     introductionMessage: { type: GraphQLString },
-    ragConfig: { type: RagConfigObjectType },
+    ragConfig: { type: RagStoreConfigurationType },
     deleted: { type: GraphQLBoolean },
   }),
 });
@@ -77,17 +62,9 @@ export const PanelistInputType = new GraphQLInputObjectType({
     panelistName: { type: GraphQLString },
     panelistDescription: { type: GraphQLString },
     introductionMessage: { type: GraphQLString },
-    ragConfig: { type: RagConfigInputType },
+    ragConfig: { type: RagStoreConfigurationInputType },
   }),
 });
-
-const RagConfigSchema = new Schema(
-  {
-    includeRag: { type: Boolean, default: false },
-    ragMetadataFilter: { type: Schema.Types.Mixed, default: {} },
-  },
-  { _id: false }
-);
 
 export const PanelistSchema = new Schema(
   {
@@ -98,7 +75,7 @@ export const PanelistSchema = new Schema(
     panelistName: { type: String },
     panelistDescription: { type: String },
     introductionMessage: { type: String },
-    ragConfig: { type: RagConfigSchema, default: () => ({}) },
+    ragConfig: { type: RagStoreConfigurationSchema, required: false },
     deleted: { type: Boolean, default: false },
   },
   {
@@ -117,6 +94,11 @@ export interface PanelistModel extends Model<Panelist> {
 }
 
 pluginPagination(PanelistSchema);
+
+// eslint-disable-next-line   @typescript-eslint/no-explicit-any
+PanelistSchema.pre(/^find/, function (this: any) {
+  this.where({ deleted: { $ne: true } });
+});
 
 export default mongoose.model<Panelist, PanelistModel>(
   "Panelist",

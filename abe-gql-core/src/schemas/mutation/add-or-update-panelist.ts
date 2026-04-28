@@ -40,10 +40,8 @@ export const addOrUpdatePanelist = {
       const updateData: Partial<Panelist> = {};
       Object.keys(panelist).forEach((key) => {
         const value = panelist[key as keyof Panelist];
-        if (value !== undefined && value !== null) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (updateData as any)[key] = value;
-        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (updateData as any)[key] = value;
       });
 
       const updatedPanelist = await PanelistModel.findOneAndUpdate(
