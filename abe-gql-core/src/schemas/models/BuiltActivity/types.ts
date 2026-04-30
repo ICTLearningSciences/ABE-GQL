@@ -54,7 +54,7 @@ export interface SystemMessageActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.SYSTEM_MESSAGE;
   message: string;
   systemCustomName: string;
-  sendFromPanelists: boolean;
+  sendFromPanelistClientIds: string[];
 }
 
 export enum NumericOperations {
@@ -127,7 +127,7 @@ export interface PromptConfiguration {
   includeChatLogContext: boolean;
   systemCustomName: string;
   numChatMessagesIncluded: string;
-  runForPanelists: boolean;
+  runForPanelistClientIds: string[];
   includeEssay: boolean;
   outputDataType: string;
   jsonResponseData?: string;

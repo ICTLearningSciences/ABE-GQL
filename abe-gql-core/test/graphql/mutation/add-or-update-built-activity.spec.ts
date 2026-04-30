@@ -42,7 +42,7 @@ export const fullBuiltActivityQueryData = `
                               message
                               systemCustomName
                               setStudentActivityComplete
-                              sendFromPanelists
+                              sendFromPanelistClientIds
                           }
 
                           ... on RequestUserInputActivityStepType {
@@ -202,7 +202,7 @@ describe("update built activity", () => {
           {
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
-            sendFromPanelists: true,
+            sendFromPanelistClientIds: ["panelist-1"],
           },
           {
             stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
@@ -215,7 +215,7 @@ describe("update built activity", () => {
               {
                 promptText: "prompt 1",
                 numChatMessagesIncluded: "LAST_1",
-                runForPanelists: true,
+                runForPanelistClientIds: ["panelist-1"],
               },
             ],
           },
@@ -247,7 +247,7 @@ describe("update built activity", () => {
                             ... on SystemMessageActivityStepType {
                                 stepType
                                 message
-                                sendFromPanelists
+                                sendFromPanelistClientIds
                             }
 
                             ... on RequestUserInputActivityStepType {
@@ -261,7 +261,7 @@ describe("update built activity", () => {
                                 promptConfigurations{
                                   promptText
                                   numChatMessagesIncluded
-                                  runForPanelists
+                                  runForPanelistClientIds
                                 }
                             }
 
@@ -309,7 +309,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
-            sendFromPanelists: true,
+            sendFromPanelistClientIds: ["panelist-1"],
           },
         ],
       },
@@ -429,7 +429,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
-            sendFromPanelists: true,
+            sendFromPanelistClientIds: ["panelist-1"],
           },
         ],
       },
@@ -471,7 +471,7 @@ describe("update built activity", () => {
             message: "message 1",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
-            sendFromPanelists: true,
+            sendFromPanelistClientIds: ["panelist-1"],
           },
           {
             stepId: "456",

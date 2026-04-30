@@ -66,7 +66,7 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
     message: { type: GraphQLString },
     systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
-    sendFromPanelists: { type: GraphQLBoolean },
+    sendFromPanelistClientIds: { type: GraphQLList(GraphQLString) },
   }),
 });
 
@@ -82,7 +82,7 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
     message: { type: GraphQLString },
     systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
-    sendFromPanelists: { type: GraphQLBoolean },
+    sendFromPanelistClientIds: { type: GraphQLList(GraphQLString) },
   }),
 });
 
@@ -168,7 +168,7 @@ export const SinglePromptConfigurationType = new GraphQLObjectType({
     systemCustomName: { type: GraphQLString },
 
     numChatMessagesIncluded: { type: GraphQLString },
-    runForPanelists: { type: GraphQLBoolean },
+    runForPanelistClientIds: { type: GraphQLList(GraphQLString) },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
@@ -247,7 +247,7 @@ export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     systemCustomName: { type: GraphQLString },
-    runForPanelists: { type: GraphQLBoolean },
+    runForPanelistClientIds: { type: GraphQLList(GraphQLString) },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
@@ -304,7 +304,7 @@ export const SystemMessageActivityStepSchema = new Schema({
   message: { type: String },
   systemCustomName: { type: String },
   setStudentActivityComplete: { type: Boolean },
-  sendFromPanelists: { type: Boolean, default: false },
+  sendFromPanelistClientIds: { type: [String], default: [] },
 });
 
 export const RequestUserInputActivityStepSchema = new Schema({
@@ -330,7 +330,7 @@ export const RagStoreConfigurationSchema = new Schema({
 
 export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
-  runForPanelists: { type: Boolean },
+  runForPanelistClientIds: { type: [String] },
   responseFormat: { type: String },
   includeChatLogContext: { type: Boolean },
   systemCustomName: { type: String },
