@@ -113,6 +113,12 @@ export enum JsonResponseDataType {
   ARRAY = "array",
 }
 
+export interface RagStoreConfiguration {
+  ragQuery: string;
+  topN: number;
+  filters?: Record<string, string | string[]>;
+}
+
 export interface PromptConfiguration {
   promptText: string;
   responseFormat: string;
@@ -125,6 +131,7 @@ export interface PromptConfiguration {
   customSystemRole: string;
   webSearch: boolean;
   editDoc: boolean;
+  ragConfiguration?: RagStoreConfiguration;
 }
 
 export interface PromptActivityStep extends ActivityBuilderStep {
