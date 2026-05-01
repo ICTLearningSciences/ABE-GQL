@@ -34,6 +34,7 @@ export interface ActivityBuilder extends IActivity {
   newDocRecommend?: boolean;
   disabled?: boolean;
   flowsList: FlowItem[];
+  attachedPanel: string;
 }
 
 export enum ActivityBuilderStepType {
@@ -53,6 +54,7 @@ export interface SystemMessageActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.SYSTEM_MESSAGE;
   message: string;
   systemCustomName: string;
+  sendFromPanelistClientIds: string[];
 }
 
 export enum NumericOperations {
@@ -125,6 +127,7 @@ export interface PromptConfiguration {
   includeChatLogContext: boolean;
   systemCustomName: string;
   numChatMessagesIncluded: string;
+  runForPanelistClientIds: string[];
   includeEssay: boolean;
   outputDataType: string;
   jsonResponseData?: string;

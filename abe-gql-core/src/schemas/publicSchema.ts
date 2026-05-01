@@ -59,6 +59,12 @@ import modifyStudentBanInSection from "./mutation/ban-student-from-section";
 import findInstructorsForCourse from "./query/find-instructors-for-course";
 import findAllGoogleDocs from "./query/find-all-google-docs";
 import gradeStudentAssignment from "./mutation/grade-student-assignment";
+import addOrUpdatePanelist from "./mutation/add-or-update-panelist";
+import deletePanelist from "./mutation/delete-panelist";
+import fetchPanelists from "./query/fetch-panelists";
+import addOrUpdatePanel from "./mutation/add-or-update-panel";
+import deletePanel from "./mutation/delete-panel";
+import fetchPanels from "./query/fetch-panels";
 import { ActivityBuilder } from "./models/BuiltActivity/types";
 const publicQueries = {
   fetchGoogleDocVersions,
@@ -82,6 +88,8 @@ const publicQueries = {
   fetchInstructors,
   findInstructorsForCourse,
   findAllGoogleDocs,
+  fetchPanelists,
+  fetchPanels,
 };
 
 const getAuthenticatedQueries = () => {
@@ -112,6 +120,10 @@ const publicMutations = {
   modifyCourseShareStatus,
   modifyStudentBanInSection,
   gradeStudentAssignment,
+  addOrUpdatePanelist,
+  deletePanelist,
+  addOrUpdatePanel,
+  deletePanel,
 };
 
 const contentManagerMutations = (userRole: UserRole, userId: string) => {

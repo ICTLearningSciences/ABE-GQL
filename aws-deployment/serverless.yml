@@ -106,7 +106,7 @@ provider:
     COGNITO_CLIENT_ID: ${ssm:/shared/cognito-client-id, ''}
 functions:
   graphql:
-    timeout: 20
+    timeout: 30
     handler: src/lambda.handler
     events:
       - http:

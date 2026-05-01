@@ -14,7 +14,7 @@ import {
 } from "graphql";
 import { DateType } from "../types/date";
 import { User } from "./User";
-import GoogleDocVersionsModel, {
+import {
   IIntention,
   IntentionInputType,
   IntentionObjectType,
@@ -68,28 +68,31 @@ export const GoogleDocType = new GraphQLObjectType({
     service: { type: GraphQLString },
     title: {
       type: GraphQLString,
-      resolve: async (doc: GoogleDoc) => {
-        const mostRecentVersionWithTitle = await GoogleDocVersionsModel.findOne(
-          {
-            docId: doc.googleDocId,
-            title: { $exists: true, $ne: "" },
-          },
-          {},
-          { sort: { createdAt: -1 } }
+      resolve: async (doc: GoogleDoc, _args: any, context: any) => {
+        console.log(
+          `[Resolver] title for docId: ${
+            doc.googleDocId
+          }, has loader: ${!!context?.googleDocVersionLoader}`
         );
-        return mostRecentVersionWithTitle?.title || doc.title || "";
+        const versionData = await context.googleDocVersionLoader.load(
+          doc.googleDocId
+        );
+        return versionData?.mostRecentWithTitle?.title || doc.title || "";
       },
     },
     createdAt: { type: DateType },
     updatedAt: {
       type: DateType,
-      resolve: async (doc: GoogleDoc) => {
-        const mostRecentVersion = await GoogleDocVersionsModel.findOne(
-          { docId: doc.googleDocId },
-          {},
-          { sort: { createdAt: -1 } }
+      resolve: async (doc: GoogleDoc, _args: any, context: any) => {
+        console.log(
+          `[Resolver] updatedAt for docId: ${
+            doc.googleDocId
+          }, has loader: ${!!context?.googleDocVersionLoader}`
         );
-        return mostRecentVersion?.createdAt || doc.createdAt || "";
+        const versionData = await context.googleDocVersionLoader.load(
+          doc.googleDocId
+        );
+        return versionData?.mostRecent?.createdAt || doc.createdAt || "";
       },
     },
     userClassroomCode: { type: GraphQLString },

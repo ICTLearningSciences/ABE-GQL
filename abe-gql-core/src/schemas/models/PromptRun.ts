@@ -55,6 +55,7 @@ export interface AiPromptStep {
   systemRole?: string;
   includeChatLogContext?: boolean;
   numChatMessagesIncluded?: NumChatMessagesIncluded;
+  runForPanelistClientIds?: string[];
   jsonValidation?: string;
   responseFormat?: string;
   webSearch?: boolean;
@@ -115,6 +116,7 @@ export const AiPromptStepType = new GraphQLObjectType({
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
     numChatMessagesIncluded: { type: GraphQLString },
+    runForPanelistClientIds: { type: GraphQLList(GraphQLString) },
     responseFormat: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
@@ -132,6 +134,7 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
     includeChatLogContext: { type: GraphQLBoolean },
     jsonValidation: { type: GraphQLString },
     numChatMessagesIncluded: { type: GraphQLString },
+    runForPanelistClientIds: { type: GraphQLList(GraphQLString) },
     responseFormat: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
@@ -183,6 +186,7 @@ export const AiPromptStepSchema = new Schema({
     required: false,
     default: NumChatMessagesIncluded.ALL,
   },
+  runForPanelistClientIds: { type: [String], required: false, default: [] },
   responseFormat: { type: String, required: false, default: "" },
   webSearch: { type: Boolean, required: false, default: false },
   editDoc: { type: Boolean, required: false, default: false },
