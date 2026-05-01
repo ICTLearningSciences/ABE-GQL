@@ -26,6 +26,7 @@ export const fullBuiltActivityQueryData = `
                       user
                       visibility
                       activityType
+                      attachedPanel
                       description
                       displayIcon
                       disabled
@@ -41,6 +42,7 @@ export const fullBuiltActivityQueryData = `
                               message
                               systemCustomName
                               setStudentActivityComplete
+                              sendFromPanelistClientIds
                           }
 
                           ... on RequestUserInputActivityStepType {
@@ -200,6 +202,7 @@ describe("update built activity", () => {
           {
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
           {
             stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
@@ -212,6 +215,7 @@ describe("update built activity", () => {
               {
                 promptText: "prompt 1",
                 numChatMessagesIncluded: "LAST_1",
+                runForPanelistClientIds: ["panelist-1"],
               },
             ],
           },
@@ -243,6 +247,7 @@ describe("update built activity", () => {
                             ... on SystemMessageActivityStepType {
                                 stepType
                                 message
+                                sendFromPanelistClientIds
                             }
 
                             ... on RequestUserInputActivityStepType {
@@ -256,6 +261,7 @@ describe("update built activity", () => {
                                 promptConfigurations{
                                   promptText
                                   numChatMessagesIncluded
+                                  runForPanelistClientIds
                                 }
                             }
 
@@ -303,6 +309,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
         ],
       },
@@ -422,6 +429,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
         ],
       },
@@ -463,6 +471,7 @@ describe("update built activity", () => {
             message: "message 1",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
           {
             stepId: "456",
@@ -532,6 +541,7 @@ describe("update built activity", () => {
       _id: "5ffdf1231ee2c62320b49e5f",
       clientId: "123",
       activityType: "builder",
+      attachedPanel: "panel 1",
       title: "title 1",
       user: "5ffdf1231ee2c62320b49a99",
       visibility: "editable",
