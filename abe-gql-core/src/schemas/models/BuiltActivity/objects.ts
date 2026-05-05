@@ -13,7 +13,10 @@ import {
   GraphQLInt,
 } from "graphql";
 import { Schema } from "mongoose";
-import { ActivityBuilderStepType as _ActivityBuilderStepType } from "./types";
+import {
+  ActivityBuilderStepType as _ActivityBuilderStepType,
+  ButtonActionTypeEnum,
+} from "./types";
 import { ObjectType } from "../../types/object";
 
 export const RagStoreConfigurationType = new GraphQLObjectType({
@@ -86,6 +89,14 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
   }),
 });
 
+export const ButtonActionType = new GraphQLObjectType({
+  name: "ButtonActionType",
+  fields: () => ({
+    buttonActionType: { type: GraphQLString },
+    buttonActionValue: { type: GraphQLList(GraphQLString) },
+  }),
+});
+
 export const PredefinedResponseType = new GraphQLObjectType({
   name: "PredefinedResponseType",
   fields: () => ({
@@ -94,7 +105,21 @@ export const PredefinedResponseType = new GraphQLObjectType({
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
     responseWeight: { type: GraphQLString },
+    buttonAction: { type: ButtonActionType },
   }),
+});
+
+export const ButtonActionTypeInput = new GraphQLInputObjectType({
+  name: "ButtonActionTypeInput",
+  fields: () => ({
+    buttonActionType: { type: GraphQLString },
+    buttonActionValue: { type: GraphQLList(GraphQLString) },
+  }),
+});
+
+export const ButtonActionSchema = new Schema({
+  buttonActionType: { type: String, enum: ButtonActionTypeEnum },
+  buttonActionValue: { type: [String] },
 });
 
 export const PredefinedResponseSchema = new Schema({
@@ -103,6 +128,7 @@ export const PredefinedResponseSchema = new Schema({
   isArray: { type: Boolean },
   jumpToStepId: { type: String, require: false },
   responseWeight: { type: String, default: "0" },
+  buttonAction: { type: ButtonActionSchema },
 });
 
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
@@ -113,6 +139,7 @@ export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
     responseWeight: { type: GraphQLString },
+    buttonAction: { type: ButtonActionTypeInput },
   }),
 });
 
