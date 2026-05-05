@@ -14,6 +14,7 @@ import request from "supertest";
 import {
   ActivityBuilder,
   ActivityBuilderStepType,
+  ButtonActionTypeEnum,
 } from "../../../src/schemas/models/BuiltActivity/types";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
@@ -60,6 +61,10 @@ export const fullBuiltActivityQueryData = `
                                   isArray
                                   jumpToStepId
                                   responseWeight
+                                  buttonAction{
+                                    buttonActionType
+                                    buttonActionValue
+                                  }
                               }
                               setStudentActivityComplete
                           }
@@ -489,6 +494,10 @@ describe("update built activity", () => {
                 isArray: false,
                 jumpToStepId: "jump to step id 1",
                 responseWeight: "1",
+                buttonAction: {
+                  buttonActionType: ButtonActionTypeEnum.FILTER_TO_PANELIST,
+                  buttonActionValue: "panelist-1",
+                },
               },
             ],
             setStudentActivityComplete: true,
