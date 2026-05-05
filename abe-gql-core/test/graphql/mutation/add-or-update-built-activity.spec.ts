@@ -496,7 +496,7 @@ describe("update built activity", () => {
                 responseWeight: "1",
                 buttonAction: {
                   buttonActionType: ButtonActionTypeEnum.FILTER_TO_PANELIST,
-                  buttonActionValue: "panelist-1",
+                  buttonActionValue: ["panelist-1"],
                 },
               },
             ],

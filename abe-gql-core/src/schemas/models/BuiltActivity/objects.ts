@@ -93,7 +93,7 @@ export const ButtonActionType = new GraphQLObjectType({
   name: "ButtonActionType",
   fields: () => ({
     buttonActionType: { type: GraphQLString },
-    buttonActionValue: { type: GraphQLString },
+    buttonActionValue: { type: GraphQLList(GraphQLString) },
   }),
 });
 
@@ -113,13 +113,13 @@ export const ButtonActionTypeInput = new GraphQLInputObjectType({
   name: "ButtonActionTypeInput",
   fields: () => ({
     buttonActionType: { type: GraphQLString },
-    buttonActionValue: { type: GraphQLString },
+    buttonActionValue: { type: GraphQLList(GraphQLString) },
   }),
 });
 
 export const ButtonActionSchema = new Schema({
   buttonActionType: { type: String, enum: ButtonActionTypeEnum },
-  buttonActionValue: { type: String },
+  buttonActionValue: { type: [String] },
 });
 
 export const PredefinedResponseSchema = new Schema({

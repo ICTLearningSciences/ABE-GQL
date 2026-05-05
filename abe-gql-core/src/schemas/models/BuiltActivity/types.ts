@@ -95,7 +95,7 @@ export enum ButtonActionTypeEnum {
 
 export interface ButtonAction {
   buttonActionType: ButtonActionTypeEnum;
-  buttonActionValue: string;
+  buttonActionValue: string[];
 }
 
 // RequestUserInput
