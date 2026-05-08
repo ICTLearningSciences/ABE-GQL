@@ -10,9 +10,32 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLInputObjectType,
+  GraphQLInt,
 } from "graphql";
 import { Schema } from "mongoose";
-import { ActivityBuilderStepType as _ActivityBuilderStepType } from "./types";
+import {
+  ActivityBuilderStepType as _ActivityBuilderStepType,
+  ButtonActionTypeEnum,
+} from "./types";
+import { ObjectType } from "../../types/object";
+
+export const RagStoreConfigurationType = new GraphQLObjectType({
+  name: "RagStoreConfigurationType",
+  fields: () => ({
+    ragQuery: { type: GraphQLString },
+    topN: { type: GraphQLInt },
+    filters: { type: ObjectType },
+  }),
+});
+
+export const RagStoreConfigurationInputType = new GraphQLInputObjectType({
+  name: "RagStoreConfigurationInputType",
+  fields: () => ({
+    ragQuery: { type: GraphQLString },
+    topN: { type: GraphQLInt },
+    filters: { type: ObjectType },
+  }),
+});
 
 export const ActivityBuilderStepType = new GraphQLObjectType({
   name: "ActivityBuilderStepType",
@@ -46,6 +69,7 @@ export const SystemMessageActivityStepType = new GraphQLObjectType({
     message: { type: GraphQLString },
     systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
+    sendFromPanelistClientIds: { type: GraphQLList(GraphQLString) },
   }),
 });
 
@@ -61,6 +85,15 @@ export const SystemMessageActivityStepTypeInput = new GraphQLInputObjectType({
     message: { type: GraphQLString },
     systemCustomName: { type: GraphQLString },
     setStudentActivityComplete: { type: GraphQLBoolean },
+    sendFromPanelistClientIds: { type: GraphQLList(GraphQLString) },
+  }),
+});
+
+export const ButtonActionType = new GraphQLObjectType({
+  name: "ButtonActionType",
+  fields: () => ({
+    buttonActionType: { type: GraphQLString },
+    buttonActionValue: { type: GraphQLList(GraphQLString) },
   }),
 });
 
@@ -72,7 +105,21 @@ export const PredefinedResponseType = new GraphQLObjectType({
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
     responseWeight: { type: GraphQLString },
+    buttonAction: { type: ButtonActionType },
   }),
+});
+
+export const ButtonActionTypeInput = new GraphQLInputObjectType({
+  name: "ButtonActionTypeInput",
+  fields: () => ({
+    buttonActionType: { type: GraphQLString },
+    buttonActionValue: { type: GraphQLList(GraphQLString) },
+  }),
+});
+
+export const ButtonActionSchema = new Schema({
+  buttonActionType: { type: String, enum: ButtonActionTypeEnum },
+  buttonActionValue: { type: [String] },
 });
 
 export const PredefinedResponseSchema = new Schema({
@@ -81,6 +128,7 @@ export const PredefinedResponseSchema = new Schema({
   isArray: { type: Boolean },
   jumpToStepId: { type: String, require: false },
   responseWeight: { type: String, default: "0" },
+  buttonAction: { type: ButtonActionSchema },
 });
 
 export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
@@ -91,6 +139,7 @@ export const PredefinedResponseTypeInput = new GraphQLInputObjectType({
     isArray: { type: GraphQLBoolean },
     jumpToStepId: { type: GraphQLString },
     responseWeight: { type: GraphQLString },
+    buttonAction: { type: ButtonActionTypeInput },
   }),
 });
 
@@ -146,12 +195,14 @@ export const SinglePromptConfigurationType = new GraphQLObjectType({
     systemCustomName: { type: GraphQLString },
 
     numChatMessagesIncluded: { type: GraphQLString },
+    runForPanelistClientIds: { type: GraphQLList(GraphQLString) },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
+    ragConfiguration: { type: RagStoreConfigurationType },
   }),
 });
 
@@ -223,12 +274,14 @@ export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
     responseFormat: { type: GraphQLString },
     includeChatLogContext: { type: GraphQLBoolean },
     systemCustomName: { type: GraphQLString },
+    runForPanelistClientIds: { type: GraphQLList(GraphQLString) },
     includeEssay: { type: GraphQLBoolean },
     outputDataType: { type: GraphQLString },
     jsonResponseData: { type: GraphQLString },
     customSystemRole: { type: GraphQLString },
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
+    ragConfiguration: { type: RagStoreConfigurationInputType },
   }),
 });
 
@@ -278,6 +331,7 @@ export const SystemMessageActivityStepSchema = new Schema({
   message: { type: String },
   systemCustomName: { type: String },
   setStudentActivityComplete: { type: Boolean },
+  sendFromPanelistClientIds: { type: [String], default: [] },
 });
 
 export const RequestUserInputActivityStepSchema = new Schema({
@@ -295,8 +349,15 @@ export const RequestUserInputActivityStepSchema = new Schema({
   predefinedResponses: [PredefinedResponseSchema],
 });
 
+export const RagStoreConfigurationSchema = new Schema({
+  ragQuery: { type: String, required: true },
+  topN: { type: Number, required: true },
+  filters: { type: Object, required: false },
+});
+
 export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
+  runForPanelistClientIds: { type: [String] },
   responseFormat: { type: String },
   includeChatLogContext: { type: Boolean },
   systemCustomName: { type: String },
@@ -307,6 +368,7 @@ export const PromptConfigurationSchema = new Schema({
   customSystemRole: { type: String },
   webSearch: { type: Boolean },
   editDoc: { type: Boolean },
+  ragConfiguration: { type: RagStoreConfigurationSchema },
 });
 
 export const PromptActivityStepSchema = new Schema({

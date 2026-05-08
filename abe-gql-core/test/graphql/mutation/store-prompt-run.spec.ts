@@ -47,6 +47,11 @@ describe("store prompt run", () => {
                     responseFormat
                     editDoc
                     webSearch
+                    ragConfiguration {
+                      ragQuery
+                      topN
+                      filters
+                    }
                     targetAiServiceModel{
                       serviceName
                       model
@@ -76,6 +81,13 @@ describe("store prompt run", () => {
               includeChatLogContext: true,
               responseFormat: "store_test_response_format",
               editDoc: true,
+              ragConfiguration: {
+                ragQuery: "store_test_rag_query",
+                topN: 10,
+                filters: {
+                  store_test_filter: "store_test_filter_value",
+                },
+              },
               targetAiServiceModel: {
                 serviceName: "store_test_service_name",
                 model: "store_test_model",
@@ -110,6 +122,13 @@ describe("store prompt run", () => {
           includeChatLogContext: true,
           responseFormat: "store_test_response_format",
           editDoc: true,
+          ragConfiguration: {
+            ragQuery: "store_test_rag_query",
+            topN: 10,
+            filters: {
+              store_test_filter: "store_test_filter_value",
+            },
+          },
           targetAiServiceModel: {
             serviceName: "store_test_service_name",
             model: "store_test_model",

@@ -34,6 +34,7 @@ export interface ActivityBuilder extends IActivity {
   newDocRecommend?: boolean;
   disabled?: boolean;
   flowsList: FlowItem[];
+  attachedPanel: string;
 }
 
 export enum ActivityBuilderStepType {
@@ -53,6 +54,7 @@ export interface SystemMessageActivityStep extends ActivityBuilderStep {
   stepType: ActivityBuilderStepType.SYSTEM_MESSAGE;
   message: string;
   systemCustomName: string;
+  sendFromPanelistClientIds: string[];
 }
 
 export enum NumericOperations {
@@ -86,6 +88,16 @@ export interface LogicOperationActivityStep extends ActivityBuilderStep {
   conditionals: LogicStepConditional[];
 }
 
+export enum ButtonActionTypeEnum {
+  "FILTER_TO_PANELIST" = "FILTER_TO_PANELIST",
+  "CLEAR_PANELIST_FILTERS" = "CLEAR_PANELIST_FILTERS",
+}
+
+export interface ButtonAction {
+  buttonActionType: ButtonActionTypeEnum;
+  buttonActionValue: string[];
+}
+
 // RequestUserInput
 export interface PredefinedResponse {
   clientId: string;
@@ -93,6 +105,7 @@ export interface PredefinedResponse {
   isArray?: boolean;
   jumpToStepId?: string;
   responseWeight?: string;
+  buttonAction?: ButtonAction;
 }
 
 export interface RequestUserInputActivityStep extends ActivityBuilderStep {
@@ -113,18 +126,26 @@ export enum JsonResponseDataType {
   ARRAY = "array",
 }
 
+export interface RagStoreConfiguration {
+  ragQuery: string;
+  topN: number;
+  filters?: Record<string, string | string[]>;
+}
+
 export interface PromptConfiguration {
   promptText: string;
   responseFormat: string;
   includeChatLogContext: boolean;
   systemCustomName: string;
   numChatMessagesIncluded: string;
+  runForPanelistClientIds: string[];
   includeEssay: boolean;
   outputDataType: string;
   jsonResponseData?: string;
   customSystemRole: string;
   webSearch: boolean;
   editDoc: boolean;
+  ragConfiguration?: RagStoreConfiguration;
 }
 
 export interface PromptActivityStep extends ActivityBuilderStep {

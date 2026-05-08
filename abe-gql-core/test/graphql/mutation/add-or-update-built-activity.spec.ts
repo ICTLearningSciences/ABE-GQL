@@ -14,6 +14,7 @@ import request from "supertest";
 import {
   ActivityBuilder,
   ActivityBuilderStepType,
+  ButtonActionTypeEnum,
 } from "../../../src/schemas/models/BuiltActivity/types";
 import BuiltActivityModel from "../../../src/schemas/models/BuiltActivity/BuiltActivity";
 import { getToken } from "../../helpers";
@@ -26,6 +27,7 @@ export const fullBuiltActivityQueryData = `
                       user
                       visibility
                       activityType
+                      attachedPanel
                       description
                       displayIcon
                       disabled
@@ -41,6 +43,7 @@ export const fullBuiltActivityQueryData = `
                               message
                               systemCustomName
                               setStudentActivityComplete
+                              sendFromPanelistClientIds
                           }
 
                           ... on RequestUserInputActivityStepType {
@@ -58,6 +61,10 @@ export const fullBuiltActivityQueryData = `
                                   isArray
                                   jumpToStepId
                                   responseWeight
+                                  buttonAction{
+                                    buttonActionType
+                                    buttonActionValue
+                                  }
                               }
                               setStudentActivityComplete
                           }
@@ -78,6 +85,11 @@ export const fullBuiltActivityQueryData = `
                                 jsonResponseData
                                 customSystemRole
                                 webSearch
+                                ragConfiguration {
+                                  ragQuery
+                                  topN
+                                  filters
+                                }
                               }
                           }
 
@@ -195,6 +207,7 @@ describe("update built activity", () => {
           {
             stepType: ActivityBuilderStepType.SYSTEM_MESSAGE,
             message: "message 1",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
           {
             stepType: ActivityBuilderStepType.REQUEST_USER_INPUT,
@@ -207,6 +220,7 @@ describe("update built activity", () => {
               {
                 promptText: "prompt 1",
                 numChatMessagesIncluded: "LAST_1",
+                runForPanelistClientIds: ["panelist-1"],
               },
             ],
           },
@@ -238,6 +252,7 @@ describe("update built activity", () => {
                             ... on SystemMessageActivityStepType {
                                 stepType
                                 message
+                                sendFromPanelistClientIds
                             }
 
                             ... on RequestUserInputActivityStepType {
@@ -251,6 +266,7 @@ describe("update built activity", () => {
                                 promptConfigurations{
                                   promptText
                                   numChatMessagesIncluded
+                                  runForPanelistClientIds
                                 }
                             }
 
@@ -298,6 +314,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
         ],
       },
@@ -417,6 +434,7 @@ describe("update built activity", () => {
             stepId: "123",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
         ],
       },
@@ -458,6 +476,7 @@ describe("update built activity", () => {
             message: "message 1",
             setStudentActivityComplete: true,
             systemCustomName: "Ben",
+            sendFromPanelistClientIds: ["panelist-1"],
           },
           {
             stepId: "456",
@@ -475,6 +494,10 @@ describe("update built activity", () => {
                 isArray: false,
                 jumpToStepId: "jump to step id 1",
                 responseWeight: "1",
+                buttonAction: {
+                  buttonActionType: ButtonActionTypeEnum.FILTER_TO_PANELIST,
+                  buttonActionValue: ["panelist-1"],
+                },
               },
             ],
             setStudentActivityComplete: true,
@@ -496,6 +519,13 @@ describe("update built activity", () => {
                 outputDataType: "JSON",
                 customSystemRole: "custom system role 1",
                 webSearch: true,
+                ragConfiguration: {
+                  ragQuery: "rag query 1",
+                  topN: 10,
+                  filters: {
+                    rag_filter_1: "rag filter 1",
+                  },
+                },
               },
             ],
           },
@@ -520,6 +550,7 @@ describe("update built activity", () => {
       _id: "5ffdf1231ee2c62320b49e5f",
       clientId: "123",
       activityType: "builder",
+      attachedPanel: "panel 1",
       title: "title 1",
       user: "5ffdf1231ee2c62320b49a99",
       visibility: "editable",
@@ -542,7 +573,6 @@ describe("update built activity", () => {
           activity,
         },
       });
-    console.log(JSON.stringify(response.body, null, 2));
     expect(response.body.data.addOrUpdateBuiltActivity).to.eql(activity);
     const builtActivitesPost = await BuiltActivityModel.find();
     expect(builtActivitesPost.length).to.equal(7);
