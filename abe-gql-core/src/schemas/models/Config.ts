@@ -162,6 +162,7 @@ export interface Config {
   surveyConfig?: SurveyConfig;
   bannerConfig?: BannerConfig;
   privacyPolicy?: string;
+  staticFilesBucket?: string;
 }
 
 type ConfigKey = keyof Config;
@@ -180,6 +181,7 @@ export const ConfigKeys: ConfigKey[] = [
   "surveyConfig",
   "bannerConfig",
   "privacyPolicy",
+  "staticFilesBucket",
 ];
 
 export function getDefaultConfig(): Config {
@@ -206,6 +208,8 @@ export function getDefaultConfig(): Config {
       bannerBgColor: "",
     },
     privacyPolicy: "",
+    staticFilesBucket:
+      process.env.S3_BUCKET_URL || "bucket env variable not found",
   };
 }
 
@@ -292,6 +296,7 @@ export const ConfigType = new GraphQLObjectType({
     surveyConfig: { type: SurveyConfigType },
     bannerConfig: { type: BannerConfigType },
     privacyPolicy: { type: GraphQLString },
+    staticFilesBucket: { type: GraphQLString },
   }),
 });
 

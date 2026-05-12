@@ -30,6 +30,7 @@ describe("config", () => {
   });
 
   it(`serves default config when no settings`, async () => {
+    process.env.S3_BUCKET_URL = "example-s3-bucket-url";
     const response = await request(app)
       .post("/graphql")
       .send({
@@ -57,9 +58,11 @@ describe("config", () => {
                 disabled
               }
             }
+            staticFilesBucket
           }
         }`,
       });
+    console.log(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchConfig).to.eql({
       aiSystemPrompt: [],
@@ -88,6 +91,7 @@ describe("config", () => {
           ],
         },
       ],
+      staticFilesBucket: process.env.S3_BUCKET_URL,
     });
   });
 
