@@ -11,7 +11,6 @@ import {
   GraphQLBoolean,
   GraphQLInputObjectType,
 } from "graphql";
-import { ObjectType } from "../types/object";
 import {
   PaginateOptions,
   PaginateQuery,
