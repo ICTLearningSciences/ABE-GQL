@@ -4,17 +4,22 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import { GraphQLObjectType, GraphQLSchema } from "graphql";
+import UserModel from "../models/User";
+import { GraphQLList } from "graphql";
+import * as dotenv from "dotenv";
+import { UserType } from "../models/User";
+dotenv.config();
 
-// import fetchConfig from './query/fetchConfig'
-
-const PrivateRootQuery = new GraphQLObjectType({
-  name: "PrivateRootQueryType",
-  fields: {
-    // fetchConfig
+export const fetchUsers = {
+  type: GraphQLList(UserType),
+  args: {},
+  async resolve() {
+    try {
+      return await UserModel.find({});
+    } catch (e) {
+      console.log(e);
+      throw new Error(String(e));
+    }
   },
-});
-
-export default new GraphQLSchema({
-  query: PrivateRootQuery,
-});
+};
+export default fetchUsers;
