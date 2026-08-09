@@ -9,7 +9,7 @@ import createApp, { appStart, appStop } from "app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import { ObjectId } from "mongodb";
 import GoogleDocModel from "../../../src/schemas/models/GoogleDoc";
@@ -51,7 +51,7 @@ describe("find all google docs", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`can find all google docs`, async () => {

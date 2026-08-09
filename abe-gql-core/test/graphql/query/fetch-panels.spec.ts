@@ -15,7 +15,7 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import PanelModel from "../../../src/schemas/models/Panel";
 import PanelistModel from "../../../src/schemas/models/Panelist";
@@ -80,7 +80,7 @@ describe("fetch panels", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it("can fetch all panels", async () => {

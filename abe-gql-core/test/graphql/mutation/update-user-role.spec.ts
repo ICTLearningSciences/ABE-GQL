@@ -9,7 +9,7 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import { UserRole } from "../../../src/schemas/types/types";
 import { EducationalRole } from "../../../src/schemas/models/User";
@@ -36,7 +36,7 @@ describe("update user roles", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`admin can edit a user's role`, async () => {

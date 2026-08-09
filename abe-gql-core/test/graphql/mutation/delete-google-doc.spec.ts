@@ -9,21 +9,21 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 
 describe("store google doc", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`delete a google doc`, async () => {

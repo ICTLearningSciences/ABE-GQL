@@ -8,7 +8,7 @@ import createApp, { appStart, appStop } from "app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import { fullBuiltActivityQueryData } from "../mutation/add-or-update-built-activity.spec";
 
@@ -30,7 +30,7 @@ describe("fetch built activity Versiopns", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`can fetch built activity versions`, async () => {

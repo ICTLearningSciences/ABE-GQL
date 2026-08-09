@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import createApp, { appStart, appStop } from "app";
 import { expect } from "chai";
 import { Express } from "express";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/types/types";
@@ -23,7 +23,7 @@ describe("configUpdate", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`throws an error if no config`, async () => {
