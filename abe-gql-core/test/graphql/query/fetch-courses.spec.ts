@@ -135,19 +135,22 @@ describe("fetch courses", () => {
     });
 
     // Add courses to instructors/students
-    await InstructorDataModel.findOneAndUpdate({
-      userId: instructorUserId,
-      courses: [
-        {
-          courseId: courseId1,
-          ownership: CourseOwnership.OWNER,
-        },
-        {
-          courseId: courseId2,
-          ownership: CourseOwnership.OWNER,
-        },
-      ],
-    });
+    await InstructorDataModel.findOneAndUpdate(
+      { userId: instructorUserId },
+      {
+        userId: instructorUserId,
+        courses: [
+          {
+            courseId: courseId1,
+            ownership: CourseOwnership.OWNER,
+          },
+          {
+            courseId: courseId2,
+            ownership: CourseOwnership.OWNER,
+          },
+        ],
+      }
+    );
 
     await InstructorDataModel.findOneAndUpdate(
       { userId: anotherInstructorId },
