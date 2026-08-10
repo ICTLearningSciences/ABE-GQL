@@ -5,13 +5,15 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
+import { TESTDB_NAME } from "../../fixtures";
 import { TimelinePointType } from "../../../src/schemas/models/DocTimeline";
 import { DisplayIcons } from "../../../src/constants";
 import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
 import { VersionType } from "../../../src/schemas/models/GoogleDocVersion";
 const { ObjectId } = mongoose.Types;
 
-module.exports = {
+const MONGO_DATA = {
   configs: [
     {
       key: "aiServiceModelConfigs",
@@ -828,3 +830,39 @@ module.exports = {
     },
   ],
 };
+
+export async function loadMongo() {
+  const client = new MongoClient(process.env.MONGO_URI || "", {});
+  await client.connect();
+  const db = client.db(TESTDB_NAME);
+  await db.collection("configs").insertMany(MONGO_DATA.configs);
+  await db.collection("organizations").insertMany(MONGO_DATA.organizations);
+  await db.collection("activities").insertMany(MONGO_DATA.activities);
+  await db.collection("builtactivities").insertMany(MONGO_DATA.builtactivities);
+  await db
+    .collection("builtactivityversions")
+    .insertMany(MONGO_DATA.builtactivityversions);
+  await db
+    .collection("useractivitystates")
+    .insertMany(MONGO_DATA.useractivitystates);
+  await db.collection("docgoals").insertMany(MONGO_DATA.docgoals);
+  await db.collection("prompts").insertMany(MONGO_DATA.prompts);
+  await db.collection("promptruns").insertMany(MONGO_DATA.promptruns);
+  await db.collection("googledocs").insertMany(MONGO_DATA.googledocs);
+  await db.collection("refreshtokens").insertMany(MONGO_DATA.refreshtokens);
+  await db
+    .collection("googledocversions")
+    .insertMany(MONGO_DATA.googledocversions);
+  await db.collection("users").insertMany(MONGO_DATA.users);
+  await db.collection("doctimelines").insertMany(MONGO_DATA.doctimelines);
+  client.close();
+}
+
+export async function wipeMongo() {
+  const client = new MongoClient(process.env.MONGO_URI || "", {});
+  await client.connect();
+  const db = client.db(TESTDB_NAME);
+  await db.dropDatabase();
+}
+
+export default MONGO_DATA;

@@ -7,7 +7,7 @@ The full terms of this copyright and license should always be found in the root 
 import createApp, { appStart, appStop } from "app";
 import { expect } from "chai";
 import { Express } from "express";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import { getToken } from "../../helpers";
 import OrganizationModel from "../../../src/schemas/models/Organization";
@@ -18,14 +18,14 @@ describe("config update by key", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it("USER cannot update config", async () => {

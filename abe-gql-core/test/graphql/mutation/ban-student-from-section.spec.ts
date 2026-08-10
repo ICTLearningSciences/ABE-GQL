@@ -9,7 +9,7 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import { getToken } from "../../helpers";
 import { UserRole } from "../../../src/schemas/types/types";
@@ -28,7 +28,7 @@ describe("ban student from section", () => {
   let studentUserId: string;
   let courseId: string;
   beforeEach(async () => {
-    await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
 
@@ -77,7 +77,7 @@ describe("ban student from section", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it("allows instructor to ban a student from section", async () => {

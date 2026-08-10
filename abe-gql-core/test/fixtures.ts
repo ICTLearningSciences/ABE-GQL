@@ -4,21 +4,50 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
+
+import * as Mocha from "mocha";
 import dotenv from "dotenv";
 import { appStop } from "../src/app";
 import { logger } from "../src/utils/logging";
 import { fixturePath } from "./helpers";
-import { before, after } from "mocha";
+import { MongoMemoryServer } from "mongodb-memory-server";
+require("dotenv").config();
 
-before(() => {
+// Define a custom context type for global fixtures
+declare module "mocha" {
+  interface Context {
+    mongoMemoryServer: MongoMemoryServer;
+  }
+}
+
+const TESTDB_NAME = "test";
+
+export async function mochaGlobalSetup(this: Mocha.Context) {
   dotenv.config({ path: fixturePath(".env") });
   process.env.DOTENV_PATH = fixturePath(".env");
-});
+  const server = await MongoMemoryServer.create({
+    instance: {
+      dbName: TESTDB_NAME,
+    },
+  });
+  this.mongoMemoryServer = server;
+  const url = server.getUri();
 
-after(async () => {
+  process.env.MONGO_URI = url; // this const process.env.DATABASE_URL = will keep link to fake mongo
+}
+
+export const mochaGlobalTeardown = async function (this: Mocha.Context) {
   try {
     await appStop();
   } catch (mongooseDisconnectErr) {
     logger.error(mongooseDisconnectErr);
   }
-});
+  try {
+    await this.mongoMemoryServer.stop();
+  } catch (mongoUnitErr) {
+    logger.error(mongoUnitErr);
+  }
+  process.env.MONGO_URI = "";
+};
+
+export default mochaGlobalSetup;
