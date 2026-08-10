@@ -7,7 +7,6 @@ The full terms of this copyright and license should always be found in the root 
 import dotenv from "dotenv";
 import { appStop } from "../src/app";
 import { logger } from "../src/utils/logging";
-import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import { fixturePath } from "./helpers";
 import { before, after } from "mocha";
 
@@ -22,14 +21,4 @@ after(async () => {
   } catch (mongooseDisconnectErr) {
     logger.error(mongooseDisconnectErr);
   }
-  try {
-    await mongoUnit.stop();
-  } catch (mongoUnitErr) {
-    logger.error(mongoUnitErr);
-  }
-});
-
-mongoUnit.start().then((url) => {
-  process.env.MONGO_URI = url; // this const process.env.DATABASE_URL = will keep link to fake mongo
-  run(); // this line start mocha tests
 });

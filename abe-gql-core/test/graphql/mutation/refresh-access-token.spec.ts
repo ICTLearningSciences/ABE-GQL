@@ -31,7 +31,7 @@ describe("refresh access token", () => {
 
   beforeEach(async () => {
     overrideGoogleAuthFunc(googleAuthFuncOverride);
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });

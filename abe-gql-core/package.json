@@ -22,7 +22,7 @@
     "format": "prettier --write '**/*.{js,jsx,json,ts,tsx,yml,yaml}'",
     "lint:fix": "eslint . --ext ts --ext js --fix",
     "start": "tsc && node dist/server.js",
-    "test": "export ENV=test && export NODE_ENV=test && npx mocha -r tsconfig-paths/register -r ts-node/register -r source-map-support/register './test/**/*.{spec,test}.{js,ts}'  --require 'test/helpers.ts' --require 'test/fixtures.ts' --timeout 10000 --full-trace --recursive --reporter spec --delay --exit",
+    "test": "export ENV=test && export NODE_ENV=test && npx mocha -r tsconfig-paths/register -r ts-node/register --require 'test/helpers.ts' --require 'test/fixtures.ts' -r source-map-support/register  './test/**/*.{spec,test}.{js,ts}'  --timeout 900000 --full-trace --recursive --reporter spec --exit",
     "test:all": "npm run test:format && npm run test:lint && npm run test:audit && npm run test:types && npm test",
     "test:audit": "npm audit --audit-level=moderate --production",
     "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",

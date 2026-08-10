@@ -16,7 +16,7 @@ describe("configUpdate", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });

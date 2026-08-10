@@ -8,7 +8,7 @@ import { GraphQLString, GraphQLObjectType } from "graphql";
 import { CookieOptions, Response } from "express";
 import jwt from "jsonwebtoken";
 import { randomBytes } from "crypto";
-import { User, UserType } from "../models/User";
+import UserModel, { User, UserType } from "../models/User";
 import DateType from "./date";
 import RefreshTokenSchema from "../models/RefreshToken";
 import requireEnv from "../../utils/require-env";
@@ -32,8 +32,10 @@ export async function getRefreshedAccessToken(
   res: Response
 ): Promise<UserAccessToken> {
   const refreshToken = await getRefreshToken(token);
-  const { user } = refreshToken;
-
+  const user = await UserModel.findById(refreshToken.user);
+  if (!user) {
+    throw new Error("invalid access token");
+  }
   // replace old refresh token with a new one and save
   const newRefreshToken = await generateRefreshToken(user);
   await newRefreshToken.save();
@@ -56,9 +58,7 @@ export async function revokeToken(token: string): Promise<void> {
 }
 
 async function getRefreshToken(token: string) {
-  const refreshToken = await RefreshTokenSchema.findOne({ token }).populate(
-    "user"
-  );
+  const refreshToken = await RefreshTokenSchema.findOne({ token });
   if (!refreshToken || !refreshToken.isActive) {
     throw "invalid token";
   }
@@ -110,7 +110,7 @@ export function generateJwtToken(user: User): UserAccessToken {
       role: user.userRole,
       expirationDate,
     },
-    process.env.JWT_SECRET,
+    process.env.JWT_SECRET as string,
     { expiresIn }
   );
   return {
@@ -129,7 +129,7 @@ export function generateAccessToken(user: User): UserAccessToken {
       role: user.userRole,
       expirationDate,
     },
-    process.env.JWT_SECRET,
+    process.env.JWT_SECRET as string,
     { expiresIn }
   );
   return {
@@ -142,9 +142,9 @@ export function generateAccessToken(user: User): UserAccessToken {
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function decodeAccessToken(token: string): any {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET);
+    return jwt.verify(token, process.env.JWT_SECRET as string);
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error as string);
   }
 }
 

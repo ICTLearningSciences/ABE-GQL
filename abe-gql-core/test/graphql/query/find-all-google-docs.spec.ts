@@ -35,7 +35,7 @@ describe("find all google docs", () => {
   let userId: string;
   let courseAssignmentId: string;
   beforeEach(async () => {
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
 

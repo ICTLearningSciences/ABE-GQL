@@ -29,7 +29,7 @@ describe("login with amazon cognito", () => {
 
   beforeEach(async () => {
     overrideCognitoAuthFunc(amazonAuthFuncOverride);
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });

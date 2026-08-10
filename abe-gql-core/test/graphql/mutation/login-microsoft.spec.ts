@@ -29,7 +29,7 @@ describe("login with microsoft", () => {
 
   beforeEach(async () => {
     overrideMicrosoftGraphUser(microsoftGraphUserFuncOverride);
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });

@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 import {
   GraphQLObjectType,
   GraphQLList,
@@ -21,7 +21,7 @@ import {
 } from "./PromptRun";
 
 export interface Prompt extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   aiPromptSteps: AiPromptStep[];
   clientId?: string;
   title: string;

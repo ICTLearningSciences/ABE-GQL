@@ -5,6 +5,8 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
+import { TESTDB_NAME } from "../../fixtures";
 import { TimelinePointType } from "../../../src/schemas/models/DocTimeline";
 import { DisplayIcons } from "../../../src/constants";
 import { ActivityBuilderStepType } from "../../../src/schemas/models/BuiltActivity/types";
