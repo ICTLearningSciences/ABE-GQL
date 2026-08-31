@@ -132,6 +132,13 @@ export interface RagStoreConfiguration {
   filters?: Record<string, string | string[]>;
 }
 
+export type ResponseLength = "low" | "med" | "high";
+export interface PanelResponseConfiguration {
+  id: string;
+  responseLength: ResponseLength;
+  difficultyLevel: ResponseLength;
+}
+
 export interface PromptConfiguration {
   promptText: string;
   responseFormat: string;
@@ -146,6 +153,7 @@ export interface PromptConfiguration {
   webSearch: boolean;
   editDoc: boolean;
   ragConfiguration?: RagStoreConfiguration;
+  panelConfiguration?: PanelResponseConfiguration[];
 }
 
 export interface PromptActivityStep extends ActivityBuilderStep {
