@@ -25,8 +25,14 @@ import {
   RagStoreConfigurationType,
   RagStoreConfigurationInputType,
   RagStoreConfigurationSchema,
+  PanelResponseConfigurationSchema,
+  PanelResponseConfigurationInputType,
+  PanelResponseConfigurationType,
 } from "./BuiltActivity/objects";
-import { RagStoreConfiguration } from "./BuiltActivity/types";
+import {
+  PanelResponseConfiguration,
+  RagStoreConfiguration,
+} from "./BuiltActivity/types";
 
 export interface AiReqRes {
   aiServiceRequestParams: string; //OpenAI.Chat.Completions.ChatCompletionCreateParams;
@@ -61,6 +67,7 @@ export interface AiPromptStep {
   webSearch?: boolean;
   editDoc?: boolean;
   ragConfiguration?: RagStoreConfiguration;
+  panelConfiguration: PanelResponseConfiguration[];
 }
 
 export interface PromptRun {
@@ -121,6 +128,7 @@ export const AiPromptStepType = new GraphQLObjectType({
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
     ragConfiguration: { type: RagStoreConfigurationType },
+    panelConfiguration: { type: GraphQLList(PanelResponseConfigurationType) },
   }),
 });
 
@@ -139,6 +147,9 @@ export const AiPromptStepInputType = new GraphQLInputObjectType({
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
     ragConfiguration: { type: RagStoreConfigurationInputType },
+    panelConfiguration: {
+      type: GraphQLList(PanelResponseConfigurationInputType),
+    },
   }),
 });
 
@@ -191,6 +202,7 @@ export const AiPromptStepSchema = new Schema({
   webSearch: { type: Boolean, required: false, default: false },
   editDoc: { type: Boolean, required: false, default: false },
   ragConfiguration: { type: RagStoreConfigurationSchema },
+  panelConfiguration: { type: [PanelResponseConfigurationSchema] },
 });
 
 export const PromptRunType = new GraphQLObjectType({
