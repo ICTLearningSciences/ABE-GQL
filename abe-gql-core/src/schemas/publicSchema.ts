@@ -102,7 +102,7 @@ const adminQueries = () => {
   };
 };
 
-const getAuthenticatedQueries = (userRole: UserRole, userId: string) => {
+const getAuthenticatedQueries = (userRole: UserRole) => {
   return userRole === UserRole.ADMIN ? adminQueries() : publicQueries;
 };
 
@@ -178,7 +178,7 @@ export function getAuthenticatedSchema(
   return new GraphQLSchema({
     query: new GraphQLObjectType({
       name: "AuthenticatedQuery",
-      fields: getAuthenticatedQueries(userRole, userId),
+      fields: getAuthenticatedQueries(userRole),
     }),
     mutation: new GraphQLObjectType({
       name: "AuthenticatedMutation",
