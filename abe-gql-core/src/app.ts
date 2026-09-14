@@ -96,6 +96,7 @@ export async function getDataFromRequest(
       splitAuthHeader[0].toLowerCase() === "bearer"
     ) {
       const token = req.headers.authorization?.split(" ")[1] || "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET || "");
       return {
         userId: decodedJwt.id,

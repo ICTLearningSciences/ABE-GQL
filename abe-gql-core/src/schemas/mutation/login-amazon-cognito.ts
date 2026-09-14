@@ -43,7 +43,7 @@ export async function authCognito(jwtToken: string): Promise<CognitoUser> {
   }
 
   const userPoolId = process.env.COGNITO_USER_POOL_ID;
-  const clientId = process.env.VITE_COGNITO_CLIENT_ID;
+  const clientId = process.env.COGNITO_CLIENT_ID;
 
   if (!userPoolId || !clientId) {
     throw new Error("Missing required Cognito configuration");

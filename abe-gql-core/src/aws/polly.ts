@@ -10,10 +10,10 @@ import { getSynthesizeSpeechUrl } from "@aws-sdk/polly-request-presigner";
 import { auth } from ".";
 
 export const pollyClient = new PollyClient({
-  region: process.env.AWS_S3_REGION || "",
+  region: process.env.AWS_S3_REGION || "test",
   credentials: {
-    accessKeyId: process.env.AWS_ACCESSKEY || "",
-    secretAccessKey: process.env.AWS_SECRETACCESSKEY || "",
+    accessKeyId: process.env.AWS_ACCESSKEY || "test",
+    secretAccessKey: process.env.AWS_SECRETACCESSKEY || "test",
   },
 });
 
