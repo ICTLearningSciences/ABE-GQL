@@ -8,9 +8,11 @@ import express, { Express, Request } from "express";
 import { graphqlHTTP } from "express-graphql";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { getAuthenticatedSchema } from "./schemas/publicSchema";
 import * as dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { S3Client } from "@aws-sdk/client-s3";
+import { getAuthenticatedSchema } from "./schemas/publicSchema";
+
 dotenv.config();
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN
@@ -23,38 +25,8 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 
 //START MIDDLEWARE
 import mongoose from "mongoose";
-import privateSchema from "./schemas/privateSchema";
 import { UserRole } from "./schemas/types/types";
 import { createGoogleDocVersionLoader } from "./dataloaders/googleDocVersionLoader";
-
-// eslint-disable-next-line   @typescript-eslint/no-explicit-any
-const authorization = (req: any, res: any, next: any) => {
-  if (process.env.ENV === "dev") {
-    return next();
-  }
-
-  if (!req.body.data || !req.body.data.secret) {
-    console.log(`failed to authorize, expected body`);
-    return res
-      .status(403)
-      .send({ error: `failed to authorize, expected body` });
-  }
-  //when sending from postman: req.body.secret, else from webpage: req.body.data.secret
-  const secret = req.body.data.secret;
-  if (!secret) {
-    console.log(`failed to authorize, expected secret`);
-    return res
-      .status(403)
-      .send({ error: `failed to authorize, expected secret` });
-  }
-  if (secret !== process.env.GQL_SECRET) {
-    console.log(`failed to authorize, secrets do not match`);
-    return res
-      .status(403)
-      .send({ error: `failed to authorize, secret does not match` });
-  }
-  return next();
-};
 
 const corsOptions = {
   credentials: true,
@@ -117,12 +89,13 @@ async function getDataFromRequest(req: Request): Promise<JwtData | undefined> {
   try {
     const splitAuthHeader = req.headers.authorization?.split(" ");
     if (
+      splitAuthHeader &&
       splitAuthHeader.length === 2 &&
       splitAuthHeader[0].toLowerCase() === "bearer"
     ) {
-      const token = req.headers.authorization?.split(" ")[1];
+      const token = req.headers.authorization?.split(" ")[1] || "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET);
+      const decodedJwt: any = jwt.verify(token, process.env.JWT_SECRET || "");
       return {
         userId: decodedJwt.id,
         userRole: decodedJwt.role,
@@ -140,21 +113,11 @@ export function createApp(): Express {
   app.use(express.json({ limit: "2mb" }));
   app.use(cors(corsOptions));
   app.use(
-    "/graphqlPrivate",
-    authorization,
-    graphqlHTTP({
-      schema: privateSchema, // private due to authorization
-      graphiql: true,
-    })
-  );
-
-  app.use(
     "/graphql",
     graphqlHTTP(async (req: Request, res) => {
       const jwtData = await getDataFromRequest(req);
       const userRole = jwtData ? (jwtData.userRole as UserRole) : UserRole.USER;
       const userId = jwtData ? jwtData.userId : undefined;
-
       return {
         schema: getAuthenticatedSchema(userRole, userId),
         graphiql: true,
@@ -169,6 +132,32 @@ export function createApp(): Express {
       };
     })
   );
+  app.get("/s3list", async (req, res, next) => {
+    const userData = await getDataFromRequest(req);
+    if (!userData) {
+      return res.status(500).json({
+        message: "Invalid token",
+      });
+    }
+    if (
+      userData.userRole !== "CONTENT_MANAGER" &&
+      userData.userRole !== "ADMIN"
+    ) {
+      return res.status(500).json({
+        message: "Invalid permissions",
+      });
+    }
+    const s3Client = new S3Client({
+      region: process.env.AWS_REGION || "test",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY || "test",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "test",
+      },
+    });
+    return res.status(200).json({
+      message: "Hello",
+    });
+  });
   return app;
 }
 
