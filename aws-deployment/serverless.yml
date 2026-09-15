@@ -38,9 +38,7 @@ custom:
     prod: api.abewriting.org
   customDomain:
     domainName: ${self:custom.domain.${opt:stage, 'dev'}}
-    basePath: "graphql" # api root url becomes: api.mentorpal.org/graphql
-    # certificateName: '*.mentorpal.org' didnt work
-    # certificateName: 'c6107db7-c2ef-4e85-a21f-bee7d1ac008a' didnt work either
+    basePath: "graphql" # api root url becomes: api.abewriting.org/graphql
     stage: ${self:provider.stage}
     endpointType: regional
     apiType: rest
@@ -108,9 +106,15 @@ provider:
     COGNITO_USER_POOL_ID: ${ssm:/shared/cognito-user-pool-id, ''}
     COGNITO_CLIENT_ID: ${ssm:/shared/cognito-client-id, ''}
     RAG_BUCKET: ${ssm:/ABE/aws/RAG_S3_BUCKET_NAME, ''}
-    AWS_S3_REGION: ${ssm:/ABE/AWS_REGION, ''}
-    AWS_ACCESSKEY: ${ssm:/ABE/AWS_ACCESSKEY, ''}
-    AWS_SECRETACCESSKEY: ${ssm:/ABE/AWS_SECRETACCESSKEY, ''}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - s3:PutObject
+            - s3:ListObjects
+          Resource:
+            - "arn:aws:s3:::*"
 
 functions:
   graphql:
@@ -157,6 +161,7 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - X-Amzn-Trace-Id
+
 resources:
   Resources:
     # this fails on first deploy because CloudFormation tries to create

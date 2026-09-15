@@ -4,13 +4,15 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request } from "express";
 import { graphqlHTTP } from "express-graphql";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { getAuthenticatedSchema } from "./schemas/publicSchema";
 import * as dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { S3Client } from "@aws-sdk/client-s3";
+import { getAuthenticatedSchema } from "./schemas/publicSchema";
+
 dotenv.config();
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN
@@ -25,8 +27,6 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN
 import mongoose from "mongoose";
 import { UserRole } from "./schemas/types/types";
 import { createGoogleDocVersionLoader } from "./dataloaders/googleDocVersionLoader";
-import { getRagFiles, uploadRagFile } from "./aws/s3";
-import { getPollyTTS } from "./aws/polly";
 
 const corsOptions = {
   credentials: true,
@@ -80,14 +80,12 @@ function getSubdomainFromRequest(req: Request): string {
   }
 }
 
-export interface JwtData {
+interface JwtData {
   userId: string;
   userRole: string;
 }
 
-export async function getDataFromRequest(
-  req: Request
-): Promise<JwtData | undefined> {
+async function getDataFromRequest(req: Request): Promise<JwtData | undefined> {
   try {
     const splitAuthHeader = req.headers.authorization?.split(" ");
     if (
@@ -111,13 +109,12 @@ export async function getDataFromRequest(
 
 export function createApp(): Express {
   const app = express();
-  app.use(cors(corsOptions));
-  app.use(bodyParser.json({ limit: "2mb" }));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json({ limit: "2mb" }));
+  app.use(cors(corsOptions));
   app.use(
     "/graphql",
-    graphqlHTTP(async (req: Request, res: Response) => {
+    graphqlHTTP(async (req: Request, res) => {
       const jwtData = await getDataFromRequest(req);
       const userRole = jwtData ? (jwtData.userRole as UserRole) : UserRole.USER;
       const userId = jwtData ? jwtData.userId : undefined;
@@ -135,10 +132,32 @@ export function createApp(): Express {
       };
     })
   );
-
-  app.post("/polly", getPollyTTS);
-  app.post("/rag/upload", uploadRagFile);
-  app.post("/rag/get", getRagFiles);
+  app.get("/s3list", async (req, res, next) => {
+    const userData = await getDataFromRequest(req);
+    if (!userData) {
+      return res.status(500).json({
+        message: "Invalid token",
+      });
+    }
+    if (
+      userData.userRole !== "CONTENT_MANAGER" &&
+      userData.userRole !== "ADMIN"
+    ) {
+      return res.status(500).json({
+        message: "Invalid permissions",
+      });
+    }
+    const s3Client = new S3Client({
+      region: process.env.AWS_REGION || "test",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY || "test",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "test",
+      },
+    });
+    return res.status(200).json({
+      message: "Hello",
+    });
+  });
   return app;
 }
 
