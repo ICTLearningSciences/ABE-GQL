@@ -10,7 +10,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import { S3Client } from "@aws-sdk/client-s3";
+import AWS from "aws-sdk";
+
 import { getAuthenticatedSchema } from "./schemas/publicSchema";
 
 dotenv.config();
@@ -80,12 +81,14 @@ function getSubdomainFromRequest(req: Request): string {
   }
 }
 
-interface JwtData {
+export interface JwtData {
   userId: string;
   userRole: string;
 }
 
-async function getDataFromRequest(req: Request): Promise<JwtData | undefined> {
+export async function getDataFromRequest(
+  req: Request
+): Promise<JwtData | undefined> {
   try {
     const splitAuthHeader = req.headers.authorization?.split(" ");
     if (
@@ -134,29 +137,56 @@ export function createApp(): Express {
   );
   app.get("/s3list", async (req, res, next) => {
     const userData = await getDataFromRequest(req);
-    if (!userData) {
-      return res.status(500).json({
-        message: "Invalid token",
-      });
-    }
     if (
-      userData.userRole !== "CONTENT_MANAGER" &&
-      userData.userRole !== "ADMIN"
+      !userData ||
+      (userData.userRole !== "CONTENT_MANAGER" && userData.userRole !== "ADMIN")
     ) {
-      return res.status(500).json({
-        message: "Invalid permissions",
-      });
+      return res.status(500).send("invalid user");
     }
-    const s3Client = new S3Client({
-      region: process.env.AWS_REGION || "test",
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY || "test",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "test",
+    const s3 = new AWS.S3({ region: process.env.AWS_REGION || "" });
+    const data = await s3
+      .listObjects({
+        Bucket: process.env.RAG_BUCKET || "",
+      })
+      .promise();
+    return res.status(200).json(data);
+  });
+  app.post("/s3upload", async (req, res, next) => {
+    const userData = await getDataFromRequest(req);
+    if (
+      !userData ||
+      (userData.userRole !== "CONTENT_MANAGER" && userData.userRole !== "ADMIN")
+    ) {
+      return res.status(500).send("invalid user");
+    }
+    const s3 = new AWS.S3({ region: process.env.AWS_REGION || "" });
+    const data = await s3.createPresignedPost({
+      Bucket: process.env.RAG_BUCKET || "",
+      Fields: {
+        Key: req.body.Key,
+        ContentType: req.body.ContentType,
+        ACL: "public-read",
       },
     });
-    return res.status(200).json({
-      message: "Hello",
-    });
+    return res.status(200).json(data);
+  });
+  app.post("/polly", async (req, res, next) => {
+    const userData = await getDataFromRequest(req);
+    if (!userData) {
+      return res.status(500).send("invalid user");
+    }
+    const s3 = new AWS.Polly({ region: process.env.AWS_REGION || "" });
+    const data = await s3
+      .synthesizeSpeech({
+        Text: req.body.Text,
+        Engine: req.body.Engine,
+        VoiceId: req.body.VoiceId,
+        LanguageCode: req.body.LanguageCode,
+        TextType: req.body.TextType,
+        OutputFormat: req.body.OutputFormat || "mp3",
+      })
+      .promise();
+    return res.status(200).json(data);
   });
   return app;
 }

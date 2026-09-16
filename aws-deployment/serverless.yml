@@ -114,7 +114,12 @@ provider:
             - s3:PutObject
             - s3:ListObjects
           Resource:
-            - "arn:aws:s3:::*"
+            - "arn:aws:s3:::abe-rag-source-data-2026/*"
+        - Effect: Allow
+          Action:
+            - polly:SynthesizeSpeech
+            - polly:DescribeVoices
+          Resource: '*'
 
 functions:
   graphql:
