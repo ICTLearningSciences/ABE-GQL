@@ -28,12 +28,30 @@ export const RagStoreConfigurationType = new GraphQLObjectType({
   }),
 });
 
+export const PanelResponseConfigurationType = new GraphQLObjectType({
+  name: "PanelResponseConfigurationType",
+  fields: () => ({
+    id: { type: GraphQLString },
+    responseLength: { type: GraphQLString },
+    difficultyLevel: { type: GraphQLString },
+  }),
+});
+
 export const RagStoreConfigurationInputType = new GraphQLInputObjectType({
   name: "RagStoreConfigurationInputType",
   fields: () => ({
     ragQuery: { type: GraphQLString },
     topN: { type: GraphQLInt },
     filters: { type: ObjectType },
+  }),
+});
+
+export const PanelResponseConfigurationInputType = new GraphQLInputObjectType({
+  name: "PanelResponseConfigurationInputType",
+  fields: () => ({
+    id: { type: GraphQLString },
+    responseLength: { type: GraphQLString },
+    difficultyLevel: { type: GraphQLString },
   }),
 });
 
@@ -203,6 +221,7 @@ export const SinglePromptConfigurationType = new GraphQLObjectType({
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
     ragConfiguration: { type: RagStoreConfigurationType },
+    panelConfiguration: { type: GraphQLList(PanelResponseConfigurationType) },
   }),
 });
 
@@ -282,6 +301,9 @@ export const SinglePromptConfigurationTypeInput = new GraphQLInputObjectType({
     webSearch: { type: GraphQLBoolean },
     editDoc: { type: GraphQLBoolean },
     ragConfiguration: { type: RagStoreConfigurationInputType },
+    panelConfiguration: {
+      type: GraphQLList(PanelResponseConfigurationInputType),
+    },
   }),
 });
 
@@ -355,6 +377,12 @@ export const RagStoreConfigurationSchema = new Schema({
   filters: { type: Object, required: false },
 });
 
+export const PanelResponseConfigurationSchema = new Schema({
+  id: { type: String, default: "", required: true },
+  responseLength: { type: String, default: "high" },
+  difficultyLevel: { type: String, default: "low" },
+});
+
 export const PromptConfigurationSchema = new Schema({
   promptText: { type: String },
   runForPanelistClientIds: { type: [String] },
@@ -369,6 +397,7 @@ export const PromptConfigurationSchema = new Schema({
   webSearch: { type: Boolean },
   editDoc: { type: Boolean },
   ragConfiguration: { type: RagStoreConfigurationSchema },
+  panelConfiguration: { type: [PanelResponseConfigurationSchema] },
 });
 
 export const PromptActivityStepSchema = new Schema({
