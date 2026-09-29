@@ -28,6 +28,7 @@ export interface TTSConfig {
   voice: string;
   engine: string;
   language: string;
+  speed?: string;
 }
 
 export interface Panelist {
@@ -49,6 +50,7 @@ export const TTSConfigType = new GraphQLObjectType({
     voice: { type: GraphQLString },
     engine: { type: GraphQLString },
     language: { type: GraphQLString },
+    speed: { type: GraphQLString },
   }),
 });
 
@@ -74,6 +76,7 @@ export const TTSConfigInputType = new GraphQLInputObjectType({
     voice: { type: GraphQLString },
     engine: { type: GraphQLString },
     language: { type: GraphQLString },
+    speed: { type: GraphQLString },
   }),
 });
 
@@ -96,6 +99,7 @@ export const TTSConfigSchema = new Schema<TTSConfig>({
   voice: { type: String, default: "long-form" },
   engine: { type: String, default: "Danielle" },
   language: { type: String, default: "en-US" },
+  speed: { type: String, default: "medium" },
 });
 
 export const PanelistSchema = new Schema(
