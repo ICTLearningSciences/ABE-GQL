@@ -40,6 +40,7 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainText
+                      uriEncoded
                       lastChangedId
                       chatLog {
                         sender
@@ -72,6 +73,7 @@ describe("submit google doc version", () => {
     const newGoogleDocData = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
+      uriEncoded: true,
       markdownText: "# hello, world!",
       lastChangedId: "123",
       courseAssignmentId: "course-assignment-id",
@@ -108,6 +110,7 @@ describe("submit google doc version", () => {
                       docId
                       plainText
                       markdownText
+                      uriEncoded
                       versionType
                       courseAssignmentId
                     }
@@ -134,6 +137,7 @@ describe("submit google doc version", () => {
     expect(docVersion).to.not.be.null;
     expect(docVersion!.versionType).to.equal(VersionType.SNAPSHOT);
     expect(docVersion!.plainText).to.equal("hello, world!");
+    expect(docVersion!.uriEncoded).to.equal(true);
     expect(docVersion!.courseAssignmentId).to.equal("course-assignment-id");
   });
 
@@ -149,6 +153,7 @@ describe("submit google doc version", () => {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "initial text",
       markdownText: "# initial text",
+      uriEncoded: true,
       lastChangedId: "123",
       chatLog: [
         {
@@ -193,6 +198,7 @@ describe("submit google doc version", () => {
                       docId
                       plainTextDelta
                       markdownTextDelta
+                      uriEncoded
                       versionType
                       lastChangedId
                     }
