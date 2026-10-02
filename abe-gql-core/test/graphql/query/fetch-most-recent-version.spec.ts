@@ -64,6 +64,7 @@ describe("fetch most recent version", () => {
             docId
             plainText
             markdownText
+            uriEncoded
             lastChangedId
             chatLog {
               sender
@@ -86,6 +87,7 @@ describe("fetch most recent version", () => {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
       markdownText: "# hello, world! 3",
+      uriEncoded: true,
       lastChangedId: "123",
       chatLog: [
         {
