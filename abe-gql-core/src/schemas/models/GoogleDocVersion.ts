@@ -147,7 +147,7 @@ export interface IGDocVersion {
   plainTextDelta: string;
   markdownText?: string;
   markdownTextDelta?: string;
-  uriEncoded?: boolean;
+  uriEncoded: boolean;
   lastChangedId: string;
   sessionId: string;
   sessionIntention: IIntention;
@@ -184,7 +184,7 @@ export const GDocVersionSchema = new Schema(
     plainTextDelta: String,
     markdownText: String,
     markdownTextDelta: String,
-    uriEncoded: { type: Boolean, required: false, default: false },
+    uriEncoded: Boolean,
     lastChangedId: String,
     sessionId: String,
     courseAssignmentId: { type: String, required: false, default: "" },
