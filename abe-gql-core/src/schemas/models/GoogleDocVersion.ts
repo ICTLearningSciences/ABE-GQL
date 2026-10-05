@@ -12,6 +12,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql";
 import DateType from "../types/date";
 import {
@@ -89,6 +90,7 @@ export const GDocVersionInputType = new GraphQLInputObjectType({
     plainTextDelta: { type: GraphQLString },
     markdownText: { type: GraphQLString },
     markdownTextDelta: { type: GraphQLString },
+    uriEncoded: { type: GraphQLBoolean },
     lastChangedId: { type: GraphQLString },
     sessionId: { type: GraphQLNonNull(GraphQLString) },
     sessionIntention: { type: IntentionInputType },
@@ -114,6 +116,7 @@ export const GDocVersionObjectType = new GraphQLObjectType({
     plainTextDelta: { type: GraphQLString },
     markdownText: { type: GraphQLString },
     markdownTextDelta: { type: GraphQLString },
+    uriEncoded: { type: GraphQLBoolean },
     lastChangedId: { type: GraphQLString },
     sessionId: { type: GraphQLString },
     sessionIntention: { type: IntentionObjectType },
@@ -144,6 +147,7 @@ export interface IGDocVersion {
   plainTextDelta: string;
   markdownText?: string;
   markdownTextDelta?: string;
+  uriEncoded?: boolean;
   lastChangedId: string;
   sessionId: string;
   sessionIntention: IIntention;
@@ -180,6 +184,7 @@ export const GDocVersionSchema = new Schema(
     plainTextDelta: String,
     markdownText: String,
     markdownTextDelta: String,
+    uriEncoded: { type: Boolean, required: false, default: false },
     lastChangedId: String,
     sessionId: String,
     courseAssignmentId: { type: String, required: false, default: "" },

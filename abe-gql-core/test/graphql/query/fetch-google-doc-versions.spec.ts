@@ -70,6 +70,7 @@ describe("fetch google doc versions", () => {
                     docId
                       plainText
                       markdownText
+                      uriEncoded
                       lastChangedId
                       chatLog {
                         sender
@@ -93,6 +94,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world!",
         markdownText: "# hello, world!",
+        uriEncoded: null,
         lastChangedId: "123",
         chatLog: [
           {
@@ -111,6 +113,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 2",
         markdownText: "# hello, world! 2",
+        uriEncoded: null,
         lastChangedId: "123",
         chatLog: [
           {
@@ -129,6 +132,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 3",
         markdownText: "# hello, world! 3",
+        uriEncoded: null,
         lastChangedId: "123",
         chatLog: [
           {
