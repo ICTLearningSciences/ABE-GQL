@@ -186,6 +186,7 @@ export function getDeltaDoc(
   }
   const deltaDoc: Partial<IGDocVersion> = {
     versionType: VersionType.DELTA,
+    uriEncoded: newVersion.uriEncoded,
     docId: docCurrentState.docId,
     sessionId: docCurrentState.sessionId,
   };

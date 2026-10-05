@@ -507,6 +507,7 @@ const MONGO_DATA = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
       markdownText: "# hello, world! 3",
+      uriEncoded: true,
       lastChangedId: "123",
       sessionId: "session-id-3",
       sessionIntention: {

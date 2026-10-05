@@ -132,7 +132,7 @@ describe("fetch google doc versions", () => {
         docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
         plainText: "hello, world! 3",
         markdownText: "# hello, world! 3",
-        uriEncoded: null,
+        uriEncoded: true,
         lastChangedId: "123",
         chatLog: [
           {
