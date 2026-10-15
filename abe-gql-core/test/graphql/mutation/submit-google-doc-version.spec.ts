@@ -9,7 +9,7 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import GDocVersionModel, {
   DocVersionCurrentStateModel,
@@ -22,14 +22,14 @@ describe("submit google doc version", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`throws an error if google doc data was not provided`, async () => {
@@ -40,6 +40,7 @@ describe("submit google doc version", () => {
                     submitGoogleDocVersion(googleDocData: $googleDocData) {
                       docId
                       plainText
+                      uriEncoded
                       lastChangedId
                       chatLog {
                         sender
@@ -72,6 +73,7 @@ describe("submit google doc version", () => {
     const newGoogleDocData = {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world!",
+      uriEncoded: true,
       markdownText: "# hello, world!",
       lastChangedId: "123",
       courseAssignmentId: "course-assignment-id",
@@ -108,6 +110,7 @@ describe("submit google doc version", () => {
                       docId
                       plainText
                       markdownText
+                      uriEncoded
                       versionType
                       courseAssignmentId
                     }
@@ -134,6 +137,7 @@ describe("submit google doc version", () => {
     expect(docVersion).to.not.be.null;
     expect(docVersion!.versionType).to.equal(VersionType.SNAPSHOT);
     expect(docVersion!.plainText).to.equal("hello, world!");
+    expect(docVersion!.uriEncoded).to.equal(true);
     expect(docVersion!.courseAssignmentId).to.equal("course-assignment-id");
   });
 
@@ -149,6 +153,7 @@ describe("submit google doc version", () => {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "initial text",
       markdownText: "# initial text",
+      uriEncoded: true,
       lastChangedId: "123",
       chatLog: [
         {
@@ -193,6 +198,7 @@ describe("submit google doc version", () => {
                       docId
                       plainTextDelta
                       markdownTextDelta
+                      uriEncoded
                       versionType
                       lastChangedId
                     }

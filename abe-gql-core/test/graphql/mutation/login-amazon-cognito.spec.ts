@@ -8,7 +8,7 @@ The full terms of this copyright and license should always be found in the root 
 import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import {
   CognitoAuthFunc,
@@ -29,7 +29,7 @@ describe("login with amazon cognito", () => {
 
   beforeEach(async () => {
     overrideCognitoAuthFunc(amazonAuthFuncOverride);
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });
@@ -37,7 +37,7 @@ describe("login with amazon cognito", () => {
   afterEach(async () => {
     restoreCognitoAuthFunc();
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`creates a new user for new amazon cognito login`, async () => {

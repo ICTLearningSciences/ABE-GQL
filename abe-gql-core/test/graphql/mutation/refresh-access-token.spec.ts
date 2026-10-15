@@ -8,7 +8,7 @@ The full terms of this copyright and license should always be found in the root 
 import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import e, { Express } from "express";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import {
   GoogleAuthFunc,
@@ -31,7 +31,7 @@ describe("refresh access token", () => {
 
   beforeEach(async () => {
     overrideGoogleAuthFunc(googleAuthFuncOverride);
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });
@@ -39,7 +39,7 @@ describe("refresh access token", () => {
   afterEach(async () => {
     restoreGoogleAuthFunc();
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`throws an error if no refreshToken`, async () => {

@@ -11,7 +11,6 @@ import {
   GraphQLBoolean,
   GraphQLInputObjectType,
 } from "graphql";
-import { ObjectType } from "../types/object";
 import {
   PaginateOptions,
   PaginateQuery,
@@ -25,6 +24,13 @@ import {
   RagStoreConfigurationType,
 } from "./BuiltActivity/objects";
 
+export interface TTSConfig {
+  voice: string;
+  engine: string;
+  language: string;
+  speed?: string;
+}
+
 export interface Panelist {
   clientId: string;
   promptSegment: string;
@@ -34,8 +40,19 @@ export interface Panelist {
   panelistDescription: string;
   introductionMessage: string;
   ragConfig: RagStoreConfiguration;
+  ttsConfig: TTSConfig;
   deleted: boolean;
 }
+
+export const TTSConfigType = new GraphQLObjectType({
+  name: "TTSConfigType",
+  fields: () => ({
+    voice: { type: GraphQLString },
+    engine: { type: GraphQLString },
+    language: { type: GraphQLString },
+    speed: { type: GraphQLString },
+  }),
+});
 
 export const PanelistType = new GraphQLObjectType({
   name: "PanelistType",
@@ -48,7 +65,18 @@ export const PanelistType = new GraphQLObjectType({
     panelistDescription: { type: GraphQLString },
     introductionMessage: { type: GraphQLString },
     ragConfig: { type: RagStoreConfigurationType },
+    ttsConfig: { type: TTSConfigType },
     deleted: { type: GraphQLBoolean },
+  }),
+});
+
+export const TTSConfigInputType = new GraphQLInputObjectType({
+  name: "TTSConfigInputType",
+  fields: () => ({
+    voice: { type: GraphQLString },
+    engine: { type: GraphQLString },
+    language: { type: GraphQLString },
+    speed: { type: GraphQLString },
   }),
 });
 
@@ -63,7 +91,15 @@ export const PanelistInputType = new GraphQLInputObjectType({
     panelistDescription: { type: GraphQLString },
     introductionMessage: { type: GraphQLString },
     ragConfig: { type: RagStoreConfigurationInputType },
+    ttsConfig: { type: TTSConfigInputType },
   }),
+});
+
+export const TTSConfigSchema = new Schema<TTSConfig>({
+  voice: { type: String, default: "long-form" },
+  engine: { type: String, default: "Danielle" },
+  language: { type: String, default: "en-US" },
+  speed: { type: String, default: "medium" },
 });
 
 export const PanelistSchema = new Schema(
@@ -76,6 +112,7 @@ export const PanelistSchema = new Schema(
     panelistDescription: { type: String },
     introductionMessage: { type: String },
     ragConfig: { type: RagStoreConfigurationSchema, required: false },
+    ttsConfig: { type: TTSConfigSchema, required: false },
     deleted: { type: Boolean, default: false },
   },
   {

@@ -8,4 +8,3 @@ update-core:
 deploy:
 	make update-core
 	npm run deploy:$(ENV)
-

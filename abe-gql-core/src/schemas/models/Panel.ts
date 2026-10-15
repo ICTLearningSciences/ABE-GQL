@@ -10,6 +10,7 @@ import {
   GraphQLObjectType,
   GraphQLList,
   GraphQLInputObjectType,
+  GraphQLInt,
 } from "graphql";
 import {
   PaginateOptions,
@@ -23,6 +24,7 @@ export interface Panel {
   panelName: string;
   panelDescription: string;
   panelists: string[];
+  groupSize?: number;
   deleted: boolean;
 }
 
@@ -33,6 +35,7 @@ export const PanelType = new GraphQLObjectType({
     panelName: { type: GraphQLString },
     panelDescription: { type: GraphQLString },
     panelists: { type: new GraphQLList(GraphQLString) },
+    groupSize: { type: GraphQLInt },
   }),
 });
 
@@ -43,6 +46,7 @@ export const PanelInputType = new GraphQLInputObjectType({
     panelName: { type: GraphQLString },
     panelDescription: { type: GraphQLString },
     panelists: { type: new GraphQLList(GraphQLString) },
+    groupSize: { type: GraphQLInt },
   }),
 });
 
@@ -52,6 +56,7 @@ export const PanelSchema = new Schema(
     panelName: { type: String },
     panelDescription: { type: String },
     panelists: [{ type: String }],
+    groupSize: { type: Number, default: 2 },
     deleted: { type: Boolean, default: false },
   },
   {

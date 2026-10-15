@@ -65,7 +65,10 @@ import fetchPanelists from "./query/fetch-panelists";
 import addOrUpdatePanel from "./mutation/add-or-update-panel";
 import deletePanel from "./mutation/delete-panel";
 import fetchPanels from "./query/fetch-panels";
+import fetchUsers from "./query/fetch-users";
 import { ActivityBuilder } from "./models/BuiltActivity/types";
+import updateUserRole from "./mutation/update-user-role";
+
 const publicQueries = {
   fetchGoogleDocVersions,
   fetchGoogleDocs,
@@ -92,8 +95,15 @@ const publicQueries = {
   fetchPanels,
 };
 
-const getAuthenticatedQueries = () => {
-  return publicQueries;
+const adminQueries = () => {
+  return {
+    ...publicQueries,
+    fetchUsers,
+  };
+};
+
+const getAuthenticatedQueries = (userRole: UserRole, userId: string) => {
+  return userRole === UserRole.ADMIN ? adminQueries() : publicQueries;
 };
 
 const publicMutations = {
@@ -149,6 +159,7 @@ const contentManagerMutations = (userRole: UserRole, userId: string) => {
 const adminMutations = (userRole: UserRole, userId: string) => {
   return {
     ...contentManagerMutations(userRole, userId),
+    updateUserRole,
   };
 };
 
@@ -167,7 +178,7 @@ export function getAuthenticatedSchema(
   return new GraphQLSchema({
     query: new GraphQLObjectType({
       name: "AuthenticatedQuery",
-      fields: getAuthenticatedQueries(),
+      fields: getAuthenticatedQueries(userRole, userId),
     }),
     mutation: new GraphQLObjectType({
       name: "AuthenticatedMutation",

@@ -9,21 +9,21 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 
 describe("fetch most recent version", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("../../fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = createApp();
     await appStart();
   });
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`throws an error if google doc id is not provided`, async () => {
@@ -64,6 +64,7 @@ describe("fetch most recent version", () => {
             docId
             plainText
             markdownText
+            uriEncoded
             lastChangedId
             chatLog {
               sender
@@ -86,6 +87,7 @@ describe("fetch most recent version", () => {
       docId: "1fKb_rCcYeGxMiuJF0y0NYB3VWo1tSMIPrcNUCtXoQ2q",
       plainText: "hello, world! 3",
       markdownText: "# hello, world! 3",
+      uriEncoded: true,
       lastChangedId: "123",
       chatLog: [
         {

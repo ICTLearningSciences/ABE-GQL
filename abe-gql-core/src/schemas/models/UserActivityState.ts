@@ -29,8 +29,8 @@ export const UserActivityStateType = new GraphQLObjectType({
 
 export const UserActivityStateSchema = new Schema<UserActivityState>(
   {
-    userId: { type: mongoose.Types.ObjectId, ref: "User" },
-    activityId: { type: mongoose.Types.ObjectId, ref: "Activity" },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    activityId: { type: mongoose.Schema.Types.ObjectId, ref: "Activity" },
     googleDocId: { type: String },
     metadata: { type: String },
   },

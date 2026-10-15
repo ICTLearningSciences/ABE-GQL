@@ -38,9 +38,7 @@ custom:
     prod: api.abewriting.org
   customDomain:
     domainName: ${self:custom.domain.${opt:stage, 'dev'}}
-    basePath: "graphql" # api root url becomes: api.mentorpal.org/graphql
-    # certificateName: '*.mentorpal.org' didnt work
-    # certificateName: 'c6107db7-c2ef-4e85-a21f-bee7d1ac008a' didnt work either
+    basePath: "graphql" # api root url becomes: api.abewriting.org/graphql
     stage: ${self:provider.stage}
     endpointType: regional
     apiType: rest
@@ -58,6 +56,7 @@ custom:
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenDev"
       WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
+      S3_BUCKET_URL: ${ssm:/abewriting/dev/s3-bucket-url, 'no ssm variable found'}
     qa:
       MONGO_URI: ${ssm:/ABE/qa/mongo_uri, ''}
       CORS_ORIGIN: "https://qa.abewriting.org,https://qa.abewriting.org/,.qa.abewriting.org,.qa.abewriting.org/,https://api-qa.abewriting.org,https://api-qa.abewriting.org/,https://*.web.core.windows.net/,https://*.web.core.windows.net,https://abestorage6245.z13.web.core.windows.net/,https://abestorage6245.z13.web.core.windows.net,https://qa.meridiomath.org/,https://qa.meridiomath.org"
@@ -65,6 +64,7 @@ custom:
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenQa"
       WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
+      S3_BUCKET_URL: ${ssm:/abewriting/qa/s3-bucket-url, 'no ssm variable found'}
 
     prod:
       MONGO_URI: ${ssm:/ABE/prod/mongo_uri, ''}
@@ -73,6 +73,7 @@ custom:
       DOMAIN: "abewriting.org"
       REFRESH_TOKEN_NAME: "refreshTokenProd"
       WEBACL_ARN: ${ssm:/abewriting-abe/api_firewall_arn, ''}
+      S3_BUCKET_URL: ${ssm:/abewriting/prod/s3-bucket-url, 'no ssm variable found'}
 
 provider:
   name: aws
@@ -104,6 +105,22 @@ provider:
     REFRESH_TOKEN_NAME: ${self:custom.stages.${self:provider.stage}.REFRESH_TOKEN_NAME}
     COGNITO_USER_POOL_ID: ${ssm:/shared/cognito-user-pool-id, ''}
     COGNITO_CLIENT_ID: ${ssm:/shared/cognito-client-id, ''}
+    RAG_BUCKET: ${ssm:/ABE/aws/RAG_S3_BUCKET_NAME, ''}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - s3:PutObject
+            - s3:ListObjects
+          Resource:
+            - "arn:aws:s3:::abe-rag-source-data-2026/*"
+        - Effect: Allow
+          Action:
+            - polly:SynthesizeSpeech
+            - polly:DescribeVoices
+          Resource: '*'
+
 functions:
   graphql:
     timeout: 30
@@ -149,6 +166,7 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - X-Amzn-Trace-Id
+
 resources:
   Resources:
     # this fails on first deploy because CloudFormation tries to create

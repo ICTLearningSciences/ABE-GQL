@@ -12,6 +12,7 @@ import {
   GraphQLInputObjectType,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLFloat,
 } from "graphql";
 import OrgModel from "./Organization";
 import { SurveyConfig, SurveyConfigType } from "./Config/survey-config";
@@ -138,6 +139,7 @@ export interface ServiceModelInfo {
   name: string;
   maxTokens: number;
   supportsWebSearch: boolean;
+  temperature?: number;
   onlyAdminUse?: boolean;
   disabled?: boolean;
 }
@@ -162,6 +164,7 @@ export interface Config {
   surveyConfig?: SurveyConfig;
   bannerConfig?: BannerConfig;
   privacyPolicy?: string;
+  staticFilesBucket?: string;
 }
 
 type ConfigKey = keyof Config;
@@ -180,6 +183,7 @@ export const ConfigKeys: ConfigKey[] = [
   "surveyConfig",
   "bannerConfig",
   "privacyPolicy",
+  "staticFilesBucket",
 ];
 
 export function getDefaultConfig(): Config {
@@ -206,6 +210,8 @@ export function getDefaultConfig(): Config {
       bannerBgColor: "",
     },
     privacyPolicy: "",
+    staticFilesBucket:
+      process.env.S3_BUCKET_URL || "bucket env variable not found",
   };
 }
 
@@ -247,6 +253,7 @@ export const ServiceModelInfoType = new GraphQLObjectType({
     name: { type: GraphQLString },
     maxTokens: { type: GraphQLInt },
     supportsWebSearch: { type: GraphQLBoolean },
+    temperature: { type: GraphQLFloat },
     onlyAdminUse: { type: GraphQLBoolean },
     disabled: { type: GraphQLBoolean },
   },
@@ -292,6 +299,7 @@ export const ConfigType = new GraphQLObjectType({
     surveyConfig: { type: SurveyConfigType },
     bannerConfig: { type: BannerConfigType },
     privacyPolicy: { type: GraphQLString },
+    staticFilesBucket: { type: GraphQLString },
   }),
 });
 

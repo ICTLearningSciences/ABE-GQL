@@ -15,7 +15,7 @@ import createApp, { appStart, appStop } from "../../../src/app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import PanelistModel from "../../../src/schemas/models/Panelist";
 
@@ -46,7 +46,7 @@ describe("fetch panelists", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
 
@@ -79,7 +79,7 @@ describe("fetch panelists", () => {
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it("can fetch all panelists", async () => {

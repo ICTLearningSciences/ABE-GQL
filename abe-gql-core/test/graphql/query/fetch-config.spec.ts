@@ -8,7 +8,7 @@ import createApp, { appStart, appStop } from "app";
 import { expect } from "chai";
 import { Express } from "express";
 import { describe } from "mocha";
-import mongoUnit from "mongo-unit";
+import { loadMongo, wipeMongo } from "test/fixtures/mongodb/data-default";
 import request from "supertest";
 import ConfigModel, {
   AiServiceNames,
@@ -19,17 +19,18 @@ describe("config", () => {
   let app: Express;
 
   beforeEach(async () => {
-    await mongoUnit.load(require("test/fixtures/mongodb/data-default.js"));
+    await loadMongo();
     app = await createApp();
     await appStart();
   });
 
   afterEach(async () => {
     await appStop();
-    await mongoUnit.drop();
+    await wipeMongo();
   });
 
   it(`serves default config when no settings`, async () => {
+    process.env.S3_BUCKET_URL = "example-s3-bucket-url";
     const response = await request(app)
       .post("/graphql")
       .send({
@@ -53,13 +54,16 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
             }
+            staticFilesBucket
           }
         }`,
       });
+    console.log(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.data.fetchConfig).to.eql({
       aiSystemPrompt: [],
@@ -82,12 +86,14 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              temperature: 0.5,
               onlyAdminUse: false,
               disabled: false,
             },
           ],
         },
       ],
+      staticFilesBucket: process.env.S3_BUCKET_URL,
     });
   });
 
@@ -113,6 +119,7 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              temperature: 0.5,
               onlyAdminUse: true,
               disabled: false,
             },
@@ -144,6 +151,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
@@ -225,6 +233,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
@@ -273,6 +282,7 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              temperature: 0.5,
               onlyAdminUse: false,
               disabled: false,
             },
@@ -388,6 +398,7 @@ describe("config", () => {
       name: "gpt-4o",
       maxTokens: 1000,
       supportsWebSearch: true,
+      temperature: 0.5,
       onlyAdminUse: true,
       disabled: false,
     };
@@ -395,6 +406,7 @@ describe("config", () => {
       name: "gpt-3.5-turbo",
       maxTokens: 1000,
       supportsWebSearch: true,
+      temperature: 0.5,
       onlyAdminUse: true,
       disabled: true,
     };
@@ -418,6 +430,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
