@@ -12,6 +12,7 @@ import {
   GraphQLInputObjectType,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLFloat,
 } from "graphql";
 import OrgModel from "./Organization";
 import { SurveyConfig, SurveyConfigType } from "./Config/survey-config";
@@ -138,6 +139,7 @@ export interface ServiceModelInfo {
   name: string;
   maxTokens: number;
   supportsWebSearch: boolean;
+  temperature?: number;
   onlyAdminUse?: boolean;
   disabled?: boolean;
 }
@@ -251,6 +253,7 @@ export const ServiceModelInfoType = new GraphQLObjectType({
     name: { type: GraphQLString },
     maxTokens: { type: GraphQLInt },
     supportsWebSearch: { type: GraphQLBoolean },
+    temperature: { type: GraphQLFloat },
     onlyAdminUse: { type: GraphQLBoolean },
     disabled: { type: GraphQLBoolean },
   },
