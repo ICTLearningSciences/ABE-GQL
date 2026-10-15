@@ -54,6 +54,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
@@ -85,6 +86,7 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              temperature: 0.5,
               onlyAdminUse: false,
               disabled: false,
             },
@@ -117,6 +119,7 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              temperature: 0.5,
               onlyAdminUse: true,
               disabled: false,
             },
@@ -148,6 +151,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
@@ -229,6 +233,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
@@ -277,6 +282,7 @@ describe("config", () => {
               name: "gpt-3.5-turbo",
               maxTokens: 1000,
               supportsWebSearch: true,
+              temperature: 0.5,
               onlyAdminUse: false,
               disabled: false,
             },
@@ -392,6 +398,7 @@ describe("config", () => {
       name: "gpt-4o",
       maxTokens: 1000,
       supportsWebSearch: true,
+      temperature: 0.5,
       onlyAdminUse: true,
       disabled: false,
     };
@@ -399,6 +406,7 @@ describe("config", () => {
       name: "gpt-3.5-turbo",
       maxTokens: 1000,
       supportsWebSearch: true,
+      temperature: 0.5,
       onlyAdminUse: true,
       disabled: true,
     };
@@ -422,6 +430,7 @@ describe("config", () => {
                 name
                 maxTokens
                 supportsWebSearch
+                temperature
                 onlyAdminUse
                 disabled
               }
