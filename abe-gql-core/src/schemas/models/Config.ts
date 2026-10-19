@@ -155,6 +155,7 @@ export interface Config {
   exampleGoogleDocs?: string[];
   overrideAiModel?: AiModelService; // overrides ALL requests for this org (should not be set in global config)
   defaultAiModel?: AiModelService;
+  defaultSharkTankAiModel?: AiModelService;
   aiServiceModelConfigs?: AiServiceModelConfigs[];
   approvedEmailsForAiModels?: string[];
   colorTheme?: Partial<ColorThemeConfig>;
@@ -175,6 +176,7 @@ export const ConfigKeys: ConfigKey[] = [
   "exampleGoogleDocs",
   "overrideAiModel",
   "defaultAiModel",
+  "defaultSharkTankAiModel",
   "aiServiceModelConfigs",
   "approvedEmailsForAiModels",
   "headerTitle",
@@ -193,6 +195,7 @@ export function getDefaultConfig(): Config {
     exampleGoogleDocs: [],
     overrideAiModel: undefined,
     defaultAiModel: undefined,
+    defaultSharkTankAiModel: undefined,
     aiServiceModelConfigs: [],
     approvedEmailsForAiModels: [],
     colorTheme: {},
@@ -277,6 +280,7 @@ export const ConfigType = new GraphQLObjectType({
     exampleGoogleDocs: { type: GraphQLList(GraphQLString) },
     overrideAiModel: { type: AiModelServiceType },
     defaultAiModel: { type: AiModelServiceType },
+    defaultSharkTankAiModel: { type: AiModelServiceType },
     aiServiceModelConfigs: {
       type: GraphQLList(AiServiceModelConfigsType),
       resolve: (config: Config) => {
