@@ -15,7 +15,7 @@ export default new GraphQLScalarType({
   parseLiteral(ast) {
     switch (ast.kind) {
       case Kind.STRING:
-        return ast.value.charAt(0) === "{" ? Json5.parse(ast.value) : null;
+        return ast.value.charAt(0) === "{" ? Json5.parse(ast.value) : ast.value;
       case Kind.OBJECT:
         return parseObject(ast);
     }
